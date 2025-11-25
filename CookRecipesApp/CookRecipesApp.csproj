@@ -68,10 +68,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Model\" />
 	  <Folder Include="ViewModel\" />
 	  <Folder Include="View\" />
-	  <Folder Include="Service\" />
 	</ItemGroup>
 
 </Project>

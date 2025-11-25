@@ -23,6 +23,8 @@ namespace CookRecipesApp
 #if DEBUG
     		builder.Logging.AddDebug();
 #endif
+            builder.Services.AddSingleton<Service.SQLiteConnectionFactory>();
+
 
             return builder.Build();
         }
