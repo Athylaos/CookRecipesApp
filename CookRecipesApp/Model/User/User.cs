@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace CookRecipesApp.Model
+namespace CookRecipesApp.Model.User
 {
     class User
     {

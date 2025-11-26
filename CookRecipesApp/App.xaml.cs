@@ -1,4 +1,6 @@
-﻿using CookRecipesApp.Model;
+﻿using CookRecipesApp.Model.Ingredient;
+using CookRecipesApp.Model.Recepie;
+using CookRecipesApp.Model.User;
 using CookRecipesApp.Service;
 using Microsoft.Extensions.DependencyInjection;
 using SQLite;
@@ -28,7 +30,10 @@ namespace CookRecipesApp
 
             await database.CreateTableAsync<UserDbModel>(); // save to call even if table exists
 
-            
+            await database.CreateTableAsync<UnitDbModel>();
+            await database.CreateTableAsync<IngredientDbModel>();
+
+            await database.CreateTableAsync<RecepieDbModel>();
 
 
             base.OnStart();
