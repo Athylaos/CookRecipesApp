@@ -12,7 +12,7 @@ namespace CookRecipesApp.Service
         public Task RemoveIngredientAsync(int id);
         public Task UpdateIngredientAsync(Ingredient ingredient);
         public Task<List<Ingredient>> GetAllIngredientsAsync();
-        public Task<Ingredient> GetIngredientAsync(int id);
+        public Task<Ingredient?> GetIngredientAsync(int id);
 
     }
     public class IngredientsService : IIngredientsService
@@ -34,10 +34,10 @@ namespace CookRecipesApp.Service
                 ingredientDbModel.Quantity,
                 unitDbModel,
                 ingredientDbModel.Calories,
-                    ingredientDbModel.Proteins,
-                    ingredientDbModel.Fats,
-                    ingredientDbModel.Carbohydrates,
-                    ingredientDbModel.Fiber);
+                ingredientDbModel.Proteins,
+                ingredientDbModel.Fats,
+                ingredientDbModel.Carbohydrates,
+                ingredientDbModel.Fiber);
         }
 
         private async Task<IngredientDbModel> IngredientToIngredientDbModelAsync(Ingredient ingredient)
@@ -71,6 +71,10 @@ namespace CookRecipesApp.Service
         public async Task<List<Ingredient>> GetAllIngredientsAsync()
         {
             var ingredientsDbModels = await _database.Table<IngredientDbModel>().ToListAsync();
+            if (ingredientsDbModels.Count == 0)
+            {
+                return new List<Ingredient>();
+            }
             var unitsDbModels = await _database.Table<UnitDbModel>().ToListAsync();
 
             var ingredients = ingredientsDbModels.Select(ingredientDbModel =>
@@ -78,7 +82,7 @@ namespace CookRecipesApp.Service
                     ingredientDbModel.Id,
                     ingredientDbModel.Name,
                     ingredientDbModel.Quantity,
-                    unitsDbModels.Find(u => u.Id == ingredientDbModel.UnitId),
+                    unitsDbModels.Find(u => u.Id == ingredientDbModel.UnitId) ?? new UnitDbModel { Id = 0, Name = "g"},
                     ingredientDbModel.Calories,
                     ingredientDbModel.Proteins,
                     ingredientDbModel.Fats,
@@ -90,7 +94,7 @@ namespace CookRecipesApp.Service
             return ingredients;
         }
 
-        public async Task<Ingredient> GetIngredientAsync(int id)
+        public async Task<Ingredient?> GetIngredientAsync(int id)
         {
             var ingredientDbModel = await _database.Table<IngredientDbModel>().FirstOrDefaultAsync(i => i.Id == id);
 

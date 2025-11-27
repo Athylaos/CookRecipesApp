@@ -22,36 +22,34 @@ namespace CookRecipesApp.Service
     {
         private readonly ISQLiteAsyncConnection _database;
 
-        public RecepiesService(ISQLiteAsyncConnection database)
+        public RecepiesService(SQLiteConnectionFactory factory)
         {
-            _database = database;
+            _database = factory.CreateConnection();
         }
 
+        public Task DeleteRecepieAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
 
         public Task<List<Recepie>> GetAllRecepiesAsync()
-        {        
-            var recepiesDbModels = _database.Table<RecepieDbModel>().ToListAsync();
-            List<Recepie> recepies = new List<Recepie>();
-
-            foreach (var recepieDbModel in recepiesDbModels.Result)
-            {
-                recepies.Add(new Recepie(
-                    Id: recepieDbModel.Id,
-                    UserId: recepieDbModel.UserId,
-                    Title: recepieDbModel.Title,
-                    CoockingProcess: recepieDbModel.CoockingProcess,
-                    CoockingTime: recepieDbModel.CoockingTime,
-                    Servings: recepieDbModel.Servings,
-                    Ingredients: new List<Model.Ingredient.Ingredient>(), // Ingredients need to be fetched separately
-                    Calories: recepieDbModel.Calories,
-                    Proteins: recepieDbModel.Proteins,
-                    Fats: recepieDbModel.Fats,
-                    Carbohydrates: recepieDbModel.Carbohydrates,
-                    Fiber: recepieDbModel.Fiber
-                ));
-            }
+        {
+            throw new NotImplementedException();
         }
 
+        public Task<Recepie> GetRecepieAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
 
+        public Task SaveRecepieAsync(Recepie recepie)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task UpdateRecepieAsync(Recepie recepie)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
