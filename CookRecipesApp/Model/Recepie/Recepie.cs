@@ -7,23 +7,6 @@ namespace CookRecipesApp.Model.Recepie
 {
     public class Recepie
     {
-
-        public Recepie(int Id, int UserId, string Title, string CoockingProcess, int CoockingTime, int Servings, List<Ingredient.Ingredient> Ingredients, float Calories, float Proteins, float Fats, float Carbohydrates, float Fiber)
-        {
-            this.Id = Id;
-            this.UserId = UserId;
-            this.Title = Title;
-            this.CoockingProcess = CoockingProcess;
-            this.CoockingTime = CoockingTime;
-            this.Servings = Servings;
-            this.Ingredients = Ingredients;
-            this.Calories = Calories;
-            this.Proteins = Proteins;
-            this.Fats = Fats;
-            this.Carbohydrates = Carbohydrates;
-            this.Fiber = Fiber;
-        }
-
         public int Id { get; set; }
         public int UserId { get; set; }
         public string Title { get; set; } = string.Empty;

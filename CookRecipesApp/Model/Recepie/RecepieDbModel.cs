@@ -16,10 +16,10 @@ namespace CookRecipesApp.Model.Recepie
         public int UserId { get; set; }
 
         [NotNull]
-        public string Title { get; set; }
+        public string Title { get; set; } = string.Empty;
 
         [NotNull]
-        public string CoockingProcess { get; set; }
+        public string CoockingProcess { get; set; } = string.Empty;
 
         [NotNull]
         public int CoockingTime { get; set; }

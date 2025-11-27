@@ -11,7 +11,7 @@ namespace CookRecipesApp.Model.Ingredient
         public int Id { get; set; }
 
         [NotNull]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         [NotNull]
         public float Quantity { get; set; }
