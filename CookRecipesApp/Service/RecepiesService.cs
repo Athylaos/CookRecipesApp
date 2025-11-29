@@ -31,7 +31,7 @@ namespace CookRecipesApp.Service
             _ingredientService = ingredientsService;
         }
 
-        public async Task<List<Ingredient>> GetAllIngredientsForRecepieAsync(int recepieId)
+        public async Task<List<Ingredient>> GetAllIngredientsForRecepieAsync(int recepieId) // would be better to load all recepie-ingredients and match them in memory, but fine for now
         {
             var recepieIngredients = await _database
                 .Table<RecepieIngredientDbModel>()
@@ -54,7 +54,7 @@ namespace CookRecipesApp.Service
 
 
 
-        public async Task<Recepie> RecepieDbModelToRecepie(RecepieDbModel recepieDbModel)
+        public async Task<Recepie> RecepieDbModelToRecepieAsync(RecepieDbModel recepieDbModel)
         {
             Recepie recepie = new Recepie()
             {
@@ -96,29 +96,50 @@ namespace CookRecipesApp.Service
 
 
 
-        public Task DeleteRecepieAsync(int id)
+        public async Task DeleteRecepieAsync(int id)
         {
-            throw new NotImplementedException();
+            await _database.DeleteAsync<RecepieDbModel>(id);
         }
 
-        public Task<List<Recepie>> GetAllRecepiesAsync()
+        public async Task<List<Recepie>> GetAllRecepiesAsync()
         {
-            throw new NotImplementedException();
+            var recepieDbList = await _database.Table<RecepieDbModel>().ToListAsync();
+            List<Recepie> recepieList = new();
+
+            foreach (var recepie in recepieDbList)
+            {
+                recepieList.Add(await RecepieDbModelToRecepieAsync(recepie));
+            }
+            return recepieList;
+            
         }
 
-        public Task<Recepie> GetRecepieAsync(int id)
+        public async Task<Recepie> GetRecepieAsync(int id)
         {
-            throw new NotImplementedException();
+            var recepieDbModel = await _database.Table<RecepieDbModel>()
+                                                .FirstOrDefaultAsync(r => r.Id == id);
+            if (recepieDbModel == null) throw new ArgumentNullException("Object not found in database");
+            return await RecepieDbModelToRecepieAsync(recepieDbModel);
         }
 
-        public Task SaveRecepieAsync(Recepie recepie)
+        public async Task SaveRecepieAsync(Recepie recepie)
         {
-            throw new NotImplementedException();
+            if (recepie == null) throw new ArgumentNullException("Cant save null object to database");
+
+            var recepieDbModel = RecepieToRecepieDbModel(recepie);
+
+            await _database.InsertAsync(recepieDbModel);
+
+            return;
         }
 
-        public Task UpdateRecepieAsync(Recepie recepie)
+        public async Task UpdateRecepieAsync(Recepie recepie)
         {
-            throw new NotImplementedException();
+            var recepieDbModel = RecepieToRecepieDbModel(recepie);
+
+            await _database.UpdateAsync(recepieDbModel);
+
+            return;
         }
     }
 }
