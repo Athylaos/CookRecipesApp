@@ -1,10 +1,11 @@
 ﻿using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Mvvm;
-using Microsoft.Extensions.Logging;
 using CookRecipesApp.Service;
 using CookRecipesApp.View;
 using CookRecipesApp.ViewModel;
+using Microsoft.Extensions.Logging;
+using Sharpnado.Shades;
 
 namespace CookRecipesApp
 {
@@ -17,6 +18,7 @@ namespace CookRecipesApp
                 .UseMauiApp<App>()
                 .UseMauiCommunityToolkit()
                 .UseMauiCommunityToolkitCore()
+                .UseSharpnadoShadows()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");

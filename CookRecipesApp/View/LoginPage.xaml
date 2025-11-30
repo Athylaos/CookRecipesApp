@@ -3,27 +3,56 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodel="clr-namespace:CookRecipesApp.ViewModel"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:sh="clr-namespace:Sharpnado.Shades;assembly=Sharpnado.Maui.Shadows"
              x:DataType="viewmodel:LoginViewModel"
              x:Class="CookRecipesApp.View.LoginPage"
              Shell.NavBarIsVisible="False"
              Title="LoginPage">
     <Grid
-        RowDefinitions="Auto"
-        BackgroundColor="{StaticResource DarkEvergreen}">
+        RowDefinitions="200,Auto, Auto, *"
+        ColumnDefinitions="*,Auto,*"
+        BackgroundColor="#161D17">
         <Border
+            Grid.Row="1"
+            Grid.Column="1"
             BackgroundColor="{StaticResource Evergreen}"
             Padding="15 20"
-            Margin="20,50"
             StrokeShape="Roundrectangle 30"
-            Stroke="Black"
-            Shadow="5 5 15 Black 0.1">
+            WidthRequest="360"
+            Stroke="{StaticResource DarkEvergreen}"
+            Margin="0 5">
             <VerticalStackLayout>
-                <Label Text="Login" FontFamily="Alegreya" FontSize="30" Padding="0 0 15 0"></Label>
-                <Label Text="Email:" TextColor="{StaticResource Porcelain}"/>
-                <Entry ></Entry>
-                <Label Text="Password:" TextColor="{StaticResource Porcelain}"/>
-                <Entry></Entry>
+                <Label Text="Login" FontFamily="Alegreya" FontSize="30" Padding="0 0 15 0" TextColor="{StaticResource SandDune}"></Label>
+                <Label Text="Email:" TextColor="{StaticResource SandDune}"/>
+                <Entry TextColor="{StaticResource SandDune}" FontFamily="Nunito" Text="{Binding Email}"></Entry>
+                <Label Text="Password:" TextColor="{StaticResource SandDune}"/>
+                <Entry TextColor="{StaticResource SandDune}" FontFamily="Nunito" IsPassword="true" Text="{Binding Password}"></Entry>
+                <Label Text="{Binding IndicatorText}" TextColor="DarkRed" IsVisible="{Binding IndicatorVisibility}" ></Label>
+                <Button Text="Continue" Margin="10" BorderColor="{StaticResource DarkEvergreen}" BorderWidth="1" TextColor="#161D17" Command="LoginBtnComman"></Button>
             </VerticalStackLayout>
         </Border>
+        <HorizontalStackLayout
+            Grid.Column="1"
+            Grid.Row="2"
+            HorizontalOptions="Center"
+            Padding="5 0"
+            Spacing="20">
+            <Button Text="Create Account" Background="Transparent" Command="CreateAccountBtnCommand"></Button>
+            <Button Text="Forgot password" Background="Transparent" Command="ForgotPasswordBtnCommand"></Button>
+        </HorizontalStackLayout>
+
+        <Button 
+            Grid.Column="1" 
+            Grid.Row="3" 
+            Text="Skip"
+            Margin="0 -15 0 0"
+            HeightRequest="15"
+            WidthRequest="60"
+            VerticalOptions="End"
+            HorizontalOptions="End"
+            Background="Transparent"
+            Command="SkipBtnCommand"/>
+
+
     </Grid>
 </ContentPage>
