@@ -5,15 +5,18 @@ using System.Text;
 
 namespace CookRecipesApp.Model.User
 {
-    public class UserLoginDto
+    public class UserRegistrationDto
     {
-        [PrimaryKey, AutoIncrement]
+        [NotNull, PrimaryKey, AutoIncrement]
         public int Id { get; set; }
-        [NotNull, Unique]
-        public string Username { get; set; }
+
         [NotNull, Unique]
         public string Email { get; set; }
-        [NotNull]
-        public string Password { get; set; }
+
+        public string Password {  get; set; }
+
+        public string PasswordHash { get; set; }
+
+        public string PasswordSalt { get; set; }
     }
 }

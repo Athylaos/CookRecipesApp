@@ -1,26 +1,40 @@
 ﻿using SQLite;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace CookRecipesApp.Model.User
 {
     public class UserDbModel
     {
-        [SQLite.NotNull, PrimaryKey, AutoIncrement]
+        [NotNull, PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
-        [SQLite.NotNull, Unique]
-        public string Username { get; set; }
 
-        [SQLite.NotNull, Unique]
+        [NotNull, Unique]
         public string Email { get; set; }
 
-        [SQLite.NotNull]
+        [NotNull]
         public string PasswordHash { get; set; }
 
+        [NotNull]
+        public string PasswordSalt { get; set; }
+
+        [NotNull]
+        public string Name { get; set; }
+
+        public string Surname { get; set; }
         
+        public int RecepiesAdded { get; set; } = 0;
+
+        //public DateOnly UserCreated { get; set; }
+
+        public string Role { get; set; } = "User";
+
+        public string? AvatarUrl { get; set; }
+
+
+
 
     }
 }

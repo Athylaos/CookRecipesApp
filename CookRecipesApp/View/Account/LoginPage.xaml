@@ -11,7 +11,7 @@
     <Grid
         RowDefinitions="200,Auto, Auto, *"
         ColumnDefinitions="*,Auto,*"
-        BackgroundColor="#161D17">
+        BackgroundColor="#1D1F1D">
         <Border
             Grid.Row="1"
             Grid.Column="1"
@@ -22,13 +22,13 @@
             Stroke="{StaticResource DarkEvergreen}"
             Margin="0 5">
             <VerticalStackLayout>
-                <Label Text="Login" FontFamily="Alegreya" FontSize="30" Padding="0 0 15 0" TextColor="{StaticResource SandDune}"></Label>
-                <Label Text="Email:" TextColor="{StaticResource SandDune}"/>
-                <Entry TextColor="{StaticResource SandDune}" FontFamily="Nunito" Text="{Binding Email}"></Entry>
-                <Label Text="Password:" TextColor="{StaticResource SandDune}"/>
-                <Entry TextColor="{StaticResource SandDune}" FontFamily="Nunito" IsPassword="true" Text="{Binding Password}"></Entry>
+                <Label Text="Login" FontFamily="Alegreya" FontSize="30" Padding="0 0 15 0" TextColor="{StaticResource Porcelain}"></Label>
+                <Label Text="Email:" TextColor="{StaticResource Porcelain}"/>
+                <Entry TextColor="{StaticResource Porcelain}" FontFamily="Nunito" Text="{Binding Email}"></Entry>
+                <Label Text="Password:" TextColor="{StaticResource Porcelain}"/>
+                <Entry TextColor="{StaticResource Porcelain}" FontFamily="Nunito" IsPassword="true" Text="{Binding Password}"></Entry>
                 <Label Text="{Binding IndicatorText}" TextColor="DarkRed" IsVisible="{Binding IndicatorVisibility}" ></Label>
-                <Button Text="Continue" Margin="10" BorderColor="{StaticResource DarkEvergreen}" BorderWidth="1" TextColor="#161D17" Command="LoginBtnComman"></Button>
+                <Button Text="Continue" Margin="10" BorderColor="{StaticResource DarkEvergreen}" BorderWidth="1" TextColor="#161D17" Command="LoginBtnComman" FontAttributes="Bold"></Button>
             </VerticalStackLayout>
         </Border>
         <HorizontalStackLayout

@@ -4,17 +4,23 @@ using System.Text;
 
 namespace CookRecipesApp.Model.User
 {
-    class User
+    public class User
     {
         public int Id { get; set; }
-        public string Username { get; set; }
+
         public string Email { get; set; }
-        public string Password { get; set; }
-        public User(string username, string email, string password)
-        {
-            Username = username;
-            Email = email;
-            Password = password;
-        }
+
+        public string Name { get; set; }
+
+        public string Surname { get; set; }
+
+        public int RecepiesAdded { get; set; } = 0;
+
+        //public DateOnly UserCreated { get; set; }
+
+        public string Role { get; set; } = "User";
+
+        public string? AvatarUrl { get; set; }
+
     }
 }

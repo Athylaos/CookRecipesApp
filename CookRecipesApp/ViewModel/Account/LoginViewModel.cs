@@ -18,6 +18,8 @@ namespace CookRecipesApp.ViewModel
 
         public LoginViewModel()
         {
+
+
         }
 
 
