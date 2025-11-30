@@ -18,8 +18,15 @@
     <Color x:Key="MidnightBlue">#190649</Color>
     <Color x:Key="OffBlack">#1f1f1f</Color>
 
+    <Color x:Key="DarkEvergreen">#011D04</Color>
+    <Color x:Key="Evergreen">#112718</Color>
+    <Color x:Key="PineTeal">#1D4934</Color>
+    <Color x:Key="PaleOak">#D4C39B</Color>
+    <Color x:Key="SandDune">#E9E0CA</Color>
+    <Color x:Key="Porcelain">#FDFCF9</Color>
+
     <Color x:Key="Gray100">#E1E1E1</Color>
-    <Color x:Key="Gray200">#C8C8C8</Color>
+    <Color x:Key="Gray200">#C8C8C8</Color>  
     <Color x:Key="Gray300">#ACACAC</Color>
     <Color x:Key="Gray400">#919191</Color>
     <Color x:Key="Gray500">#6E6E6E</Color>

@@ -32,7 +32,6 @@ namespace CookRecipesApp
 
             await database.CreateTableAsync<UnitDbModel>();
             await database.CreateTableAsync<IngredientDbModel>();
-
             await database.CreateTableAsync<RecepieDbModel>();
 
 
