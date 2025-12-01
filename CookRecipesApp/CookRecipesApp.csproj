@@ -66,10 +66,14 @@
 		<PackageReference Include="Sharpnado.Maui.Shadows" Version="2.0.2" />
 		<PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
 		<PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.11" />
+		<PackageReference Include="UraniumUI.Blurs" Version="2.13.0" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <MauiXaml Update="View\Account\LoginPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="View\Account\RegisterPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	</ItemGroup>

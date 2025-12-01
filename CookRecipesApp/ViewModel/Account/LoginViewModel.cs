@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CookRecipesApp.ViewModel
+namespace CookRecipesApp.ViewModel.Account
 {
     public partial class LoginViewModel : ObservableObject
     {

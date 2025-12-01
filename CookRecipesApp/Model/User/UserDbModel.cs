@@ -12,18 +12,18 @@ namespace CookRecipesApp.Model.User
 
 
         [NotNull, Unique]
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
         [NotNull]
-        public string PasswordHash { get; set; }
+        public string PasswordHash { get; set; } = string.Empty;
 
         [NotNull]
-        public string PasswordSalt { get; set; }
+        public string PasswordSalt { get; set; } = string.Empty;
 
         [NotNull]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
-        public string Surname { get; set; }
+        public string Surname { get; set; } = string.Empty;
         
         public int RecepiesAdded { get; set; } = 0;
 

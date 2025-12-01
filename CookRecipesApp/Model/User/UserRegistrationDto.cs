@@ -11,12 +11,12 @@ namespace CookRecipesApp.Model.User
         public int Id { get; set; }
 
         [NotNull, Unique]
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
-        public string Password {  get; set; }
+        public string Password { get; set; } = string.Empty;
 
-        public string PasswordHash { get; set; }
+        public string PasswordHash { get; set; } = string.Empty;
 
-        public string PasswordSalt { get; set; }
+        public string PasswordSalt { get; set; } = string.Empty;
     }
 }

@@ -3,9 +3,12 @@ using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Mvvm;
 using CookRecipesApp.Service;
 using CookRecipesApp.View;
+using CookRecipesApp.View.Account;
 using CookRecipesApp.ViewModel;
+using CookRecipesApp.ViewModel.Account;
 using Microsoft.Extensions.Logging;
 using Sharpnado.Shades;
+using UraniumUI;
 
 namespace CookRecipesApp
 {
@@ -19,6 +22,7 @@ namespace CookRecipesApp
                 .UseMauiCommunityToolkit()
                 .UseMauiCommunityToolkitCore()
                 .UseSharpnadoShadows()
+                .UseUraniumUIBlurs()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -36,6 +40,9 @@ namespace CookRecipesApp
 
             builder.Services.AddSingleton<LoginPage>();
             builder.Services.AddTransient<LoginViewModel>();
+
+            builder.Services.AddSingleton<RegisterPage>();
+            builder.Services.AddTransient<RegisterViewModel>();
 
 
 

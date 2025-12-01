@@ -1,57 +1,69 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:viewmodel="clr-namespace:CookRecipesApp.ViewModel"
+             xmlns:viewmodel="clr-namespace:CookRecipesApp.ViewModel.Account"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:sh="clr-namespace:Sharpnado.Shades;assembly=Sharpnado.Maui.Shadows"
+             xmlns:uranium="http://schemas.enisn-projects.io/dotnet/maui/uraniumui"
              x:DataType="viewmodel:LoginViewModel"
-             x:Class="CookRecipesApp.View.LoginPage"
+             x:Class="CookRecipesApp.View.Account.LoginPage"
              Shell.NavBarIsVisible="False"
              Title="LoginPage">
     <Grid
-        RowDefinitions="200,Auto, Auto, *"
+        RowDefinitions="300,Auto, Auto, *"
         ColumnDefinitions="*,Auto,*"
         BackgroundColor="#1D1F1D">
-        <Border
-            Grid.Row="1"
+
+        <VerticalStackLayout
+            Grid.Row="0"
             Grid.Column="1"
-            BackgroundColor="{StaticResource Evergreen}"
-            Padding="15 20"
-            StrokeShape="Roundrectangle 30"
-            WidthRequest="360"
-            Stroke="{StaticResource DarkEvergreen}"
-            Margin="0 5">
-            <VerticalStackLayout>
-                <Label Text="Login" FontFamily="Alegreya" FontSize="30" Padding="0 0 15 0" TextColor="{StaticResource Porcelain}"></Label>
-                <Label Text="Email:" TextColor="{StaticResource Porcelain}"/>
-                <Entry TextColor="{StaticResource Porcelain}" FontFamily="Nunito" Text="{Binding Email}"></Entry>
-                <Label Text="Password:" TextColor="{StaticResource Porcelain}"/>
-                <Entry TextColor="{StaticResource Porcelain}" FontFamily="Nunito" IsPassword="true" Text="{Binding Password}"></Entry>
-                <Label Text="{Binding IndicatorText}" TextColor="DarkRed" IsVisible="{Binding IndicatorVisibility}" ></Label>
-                <Button Text="Continue" Margin="10" BorderColor="{StaticResource DarkEvergreen}" BorderWidth="1" TextColor="#161D17" Command="LoginBtnComman" FontAttributes="Bold"></Button>
-            </VerticalStackLayout>
-        </Border>
+            VerticalOptions="End"
+            Margin="0,0,0,60">
+            <Label Text="Login" FontFamily="Alegreya" FontSize="40" Padding="0, 0, 15, 0" TextColor="{StaticResource Porcelain}" HorizontalOptions="Center"></Label>
+            <Label
+                VerticalOptions="Center"
+                HorizontalOptions="Center"
+                Text="Welcome back, Chef!"
+                TextColor="#A0A0A0"
+                FontSize="23"
+                FontAttributes="Bold,Italic"
+                FontFamily="Alegreya"
+                Padding="0, 0, 0, 0"/>
+        </VerticalStackLayout>
+
+        <VerticalStackLayout
+                Grid.Row="1"
+                Grid.Column="1"
+                Padding="0, 15">
+            <Label Text="Email:" TextColor="{StaticResource Porcelain}"/>
+            <Entry TextColor="{StaticResource Porcelain}" FontFamily="Nunito" Text="{Binding Email}" Margin="3,0"></Entry>
+            <Label Text="Password:" TextColor="{StaticResource Porcelain}" />
+            <Entry TextColor="{StaticResource Porcelain}" FontFamily="Nunito" IsPassword="true" Text="{Binding Password}"></Entry>
+            <Label Text="{Binding IndicatorText}" TextColor="DarkRed" IsVisible="{Binding IndicatorVisibility}" Margin="3, 0, 0, 0"></Label>
+            <Button Text="Continue" Margin="5, 20, 5, 0" BorderColor="{StaticResource DarkEvergreen}" BorderWidth="1" Command="{Binding LoginBtnCommand}" TextColor="{StaticResource Porcelain}" CornerRadius="25"></Button>
+        </VerticalStackLayout>
+        
         <HorizontalStackLayout
             Grid.Column="1"
             Grid.Row="2"
             HorizontalOptions="Center"
-            Padding="5 0"
+            Padding="5, 0"
             Spacing="20">
-            <Button Text="Create Account" Background="Transparent" Command="CreateAccountBtnCommand"></Button>
-            <Button Text="Forgot password" Background="Transparent" Command="ForgotPasswordBtnCommand"></Button>
+            <Button Text="Create Account" Background="Transparent" Command="{Binding CreateAccountBtnCommand}"></Button>
+            <Button Text="Forgot password" Background="Transparent" Command="{Binding ForgotPasswordBtnCommand}"></Button>
         </HorizontalStackLayout>
 
         <Button 
             Grid.Column="1" 
             Grid.Row="3" 
             Text="Skip"
-            Margin="0 -15 0 0"
+            Margin="0, -15, 0, 0"
             HeightRequest="15"
             WidthRequest="60"
             VerticalOptions="End"
             HorizontalOptions="End"
             Background="Transparent"
-            Command="SkipBtnCommand"/>
+            Command="{Binding SkipBtnCommand}"/>
 
 
     </Grid>

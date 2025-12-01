@@ -11,6 +11,6 @@ namespace CookRecipesApp.Model.Ingredient
         public int Id { get; set; }
 
         [NotNull, Unique]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
     }
 }
