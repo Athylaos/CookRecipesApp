@@ -3,8 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodel="clr-namespace:CookRecipesApp.ViewModel.Account"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             xmlns:sh="clr-namespace:Sharpnado.Shades;assembly=Sharpnado.Maui.Shadows"
-             xmlns:uranium="http://schemas.enisn-projects.io/dotnet/maui/uraniumui"
              x:DataType="viewmodel:LoginViewModel"
              x:Class="CookRecipesApp.View.Account.LoginPage"
              Shell.NavBarIsVisible="False"
@@ -36,10 +34,10 @@
                 Grid.Column="1"
                 Padding="0, 15">
             <Label Text="Email:" TextColor="{StaticResource Porcelain}"/>
-            <Entry TextColor="{StaticResource Porcelain}" FontFamily="Nunito" Text="{Binding Email}" Margin="3,0"></Entry>
+            <Entry TextColor="{StaticResource Porcelain}" FontFamily="Nunito" Text="{Binding Email}" Margin="0, 3, 0, 10"></Entry>
             <Label Text="Password:" TextColor="{StaticResource Porcelain}" />
             <Entry TextColor="{StaticResource Porcelain}" FontFamily="Nunito" IsPassword="true" Text="{Binding Password}"></Entry>
-            <Label Text="{Binding IndicatorText}" TextColor="DarkRed" IsVisible="{Binding IndicatorVisibility}" Margin="3, 0, 0, 0"></Label>
+            <Label Text="{Binding IndicatorText}" TextColor="DarkRed" IsVisible="{Binding IndicatorVisibility}" Margin="0, 3, 0, 10"></Label>
             <Button Text="Continue" Margin="5, 20, 5, 0" BorderColor="{StaticResource DarkEvergreen}" BorderWidth="1" Command="{Binding LoginBtnCommand}" TextColor="{StaticResource Porcelain}" CornerRadius="25"></Button>
         </VerticalStackLayout>
         
@@ -49,12 +47,12 @@
             HorizontalOptions="Center"
             Padding="5, 0"
             Spacing="20">
-            <Button Text="Create Account" Background="Transparent" Command="{Binding CreateAccountBtnCommand}"></Button>
+            <Button Text="Create Account" Background="Transparent" Command="{Binding CreateAccountBtnCommand}" ></Button>
             <Button Text="Forgot password" Background="Transparent" Command="{Binding ForgotPasswordBtnCommand}"></Button>
         </HorizontalStackLayout>
 
         <Button 
-            Grid.Column="1" 
+            Grid.Column="2" 
             Grid.Row="3" 
             Text="Skip"
             Margin="0, -15, 0, 0"

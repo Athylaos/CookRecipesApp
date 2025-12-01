@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CookRecipesApp.View.Account;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -33,7 +34,7 @@ namespace CookRecipesApp.ViewModel.Account
         [RelayCommand]
         public void CreateAccountBtn()
         {
-
+            Shell.Current.GoToAsync(nameof(RegisterPage));
         }
 
         [RelayCommand]
