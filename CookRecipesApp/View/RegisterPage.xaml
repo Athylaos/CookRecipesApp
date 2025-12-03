@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:viewmodel="clr-namespace:CookRecipesApp.ViewModel.Account"
+             xmlns:viewmodel="clr-namespace:CookRecipesApp.ViewModel"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:DataType="viewmodel:RegisterViewModel"
-             x:Class="CookRecipesApp.View.Account.RegisterPage"
+             x:Class="CookRecipesApp.View.RegisterPage"
              Shell.NavBarIsVisible="False"
              Title="RegisterPage">
     
@@ -36,13 +36,13 @@
                 Grid.Column="1"
                 Padding="0, 15">
             <Label Text="Name:" TextColor="{StaticResource Porcelain}"/>
-            <Entry TextColor="{StaticResource Porcelain}" FontFamily="Nunito" Text="{Binding NewUser.Name}" Margin="0, 3, 0, 10"></Entry>
+            <Entry TextColor="{StaticResource Porcelain}" FontFamily="Nunito" Text="{Binding NameEntry}" Margin="0, 3, 0, 10"></Entry>
 
             <Label Text="Surname (optional):" TextColor="{StaticResource Porcelain}"/>
-            <Entry TextColor="{StaticResource Porcelain}" FontFamily="Nunito" Text="{Binding NewUser.Surname}" Margin="0, 3, 0, 10"></Entry>
+            <Entry TextColor="{StaticResource Porcelain}" FontFamily="Nunito" Text="{Binding SurnameEntry}" Margin="0, 3, 0, 10"></Entry>
 
             <Label Text="Email:" TextColor="{StaticResource Porcelain}"/>
-            <Entry TextColor="{StaticResource Porcelain}" FontFamily="Nunito" Text="{Binding NewRegistrationDto.Email}" Margin="0, 3, 0, 10"></Entry>
+            <Entry TextColor="{StaticResource Porcelain}" FontFamily="Nunito" Text="{Binding EmailEntry}" Margin="0, 3, 0, 10"></Entry>
             
             <Label Text="Password:" TextColor="{StaticResource Porcelain}" />
             <Entry TextColor="{StaticResource Porcelain}" FontFamily="Nunito" IsPassword="true" Text="{Binding Password1}"></Entry>

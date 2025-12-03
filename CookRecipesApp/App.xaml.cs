@@ -11,12 +11,15 @@ namespace CookRecipesApp
     {
 
         private readonly SQLiteConnectionFactory _connectionFactory;
+        private readonly IUserService _userService;
+        private readonly AppShell _appShell;
 
         public App(SQLiteConnectionFactory connectionFactory)
         {
             InitializeComponent();
 
             _connectionFactory = connectionFactory;
+
         }
 
         protected override Window CreateWindow(IActivationState? activationState)
@@ -37,5 +40,8 @@ namespace CookRecipesApp
 
             base.OnStart();
         }
+
+
+
     }
 }

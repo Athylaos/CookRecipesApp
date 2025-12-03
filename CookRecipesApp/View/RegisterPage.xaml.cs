@@ -1,6 +1,6 @@
-using CookRecipesApp.ViewModel.Account;
+using CookRecipesApp.ViewModel;
 
-namespace CookRecipesApp.View.Account;
+namespace CookRecipesApp.View;
 
 public partial class RegisterPage : ContentPage
 {

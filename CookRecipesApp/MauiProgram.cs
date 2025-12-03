@@ -3,9 +3,7 @@ using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Mvvm;
 using CookRecipesApp.Service;
 using CookRecipesApp.View;
-using CookRecipesApp.View.Account;
 using CookRecipesApp.ViewModel;
-using CookRecipesApp.ViewModel.Account;
 using Microsoft.Extensions.Logging;
 using Sharpnado.Shades;
 using UraniumUI;
@@ -44,7 +42,8 @@ namespace CookRecipesApp
             builder.Services.AddSingleton<RegisterPage>();
             builder.Services.AddTransient<RegisterViewModel>();
 
-
+            builder.Services.AddSingleton<TestPage>();
+            builder.Services.AddTransient<TestViewModel>();
 
 
             return builder.Build();

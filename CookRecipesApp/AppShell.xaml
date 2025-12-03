@@ -4,12 +4,12 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:CookRecipesApp"
-    xmlns:view="clr-namespace:CookRecipesApp.View.Account"
+    xmlns:view="clr-namespace:CookRecipesApp.View"
     Title="CookRecipesApp">
 
     <ShellContent
         Title="Home"
-        ContentTemplate="{DataTemplate view:LoginPage}"
-        Route="LoginPage" />
+        ContentTemplate="{DataTemplate view:TestPage}"
+        Route="TestPage" />
 
 </Shell>

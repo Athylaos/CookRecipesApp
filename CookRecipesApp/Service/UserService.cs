@@ -25,8 +25,9 @@ namespace CookRecipesApp.Service
 
         Task UpdateUserAsync(User user);
 
-
         Task ChangePasswordAsync(int userId, string oldPassword, string newPassword);
+
+        Task<bool> IsEmailRegistredAsync(string email);
     }
 
 
@@ -113,6 +114,10 @@ namespace CookRecipesApp.Service
 
             if(userDto != null)
             {
+                if (string.IsNullOrEmpty(userDbModel.Email))
+                {
+                    userDbModel.Email = userDto.Email;
+                }
                 userDbModel.PasswordHash = userDto.PasswordHash;
                 userDbModel.PasswordSalt = userDto.PasswordSalt;
             }
@@ -228,6 +233,14 @@ namespace CookRecipesApp.Service
             var userDbModelNew = UserAndUserRegistrationDtoToUserDbModel(user, null);
 
             await _database.UpdateAsync(userDbModelNew);
+        }
+
+        public async Task<bool> IsEmailRegistredAsync(string email)
+        {
+            int count = await _database.Table<UserDbModel>()
+                                       .Where(x => x.Email == email)
+                                       .CountAsync();
+            return count > 0;
         }
     }
 }

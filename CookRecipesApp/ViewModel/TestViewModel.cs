@@ -1,0 +1,68 @@
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using CookRecipesApp.Model.User;
+using CookRecipesApp.Service;
+using CookRecipesApp.View;
+using SQLite;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Text;
+
+
+
+namespace CookRecipesApp.ViewModel
+{
+    public partial class TestViewModel : ObservableObject
+    {
+        private UserService _userService;
+
+        private ISQLiteAsyncConnection _database;
+
+
+        public bool IsLoggedIn { get; set; }
+        [ObservableProperty] private string userName;
+
+
+        public TestViewModel()
+        {
+            _database = new SQLiteConnectionFactory().CreateConnection();
+            _userService = new(new SQLiteConnectionFactory());
+
+        }
+
+        public async void OnAppStartAsync()
+        {
+            IsLoggedIn = await _userService.IsUserLoggedInAsync();
+
+            if(IsLoggedIn)
+            {
+                UserName = "Logged in";
+            }
+            else
+            {
+                UserName = "Not logged in";
+            }
+
+        }
+
+        [RelayCommand]
+        public async void LoginBtn()
+        {
+            Debug.WriteLine("LoginBtn");
+            Shell.Current.GoToAsync(nameof(LoginPage));
+
+        }
+
+        [RelayCommand]
+        public async Task DebugDbBtn()
+        {
+            // Vypíše všechny uživatele do Output okna
+            var users = await _database.Table<UserDbModel>().ToListAsync();
+            foreach (var u in users)
+            {
+                System.Diagnostics.Debug.WriteLine($"ID: {u.Id}, Email: '{u.Email}', Hash: {u.PasswordHash}");
+            }
+        }
+    }
+}

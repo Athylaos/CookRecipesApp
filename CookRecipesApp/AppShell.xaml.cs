@@ -1,5 +1,4 @@
 ﻿using CookRecipesApp.View;
-using CookRecipesApp.View.Account;
 
 namespace CookRecipesApp
 {
@@ -10,6 +9,10 @@ namespace CookRecipesApp
             InitializeComponent();
 
             Routing.RegisterRoute(nameof(RegisterPage), typeof(RegisterPage));
+
+            Routing.RegisterRoute(nameof(LoginPage), typeof(LoginPage));
+
+            Routing.RegisterRoute(nameof(TestPage), typeof(TestPage));
 
 
         }
