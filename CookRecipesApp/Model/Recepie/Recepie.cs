@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using CookRecipesApp.Model.Category;
 
 namespace CookRecipesApp.Model.Recepie
 {
@@ -30,12 +31,13 @@ namespace CookRecipesApp.Model.Recepie
         public float Carbohydrates { get; set; }
         public float Fiber { get; set; }
 
+        public DateTime RecepieCreated = DateTime.Now;
         public int Rating { get; set; }
         public int UsersRated { get; set; }
-        public List<Comment> Comments { get; set; }
+        public List<Comment> Comments { get; set; } = new();
 
-        public List<CategoryDbModel> Categories { get; set; }
-        public List<CategoryDbModel> SubCategories { get; set; }
+        public List<CategoryDbModel> Categories { get; set; } = new();
+        public List<CategoryDbModel> SubCategories { get; set; } = new();
 
 
 

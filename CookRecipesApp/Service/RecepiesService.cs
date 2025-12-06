@@ -6,6 +6,7 @@ using CookRecipesApp.Model.Ingredient;
 using SQLite;
 using CookRecipesApp.Model;
 using System.Threading.Tasks;
+using Microsoft.Maui.Graphics.Text;
 
 namespace CookRecipesApp.Service
 {
@@ -16,19 +17,19 @@ namespace CookRecipesApp.Service
         public Task SaveRecepieAsync(Recepie recepie);
         public Task DeleteRecepieAsync(int id);
         public Task UpdateRecepieAsync(Recepie recepie);
-
-
     }
 
     public class RecepiesService : IRecepiesService
     {
         private readonly ISQLiteAsyncConnection _database;
         private readonly IngredientsService _ingredientService;
+        private readonly CategoryService _categoryService;
 
-        public RecepiesService(SQLiteConnectionFactory factory, IngredientsService ingredientsService)
+        public RecepiesService(SQLiteConnectionFactory factory, IngredientsService ingredientsService, CategoryService categoryService)
         {
             _database = factory.CreateConnection();
             _ingredientService = ingredientsService;
+            _categoryService = categoryService;
         }
 
         public async Task<List<Ingredient>> GetAllIngredientsForRecepieAsync(int recepieId) // would be better to load all recepie-ingredients and match them in memory, but fine for now
@@ -52,6 +53,47 @@ namespace CookRecipesApp.Service
             return ingredients;
         }
 
+        public async Task<List<CategoryDbModel>> GetAllCategoriesForRecepie(int recepieId)
+        {
+            var recepieCategories = await _database
+                .Table<RecepieCategoryDbModel>()
+                .Where(rc => rc.RecepieId == recepieId)
+                .ToListAsync();
+
+            if (recepieCategories.Count == 0) return new List<CategoryDbModel>();
+
+            List<int> targetCategoryIds = recepieCategories.Select(rc => rc.CategoryId).ToList();
+
+            var allCategories = await _database.Table<CategoryDbModel>().ToListAsync();
+
+            var result = allCategories
+                .Where(c => targetCategoryIds.Contains(c.Id) && c.ParentCategoryId == null)
+                .ToList();
+
+            return result;
+        }
+
+        public async Task<List<CategoryDbModel>> GetAllSubcategoriesForRecepie(int recepieId)
+        {
+            var recepieCategories = await _database
+                .Table<RecepieCategoryDbModel>()
+                .Where(rc => rc.RecepieId == recepieId)
+                .ToListAsync();
+
+            if (recepieCategories.Count == 0) return new List<CategoryDbModel>();
+
+            List<int> targetCategoryIds = recepieCategories.Select(rc => rc.CategoryId).ToList();
+
+            var allCategories = await _database.Table<CategoryDbModel>().ToListAsync();
+
+            var result = allCategories
+                .Where(c => targetCategoryIds.Contains(c.Id) && c.ParentCategoryId == null)
+                .ToList();
+
+            return result;
+        }
+
+
 
 
         public async Task<Recepie> RecepieDbModelToRecepieAsync(RecepieDbModel recepieDbModel)
@@ -64,12 +106,17 @@ namespace CookRecipesApp.Service
                 CoockingProcess = recepieDbModel.CoockingProcess,
                 CoockingTime = recepieDbModel.CoockingTime,
                 Servings = recepieDbModel.Servings,
+                DifficultyLevel = (DifficultyLevel)recepieDbModel.Difficulty,
                 Ingredients = await GetAllIngredientsForRecepieAsync(recepieDbModel.Id),
                 Calories = recepieDbModel.Calories,
                 Proteins = recepieDbModel.Proteins,
                 Fats = recepieDbModel.Fats,
                 Carbohydrates = recepieDbModel.Carbohydrates,
                 Fiber = recepieDbModel.Fiber,
+                RecepieCreated = DateTime.Parse(recepieDbModel.RecepieCreated),
+                Rating = recepieDbModel.Rating,
+                UsersRated = recepieDbModel.UsersRated
+
             };
             return recepie;
         }
@@ -84,11 +131,15 @@ namespace CookRecipesApp.Service
                 CoockingProcess = recepie.CoockingProcess,
                 CoockingTime = recepie.CoockingTime,
                 Servings = recepie.Servings,
+                Difficulty = (int)recepie.DifficultyLevel,
                 Calories = recepie.Calories,
                 Proteins = recepie.Proteins,
                 Fats = recepie.Fats,
                 Carbohydrates = recepie.Carbohydrates,
-                Fiber = recepie.Fiber
+                Fiber = recepie.Fiber,
+                RecepieCreated = recepie.RecepieCreated.ToString(),
+                Rating = recepie.Rating,
+                UsersRated = recepie.UsersRated
             };            
 
             return recepieDbModel;

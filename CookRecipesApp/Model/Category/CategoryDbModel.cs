@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace CookRecipesApp.Model.Recepie
+namespace CookRecipesApp.Model.Category
 {
     public class CategoryDbModel
     {
@@ -13,6 +13,8 @@ namespace CookRecipesApp.Model.Recepie
 
         [NotNull]
         public string Name { get; set; }
+        public string PictureUrl { get; set; } = "default_picture.png";
+        public int SortOrder { get; set; }
 
         public int? ParentCategoryId { get; set; }
 

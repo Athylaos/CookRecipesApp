@@ -45,6 +45,7 @@ namespace CookRecipesApp
             builder.Services.AddSingleton<SQLiteConnectionFactory>();
             builder.Services.AddSingleton<IIngredientsService, IngredientsService>();
             builder.Services.AddSingleton<IRecepiesService,RecepiesService>();
+            builder.Services.AddSingleton<ICategoryService, CategoryService>();
 
             builder.Services.AddSingleton<LoginPage>();
             builder.Services.AddTransient<LoginViewModel>();

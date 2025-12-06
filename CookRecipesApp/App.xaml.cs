@@ -30,11 +30,13 @@ namespace CookRecipesApp
         {
             ISQLiteAsyncConnection database = _connectionFactory.CreateConnection();
 
-            await database.CreateTableAsync<UserDbModel>(); // save to call even if table exists
-
+            await database.CreateTableAsync<UserDbModel>();
             await database.CreateTableAsync<UnitDbModel>();
             await database.CreateTableAsync<IngredientDbModel>();
             await database.CreateTableAsync<RecepieDbModel>();
+            await database.CreateTableAsync<CategoryDbModel>();
+            await database.CreateTableAsync<CommentDbModel>();
+            await database.CreateTableAsync<RecepieCategoryDbModel>();
 
 
             base.OnStart();
