@@ -25,6 +25,7 @@ namespace CookRecipesApp.Model.Recepie
         public int CoockingTime { get; set; }
 
         public int Servings { get; set; }
+        public int Difficulty { get; set; }
 
         public float Calories { get; set; }
         public float Proteins { get; set; }
@@ -32,6 +33,8 @@ namespace CookRecipesApp.Model.Recepie
         public float Carbohydrates { get; set; }
         public float Fiber { get; set; }
 
+        public int Rating { get; set; }
+        public int UsersRated { get; set; }
 
 
     }

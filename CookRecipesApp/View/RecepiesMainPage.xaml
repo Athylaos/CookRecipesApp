@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodel="clr-namespace:CookRecipesApp.ViewModel"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:uranium="clr-namespace:UraniumUI.Blurs;assembly=UraniumUI.Blurs"
+             x:DataType="viewmodel:RecepiesMainViewModel"
+             x:Class="CookRecipesApp.View.RecepiesMainPage"
+             Title="RecepiesMainPage"
+             BackgroundColor="{StaticResource DarkEvergreen}"
+             Shell.NavBarIsVisible="False">
+
+    <Grid
+        Padding="10,0"
+        BackgroundColor="#1D1F1D"
+        ColumnDefinitions="*"
+        RowDefinitions="50, 3*, 2*, 60"
+        ColumnSpacing="0"
+        RowSpacing="0"
+        MaximumWidthRequest="1300"
+        >
+        <Border
+            Grid.Row="0"
+            Grid.Column="0"
+            Margin="7, 0"
+            StrokeShape="RoundRectangle, 30"
+            BackgroundColor="#212121"
+            Stroke="Transparent">
+            <SearchBar
+                TextColor="{StaticResource Porcelain}"
+                Margin=" -5, 0, 0, 0"
+                PlaceholderColor="{StaticResource PineTeal}"
+                Placeholder="Search"
+                SearchIconColor="{StaticResource PineTeal}"
+                CancelButtonColor="{StaticResource PineTeal}"
+            />
+
+        </Border>
+
+        <ScrollView
+            Orientation="Horizontal"
+            Grid.Row="1"
+            Grid.Column="0"
+            HeightRequest="420"
+            HorizontalScrollBarVisibility="Never"
+            VerticalScrollBarVisibility="Never">
+            <Grid
+                ColumnDefinitions="190, 190, 190"
+                RowDefinitions="140, 140, 140">
+
+                <Border
+                    Grid.Column="0" Grid.Row="0"
+                    Margin="7"
+                    StrokeShape="RoundRectangle, 15"
+                    StrokeThickness="0"
+                    HorizontalOptions="Fill"
+                    VerticalOptions="Fill"
+                    Shadow="2, 2, 5, Black 0.4">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding CategoryBtnCommand}" CommandParameter="Lunch"/>
+                    </Border.GestureRecognizers>
+
+                    <Grid>
+                        <Image 
+                            Source="top_view_table_full_food.jpg"
+                            Aspect="AspectFill" />
+                        <Border StrokeThickness="0" BackgroundColor="Transparent">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="0.2,1">
+                                    <GradientStop Color="#cc000000" Offset="0.0" />
+                                    <GradientStop Color="Transparent" Offset="1" />
+                                </LinearGradientBrush>
+                            </Border.Background>
+                        </Border>
+                        <Label 
+                            Text="Lunch"
+                            HorizontalOptions="Start"
+                            VerticalOptions="Start"
+                            FontFamily="Alegreya"
+                            FontAttributes="Bold"
+                            TextColor="{StaticResource Porcelain}"
+                            FontSize="27"                            
+                            Margin="8, 4"
+                            Shadow="3, 3, 3, Black 1"/>
+                    </Grid>
+                </Border>
+
+                <Border
+                    Grid.Column="0" Grid.Row="1"
+                    Margin="7"
+                    StrokeShape="RoundRectangle, 15"
+                    StrokeThickness="0"
+                    HorizontalOptions="Fill"
+                    VerticalOptions="Fill">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding BreakfastBtnCommand}"/>
+                    </Border.GestureRecognizers>
+
+                    <Grid>
+                        <Image
+                            Source="smoothie_bowl_3a8632c.jpg"
+                            Aspect="AspectFill"/>
+                        <Label 
+                            Text="Breakfast"
+                            HorizontalOptions="Start"
+                            VerticalOptions="Start"
+                            FontFamily="Alegreya"
+                            FontAttributes="Bold"
+                            TextColor="{StaticResource Porcelain}"
+                            FontSize="27"                            
+                            Margin="8, 4"
+                            Shadow="3, 3, 3, Black 1"/>
+                    </Grid>
+                </Border>
+
+                <Border
+                    Grid.Column="1" Grid.Row="0"
+                    Margin="7"
+                    StrokeShape="RoundRectangle, 15"
+                    StrokeThickness="0"
+                    HorizontalOptions="Fill"
+                    VerticalOptions="Fill">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding SnackBtnCommand}"/>
+                    </Border.GestureRecognizers>
+
+                    <Grid>
+                        <Image
+                            Source="grilled_sandwitch.jpg"
+                            Aspect="AspectFill"/>
+                        <Label 
+                            Text="Breakfast"
+                            HorizontalOptions="Start"
+                            VerticalOptions="Start"
+                            FontFamily="Alegreya"
+                            FontAttributes="Bold"
+                            TextColor="{StaticResource Porcelain}"
+                            FontSize="27"                            
+                            Margin="8, 4"
+                            Shadow="3, 3, 3, Black 1"/>
+                    </Grid>
+                </Border>
+
+                <Border
+                    Grid.Column="2" Grid.Row="0"
+                    Margin="7"
+                    StrokeShape="RoundRectangle, 15"
+                    StrokeThickness="0"
+                    HorizontalOptions="Fill"
+                    VerticalOptions="Fill">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding BreakFastBtnCommand}"/>
+                    </Border.GestureRecognizers>
+
+                    <Grid>
+                        <Image
+                            Source="top_view_table_full_food.jpg"
+                            Aspect="AspectFill"/>
+                        <Label 
+                            Text="Breakfast"
+                            HorizontalOptions="Start"
+                            VerticalOptions="Start"
+                            FontFamily="Alegreya"
+                            FontAttributes="Bold"
+                            TextColor="{StaticResource Porcelain}"
+                            FontSize="27"                            
+                            Margin="8, 4"
+                            Shadow="3, 3, 3, Black 1"/>
+                    </Grid>
+                </Border>
+
+                <Border
+                    Grid.Column="0" Grid.Row="2"
+                    Margin="7"
+                    StrokeShape="RoundRectangle, 15"
+                    StrokeThickness="0"
+                    HorizontalOptions="Fill"
+                    VerticalOptions="Fill">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding BreakFastBtnCommand}"/>
+                    </Border.GestureRecognizers>
+
+                    <Grid>
+                        <Image
+                            Source="top_view_table_full_food.jpg"
+                            Aspect="AspectFill"/>
+                        <Label 
+                            Text="Breakfast"
+                            HorizontalOptions="Start"
+                            VerticalOptions="Start"
+                            FontFamily="Alegreya"
+                            FontAttributes="Bold"
+                            TextColor="{StaticResource Porcelain}"
+                            FontSize="27"                            
+                            Margin="8, 4"
+                            Shadow="3, 3, 3, Black 1"/>
+                    </Grid>
+                </Border>
+
+            </Grid>
+        </ScrollView>
+
+        <Grid
+            Grid.Column="0"
+            Grid.Row="2"
+            RowDefinitions="40,*,40,*">
+            <Label
+                Text="Favourite"                
+                TextColor="{StaticResource Porcelain}"
+                FontFamily="Alegreya"
+                Margin="5, 0, 0, 2"
+                VerticalOptions="End"
+                FontSize="30"
+                Grid.Row="0"
+                />
+            <ScrollView
+                Grid.Row="1"
+                BackgroundColor="Pink">
+            </ScrollView>
+
+            <Label
+                Text="From your fridge"
+                TextColor="{StaticResource Porcelain}"
+                FontFamily="Alegreya"
+                Margin="5, 0, 0, 2"
+                VerticalOptions="End"
+                FontSize="30"
+                Grid.Row="2"
+                />
+            <ScrollView
+                Grid.Row="3"
+                BackgroundColor="Pink">
+            </ScrollView>
+        </Grid>
+
+        <Grid
+            RowDefinitions="*"
+            ColumnDefinitions="*, *, *, *"
+            Grid.Row="3"
+            Grid.Column="0"
+            HeightRequest="60">
+
+            <ImageButton
+                Grid.Column="0"
+                Source="fridge.png"
+                Aspect="AspectFit"
+                VerticalOptions="Center"
+                HorizontalOptions="Center"
+                BackgroundColor="{StaticResource PineTeal}"
+                Padding="8"
+                Margin="8, 4"
+                CornerRadius="23"
+                WidthRequest="90"
+                HeightRequest="52"
+                BorderWidth="1"
+                BorderColor="{StaticResource DarkEvergreen}">
+            </ImageButton>
+
+            <ImageButton
+                Grid.Column="1"
+                Source="book.png"
+                Aspect="AspectFit"
+                VerticalOptions="Center"
+                HorizontalOptions="Center"
+                BackgroundColor="{StaticResource Evergreen}"
+                Padding="8"
+                Margin="8, 4"
+                CornerRadius="23"
+                WidthRequest="90"
+                HeightRequest="52"
+                BorderWidth="1"
+                BorderColor="{StaticResource DarkEvergreen}">
+            </ImageButton>
+
+            <ImageButton
+                Grid.Column="2"
+                Source="calendar.png"
+                Aspect="AspectFit"
+                VerticalOptions="Center"
+                HorizontalOptions="Center"
+                BackgroundColor="{StaticResource PineTeal}"
+                Padding="8"
+                Margin="8, 4"
+                CornerRadius="23"
+                WidthRequest="90"
+                HeightRequest="52"
+                BorderWidth="1"
+                BorderColor="{StaticResource DarkEvergreen}">
+            </ImageButton>
+
+            <ImageButton
+                Grid.Column="3"
+                Source="nutrition.png"
+                Aspect="AspectFit"
+                VerticalOptions="Center"
+                HorizontalOptions="Center"
+                BackgroundColor="{StaticResource PineTeal}"
+                Padding="8"
+                Margin="8, 4"
+                CornerRadius="23"
+                WidthRequest="90"
+                HeightRequest="52"
+                BorderWidth="1"
+                BorderColor="{StaticResource DarkEvergreen}">
+            </ImageButton>
+
+
+
+        </Grid>
+        
+    </Grid>
+</ContentPage>

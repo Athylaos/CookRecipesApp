@@ -3,12 +3,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodel="clr-namespace:CookRecipesApp.ViewModel"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:android="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific;assembly=Microsoft.Maui.Controls"
              x:DataType="viewmodel:LoginViewModel"
              x:Class="CookRecipesApp.View.LoginPage"
              Shell.NavBarIsVisible="False"
              Title="LoginPage">
     <Grid
-        RowDefinitions="300,Auto, Auto, *"
+        RowDefinitions="270,Auto, Auto, *"
         ColumnDefinitions="*,Auto,*"
         BackgroundColor="#1D1F1D">
 
@@ -34,11 +35,34 @@
                 Grid.Column="1"
                 Padding="0, 15">
             <Label Text="Email:" TextColor="{StaticResource Porcelain}"/>
-            <Entry TextColor="{StaticResource Porcelain}" FontFamily="Nunito" Text="{Binding Email}" Margin="0, 3, 0, 10"></Entry>
+            <Border
+                Padding="0"
+                Margin="0, 3, 0, 10"
+                StrokeShape="RoundRectangle, 8"
+                BackgroundColor="#212121"
+                Stroke="Transparent"
+                >
+                <Entry TextColor="{StaticResource Porcelain}" FontFamily="Nunito" Text="{Binding Email}" Keyboard="Email">
+                    <Entry.Behaviors>
+                        <toolkit:EmailValidationBehavior 
+                    Flags="ValidateOnValueChanged" />
+                    </Entry.Behaviors>
+                </Entry>
+            </Border>
+
             <Label Text="Password:" TextColor="{StaticResource Porcelain}" />
-            <Entry TextColor="{StaticResource Porcelain}" FontFamily="Nunito" IsPassword="true" Text="{Binding Password}"></Entry>
+            <Border
+                Padding="0"
+                Margin="0, 3, 0, 10"
+                StrokeShape="RoundRectangle, 8"
+                BackgroundColor="#212121"
+                Stroke="Transparent"
+                >
+                <Entry TextColor="{StaticResource Porcelain}" FontFamily="Nunito" IsPassword="true" Text="{Binding Password}"></Entry>
+            </Border>
+
             <Label Text="{Binding IndicatorText}" TextColor="DarkRed" IsVisible="{Binding IndicatorVisibility}" Margin="0, 3, 0, 10"></Label>
-            <Button Text="Continue" Margin="5, 20, 5, 0" BorderColor="{StaticResource DarkEvergreen}" BorderWidth="1" Command="{Binding LoginBtnCommand}" TextColor="{StaticResource Porcelain}" CornerRadius="25"></Button>
+            <Button Text="Continue" Margin="5, 5, 5, 0" BorderColor="{StaticResource DarkEvergreen}" BorderWidth="1" Command="{Binding LoginBtnCommand}" TextColor="{StaticResource Porcelain}" CornerRadius="25"></Button>
         </VerticalStackLayout>
         
         <HorizontalStackLayout

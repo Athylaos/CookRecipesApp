@@ -11,8 +11,7 @@ namespace CookRecipesApp
     {
 
         private readonly SQLiteConnectionFactory _connectionFactory;
-        private readonly IUserService _userService;
-        private readonly AppShell _appShell;
+
 
         public App(SQLiteConnectionFactory connectionFactory)
         {

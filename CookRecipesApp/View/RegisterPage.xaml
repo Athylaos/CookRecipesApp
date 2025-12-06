@@ -9,7 +9,7 @@
              Title="RegisterPage">
     
     <Grid
-        RowDefinitions="180,Auto, Auto, *"
+        RowDefinitions="220,Auto, Auto, *"
         ColumnDefinitions="*,Auto,*"
         BackgroundColor="#1D1F1D">
 
@@ -36,21 +36,60 @@
                 Grid.Column="1"
                 Padding="0, 15">
             <Label Text="Name:" TextColor="{StaticResource Porcelain}"/>
-            <Entry TextColor="{StaticResource Porcelain}" FontFamily="Nunito" Text="{Binding NameEntry}" Margin="0, 3, 0, 10"></Entry>
-
+            <Border
+                Padding="0"
+                Margin="0, 3, 0, 10"
+                StrokeShape="RoundRectangle, 8"
+                BackgroundColor="#212121"
+                Stroke="Transparent"
+                >
+                <Entry TextColor="{StaticResource Porcelain}" FontFamily="Nunito" Text="{Binding NameEntry}"></Entry>
+            </Border>
+                       
             <Label Text="Surname (optional):" TextColor="{StaticResource Porcelain}"/>
-            <Entry TextColor="{StaticResource Porcelain}" FontFamily="Nunito" Text="{Binding SurnameEntry}" Margin="0, 3, 0, 10"></Entry>
-
+            <Border
+                Padding="0"
+                Margin="0, 3, 0, 10"
+                StrokeShape="RoundRectangle, 8"
+                BackgroundColor="#212121"
+                Stroke="Transparent"
+                >
+                <Entry TextColor="{StaticResource Porcelain}" FontFamily="Nunito" Text="{Binding SurnameEntry}"></Entry>
+            </Border>
+            
             <Label Text="Email:" TextColor="{StaticResource Porcelain}"/>
-            <Entry TextColor="{StaticResource Porcelain}" FontFamily="Nunito" Text="{Binding EmailEntry}" Margin="0, 3, 0, 10"></Entry>
+            <Border
+                Padding="0"
+                Margin="0, 3, 0, 10"
+                StrokeShape="RoundRectangle, 8"
+                BackgroundColor="#212121"
+                Stroke="Transparent"
+                >
+                <Entry TextColor="{StaticResource Porcelain}" FontFamily="Nunito" Text="{Binding EmailEntry}" Keyboard="Email"></Entry>
+            </Border>
             
             <Label Text="Password:" TextColor="{StaticResource Porcelain}" />
-            <Entry TextColor="{StaticResource Porcelain}" FontFamily="Nunito" IsPassword="true" Text="{Binding Password1}"></Entry>
+            <Border
+                Padding="0"
+                Margin="0, 3, 0, 10"
+                StrokeShape="RoundRectangle, 8"
+                BackgroundColor="#212121"
+                Stroke="Transparent"
+                >
+                <Entry TextColor="{StaticResource Porcelain}" FontFamily="Nunito" IsPassword="true" Text="{Binding Password1}"></Entry>
+            </Border>
 
             <Label Text="Password again:" TextColor="{StaticResource Porcelain}" />
-            <Entry TextColor="{StaticResource Porcelain}" FontFamily="Nunito" IsPassword="true" Text="{Binding Password2}"></Entry>
-
-            <Label Text="{Binding IndicatorText}" TextColor="DarkRed" IsVisible="{Binding IndicatorVisibility}" Margin="0, 3, 0, 5"></Label>
+            <Border
+                Padding="0"
+                Margin="0, 3, 0, 10"
+                StrokeShape="RoundRectangle, 8"
+                BackgroundColor="#212121"
+                Stroke="Transparent"
+                >
+                <Entry TextColor="{StaticResource Porcelain}" FontFamily="Nunito" IsPassword="true" Text="{Binding Password2}"></Entry>
+            </Border>
+            <Label Text="{Binding IndicatorText}" TextColor="DarkRed" IsVisible="{Binding IndicatorVisibility}" Margin="0,0,0,5"></Label>
             
             <Button Text="Continue" Margin="5, 0, 5, 0" BorderColor="{StaticResource DarkEvergreen}" BorderWidth="1" Command="{Binding RegisterBtnCommand}" TextColor="{StaticResource Porcelain}" CornerRadius="25"></Button>
             

@@ -12,4 +12,14 @@
         ContentTemplate="{DataTemplate view:TestPage}"
         Route="TestPage" />
 
+    <ShellContent
+        Title="Login"
+        ContentTemplate="{DataTemplate view:LoginPage}"
+        Route="LoginPage"/>
+
+    <ShellContent
+        Title="RecepiesMain"
+        ContentTemplate="{DataTemplate view:RecepiesMainPage}"
+        Route="RecepiesMainPage"/>
+
 </Shell>

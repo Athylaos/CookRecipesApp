@@ -29,8 +29,18 @@ namespace CookRecipesApp
                     fonts.AddFont("Nunito-VariableFont_wght.ttf", "Nunito");
                 });
 
+            Microsoft.Maui.Handlers.EntryHandler.Mapper.AppendToMapping("Placeholder", (h, v) =>
+            {
+#if ANDROID
+                h.PlatformView.BackgroundTintList = Android.Content.Res.ColorStateList.ValueOf(Android.Graphics.Color.Transparent);
+#endif
+#if IOS
+                h.PlatformView.BorderStyle = UIKit.UITextBorderStyle.None;
+#endif
+            });
+
 #if DEBUG
-    		builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
 #endif
             builder.Services.AddSingleton<SQLiteConnectionFactory>();
             builder.Services.AddSingleton<IIngredientsService, IngredientsService>();
@@ -41,6 +51,9 @@ namespace CookRecipesApp
 
             builder.Services.AddSingleton<RegisterPage>();
             builder.Services.AddTransient<RegisterViewModel>();
+
+            builder.Services.AddSingleton<RecepiesMainPage>();
+            builder.Services.AddTransient<RecepiesMainViewModel>();
 
             builder.Services.AddSingleton<TestPage>();
             builder.Services.AddTransient<TestViewModel>();

@@ -25,6 +25,10 @@ namespace CookRecipesApp.ViewModel
             _connectionFactory = new SQLiteConnectionFactory();
             _userService = new(_connectionFactory);
 
+            IndicatorVisibility = false;
+            Email = string.Empty;
+            Password = string.Empty;
+
 
         }
 
@@ -33,25 +37,13 @@ namespace CookRecipesApp.ViewModel
         [RelayCommand]
         public async Task LoginBtn()
         {
-            IndicatorVisibility = false;
-            System.Diagnostics.Debug.WriteLine(Email);
-            System.Diagnostics.Debug.WriteLine(Password);
-            var x = await _userService.IsEmailRegistredAsync(Email);
-            if (x)
-            {
-                System.Diagnostics.Debug.WriteLine("True");
-            }
-            else
-            {
-                System.Diagnostics.Debug.WriteLine("False");
-            }
-
             if (!await _userService.IsEmailRegistredAsync(Email))
             {
                 IndicatorVisibility = true;
                 IndicatorText = "Email not registered, please register";
                 return;
             }
+
 
             if(await _userService.LoginAsync(Email, Password) == null)
             {
@@ -60,6 +52,7 @@ namespace CookRecipesApp.ViewModel
                 return;
             }
 
+            Shell.Current.GoToAsync("//TestPage");
             System.Diagnostics.Debug.WriteLine("Prihlaseno");
 
         }

@@ -7,6 +7,7 @@ using CookRecipesApp.View;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Net.Mail;
 
 namespace CookRecipesApp.ViewModel
 {
@@ -38,6 +39,18 @@ namespace CookRecipesApp.ViewModel
 
         }
 
+        private bool IsValidEmail(string email)
+        {
+            if(string.IsNullOrEmpty(email)) return false;
+
+            try
+            {
+                var addr = new MailAddress(email);
+                return addr.Address == email;
+            }
+            catch { return false; }
+        }
+
         [RelayCommand]
         public async Task RegisterBtn()
         {
@@ -47,6 +60,12 @@ namespace CookRecipesApp.ViewModel
                 Surname = SurnameEntry,
                 Email = EmailEntry,
             };
+
+            if (!IsValidEmail(newUser.Email)){
+                IndicatorVisibility = true;
+                IndicatorText = "Invalid email format";
+                return;
+            }
 
             System.Diagnostics.Debug.WriteLine(newUser.Email);
             IndicatorVisibility = false;
@@ -81,7 +100,7 @@ namespace CookRecipesApp.ViewModel
             }
 
             System.Diagnostics.Debug.WriteLine("All good going to main page");
-            Shell.Current.GoToAsync(nameof(TestPage));
+            Shell.Current.GoToAsync("//TestPage");
 
         }
 

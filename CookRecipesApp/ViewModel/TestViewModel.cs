@@ -64,5 +64,13 @@ namespace CookRecipesApp.ViewModel
                 System.Diagnostics.Debug.WriteLine($"ID: {u.Id}, Email: '{u.Email}', Hash: {u.PasswordHash}");
             }
         }
+
+
+        [RelayCommand]
+        public void RecepiesMainPageBtn()
+        {
+            Shell.Current.GoToAsync("//RecepiesMainPage");
+        }
+
     }
 }
