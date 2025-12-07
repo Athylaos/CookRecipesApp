@@ -1,5 +1,6 @@
 ﻿using CookRecipesApp.Model.Ingredient;
 using CookRecipesApp.Model.Recepie;
+using CookRecipesApp.Model.Category;
 using CookRecipesApp.Model.User;
 using CookRecipesApp.Service;
 using Microsoft.Extensions.DependencyInjection;
@@ -38,6 +39,10 @@ namespace CookRecipesApp
             await database.CreateTableAsync<CommentDbModel>();
             await database.CreateTableAsync<RecepieCategoryDbModel>();
 
+            /*
+            DatabaseSeederService ds = new(database);
+            await ds.SeedCategoriesAsync();
+            */
 
             base.OnStart();
         }

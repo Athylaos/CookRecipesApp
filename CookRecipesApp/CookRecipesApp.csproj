@@ -57,6 +57,28 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="Resources\Images\Categories\breakfast_icon.png" />
+	  <None Remove="Resources\Images\Categories\dessert_icon.png" />
+	  <None Remove="Resources\Images\Categories\dinner_icon.png" />
+	  <None Remove="Resources\Images\Categories\drinks_icon.png" />
+	  <None Remove="Resources\Images\Categories\lunch_icon.png" />
+	  <None Remove="Resources\Images\Categories\salad_icon.png" />
+	  <None Remove="Resources\Images\Categories\snack_icon.png" />
+	  <None Remove="Resources\Images\Categories\soup_icon.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiImage Include="Resources\Images\Categories\breakfast_icon.png" />
+	  <MauiImage Include="Resources\Images\Categories\dessert_icon.png" />
+	  <MauiImage Include="Resources\Images\Categories\dinner_icon.png" />
+	  <MauiImage Include="Resources\Images\Categories\drinks_icon.png" />
+	  <MauiImage Include="Resources\Images\Categories\lunch_icon.png" />
+	  <MauiImage Include="Resources\Images\Categories\salad_icon.png" />
+	  <MauiImage Include="Resources\Images\Categories\snack_icon.png" />
+	  <MauiImage Include="Resources\Images\Categories\soup_icon.png" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Maui" Version="13.0.0" />
 		<PackageReference Include="CommunityToolkit.Maui.Core" Version="13.0.0" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />

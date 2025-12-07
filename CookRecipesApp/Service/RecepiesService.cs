@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using CookRecipesApp.Model.Recepie;
 using CookRecipesApp.Model.Ingredient;
+using CookRecipesApp.Model.Category;
 using SQLite;
 using CookRecipesApp.Model;
 using System.Threading.Tasks;

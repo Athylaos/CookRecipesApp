@@ -9,4 +9,13 @@ public partial class RecepiesMainPage : ContentPage
 		BindingContext = vm;
 		InitializeComponent();
 	}
+
+    protected override async void OnAppearing()
+	{
+		base.OnAppearing();
+		if(BindingContext is RecepiesMainViewModel vm)
+		{
+			vm.StartAsync();
+		}
+	}
 }

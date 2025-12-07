@@ -4,6 +4,8 @@
              xmlns:viewmodel="clr-namespace:CookRecipesApp.ViewModel"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:uranium="clr-namespace:UraniumUI.Blurs;assembly=UraniumUI.Blurs"
+             xmlns:models="clr-namespace:CookRecipesApp.ViewModel"
+             xmlns:categoryModels="clr-namespace:CookRecipesApp.Model.Category"
              x:DataType="viewmodel:RecepiesMainViewModel"
              x:Class="CookRecipesApp.View.RecepiesMainPage"
              Title="RecepiesMainPage"
@@ -44,6 +46,66 @@
             HeightRequest="420"
             HorizontalScrollBarVisibility="Never"
             VerticalScrollBarVisibility="Never">
+
+            <CollectionView ItemsSource="{Binding Categories}">
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout
+                        Orientation="Horizontal"
+                        Span="3"/>
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate 
+                        x:DataType="categoryModels:Category">
+                        <Border
+                            Padding="7"
+                            Shadow="2, 2, 7, Black 0.3"
+                            StrokeThickness="0">
+                            <Border
+                                StrokeShape="RoundRectangle, 15"
+                                StrokeThickness="0"
+                                HorizontalOptions="Fill"
+                                VerticalOptions="Fill"
+                                HeightRequest="130"
+                                WidthRequest="160">    
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding CategoryBtnCommand}" CommandParameter="{Binding Id}"/>
+                                </Border.GestureRecognizers>
+
+                                <Grid>
+                                    <Image 
+                                        Source="{Binding PictureUrl}"
+                                        Aspect="AspectFill"/>
+                                    <Border StrokeThickness="0" BackgroundColor="Transparent">
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="0.2,1">
+                                                <GradientStop Color="#cc000000" Offset="0.0" />
+                                                <GradientStop Color="Transparent" Offset="1" />
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                    </Border>
+                                    <Label 
+                                        Text="{Binding Name}"
+                                        HorizontalOptions="Start"
+                                        VerticalOptions="Start"
+                                        FontFamily="Alegreya"
+                                        FontAttributes="Bold"
+                                        TextColor="{StaticResource Porcelain}"
+                                        FontSize="27"                            
+                                        Margin="9, 5"
+                                        Shadow="3, 3, 3, Black 1"/>
+                                </Grid>
+                            </Border>                            
+                        </Border>
+
+
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+                
+                
+            </CollectionView>
+            
+            <!--
             <Grid
                 ColumnDefinitions="190, 190, 190"
                 RowDefinitions="140, 140, 140">
@@ -198,6 +260,8 @@
                 </Border>
 
             </Grid>
+            -->
+            
         </ScrollView>
 
         <Grid
