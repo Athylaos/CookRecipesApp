@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CookRecipesApp.Model.User;
+using CookRecipesApp.Model.Category;
 using CookRecipesApp.Service;
 using CookRecipesApp.View;
 using SQLite;
@@ -16,6 +17,7 @@ namespace CookRecipesApp.ViewModel
     public partial class TestViewModel : ObservableObject
     {
         private UserService _userService;
+        private CategoryService _categoryService;
 
         private ISQLiteAsyncConnection _database;
 
@@ -28,6 +30,7 @@ namespace CookRecipesApp.ViewModel
         {
             _database = new SQLiteConnectionFactory().CreateConnection();
             _userService = new(new SQLiteConnectionFactory());
+            _categoryService = new(new SQLiteConnectionFactory());
 
         }
 
@@ -63,6 +66,17 @@ namespace CookRecipesApp.ViewModel
             {
                 System.Diagnostics.Debug.WriteLine($"ID: {u.Id}, Email: '{u.Email}', Hash: {u.PasswordHash}");
             }
+        }
+
+        [RelayCommand]
+        public async Task CategoryDbBtn()
+        {
+            var categories = await _database.Table<CategoryDbModel>().ToListAsync();
+            foreach(var c in categories)
+            {
+                System.Diagnostics.Debug.WriteLine($"ID: {c.Id}, Name: '{c.Name}', Image: {c.PictureUrl}");
+            }
+
         }
 
 

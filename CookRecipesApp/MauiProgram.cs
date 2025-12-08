@@ -5,6 +5,7 @@ using CookRecipesApp.Service;
 using CookRecipesApp.View;
 using CookRecipesApp.ViewModel;
 using Microsoft.Extensions.Logging;
+using Sharpnado.MaterialFrame;
 using Sharpnado.Shades;
 using UraniumUI;
 
@@ -20,6 +21,7 @@ namespace CookRecipesApp
                 .UseMauiCommunityToolkit()
                 .UseMauiCommunityToolkitCore()
                 .UseSharpnadoShadows()
+                .UseSharpnadoMaterialFrame(loggerEnable: false)
                 .UseUraniumUIBlurs()
                 .ConfigureFonts(fonts =>
                 {
@@ -58,6 +60,9 @@ namespace CookRecipesApp
 
             builder.Services.AddSingleton<TestPage>();
             builder.Services.AddTransient<TestViewModel>();
+
+            builder.Services.AddSingleton<AddRecepiePage>();
+            builder.Services.AddTransient<AddRecepieViewModel>();
 
 
             return builder.Build();

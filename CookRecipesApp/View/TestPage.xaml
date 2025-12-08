@@ -21,6 +21,7 @@
         <Button Text="Login" Command="{Binding LoginBtnCommand}"></Button>
         <Button Text="Debug print all users" Command="{Binding DebugDbBtnCommand}"></Button>
         <Button Text="RecepiesMainPage" Command="{Binding RecepiesMainPageBtnCommand}"/>
+        <Button Text="Debug print all categories" Command="{Binding CategoryDbBtnCommand}"/>
 
     </VerticalStackLayout>
 </ContentPage>

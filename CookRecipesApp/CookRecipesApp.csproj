@@ -65,6 +65,9 @@
 	  <None Remove="Resources\Images\Categories\salad_icon.png" />
 	  <None Remove="Resources\Images\Categories\snack_icon.png" />
 	  <None Remove="Resources\Images\Categories\soup_icon.png" />
+	  <None Remove="Resources\Images\Icons\add_recepie.png" />
+	  <None Remove="Resources\Images\Icons\home.png" />
+	  <None Remove="Resources\Images\Icons\plus.png" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -76,6 +79,14 @@
 	  <MauiImage Include="Resources\Images\Categories\salad_icon.png" />
 	  <MauiImage Include="Resources\Images\Categories\snack_icon.png" />
 	  <MauiImage Include="Resources\Images\Categories\soup_icon.png" />
+	  <MauiImage Include="Resources\Images\Icons\account.png" />
+	  <MauiImage Include="Resources\Images\Icons\add_recepie.png" />
+	  <MauiImage Include="Resources\Images\Icons\book.png" />
+	  <MauiImage Include="Resources\Images\Icons\calendar.png" />
+	  <MauiImage Include="Resources\Images\Icons\fridge.png" />
+	  <MauiImage Include="Resources\Images\Icons\home.png" />
+	  <MauiImage Include="Resources\Images\Icons\nutrition.png" />
+	  <MauiImage Include="Resources\Images\Icons\plus.png" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -85,6 +96,7 @@
 		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.11" />
 		<PackageReference Include="Microsoft.Maui.Essentials" Version="10.0.11" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
+		<PackageReference Include="Sharpnado.MaterialFrame.Maui" Version="3.0.2" />
 		<PackageReference Include="Sharpnado.Maui.Shadows" Version="2.0.2" />
 		<PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
 		<PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.11" />
@@ -92,6 +104,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiXaml Update="View\AddRecepiePage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="View\LoginPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

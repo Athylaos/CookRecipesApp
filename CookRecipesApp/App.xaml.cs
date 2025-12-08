@@ -39,10 +39,12 @@ namespace CookRecipesApp
             await database.CreateTableAsync<CommentDbModel>();
             await database.CreateTableAsync<RecepieCategoryDbModel>();
 
-            /*
-            DatabaseSeederService ds = new(database);
-            await ds.SeedCategoriesAsync();
-            */
+            if(await database.Table<CategoryDbModel>().CountAsync() == 0)
+            {
+                DatabaseSeederService ds = new(database);
+                await ds.SeedCategoriesAsync();
+            }
+
 
             base.OnStart();
         }
