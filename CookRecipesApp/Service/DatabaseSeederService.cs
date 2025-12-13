@@ -86,126 +86,168 @@ namespace CookRecipesApp.Service
             }
         }
 
-        public async Task SeedUnitsAsync()
+        public async Task SeedDataAsync()
         {
-            var count = await _database.Table<UnitDbModel>().CountAsync();
-            if (count > 0)
+            // 1. Kontrola, jestli už data neexistují (pokud ano, konec)
+            if (await _database.Table<UnitDbModel>().CountAsync() > 0) return;
+
+            // --- A. SEED UNITS (JEDNOTKY) ---
+            var unitG = new UnitDbModel { Name = "g", IsServingUnit = false };
+            var unitKg = new UnitDbModel { Name = "kg", IsServingUnit = false };
+            var unitMl = new UnitDbModel { Name = "ml", IsServingUnit = false };
+            var unitL = new UnitDbModel { Name = "l", IsServingUnit = false };
+            var unitPcs = new UnitDbModel { Name = "pcs", IsServingUnit = false };
+            var unitTsp = new UnitDbModel { Name = "tsp", IsServingUnit = false }; // Lžička
+            var unitTbsp = new UnitDbModel { Name = "tbsp", IsServingUnit = false }; // Lžíce
+            var unitCup = new UnitDbModel { Name = "cup", IsServingUnit = false }; // Hrnek
+            var unitSlice = new UnitDbModel { Name = "slice", IsServingUnit = true };
+            var unitClove = new UnitDbModel { Name = "clove", IsServingUnit = false }; // Stroužek
+
+            // Vložení a získání IDček (SQLite IDčka generuje až po insertu)
+            await _database.InsertAsync(unitG);
+            await _database.InsertAsync(unitKg);
+            await _database.InsertAsync(unitMl);
+            await _database.InsertAsync(unitL);
+            await _database.InsertAsync(unitPcs);
+            await _database.InsertAsync(unitTsp);
+            await _database.InsertAsync(unitTbsp);
+            await _database.InsertAsync(unitCup);
+            await _database.InsertAsync(unitSlice);
+            await _database.InsertAsync(unitClove);
+
+            // --- B. SEED INGREDIENTS (SUROVINY) ---
+            var ingredientsToInsert = new List<IngredientDbModel>();
+            var ingredientUnitsToInsert = new List<IngredientUnitDbModel>();
+
+            // Pomocná lokální funkce pro přidání suroviny a jejích vazeb
+            void AddIng(string name, int defaultUnitId, float cal, float prot, float fat, float carb, float fib, params int[] otherUnitIds)
             {
-                return;
+                var ing = new IngredientDbModel
+                {
+                    Name = name,
+                    DefaultUnitId = defaultUnitId,
+                    Calories = cal,
+                    Proteins = prot,
+                    Fats = fat,
+                    Carbohydrates = carb,
+                    Fiber = fib
+                };
+                ingredientsToInsert.Add(ing);
+
+                // Vazby přidáme až po vložení suroviny (kvůli získání ID), takže si je zatím uložíme bokem
+                // Ale pozor: Tady ještě nemáme ID ingredience. Musíme to udělat ve dvou krocích.
+                // Proto si uložíme "akci", která se provede až budeme mít ID.
             }
 
-            var units = new List<UnitDbModel>
-    {
-        // --- Weight---
-        new UnitDbModel { Name = "g", IsServingUnit = false },
-        new UnitDbModel { Name = "kg", IsServingUnit = false },
-        new UnitDbModel { Name = "mg", IsServingUnit = false },
-        new UnitDbModel { Name = "oz", IsServingUnit = false },  // Ounce
-        new UnitDbModel { Name = "lb", IsServingUnit = false },  // Pound
+            // Definice surovin (Nutriční hodnoty jsou orientační na 100g/ml nebo 1ks)
 
-        // --- Volume---
-        new UnitDbModel { Name = "ml", IsServingUnit = false },
-        new UnitDbModel { Name = "l", IsServingUnit = true },
-        new UnitDbModel { Name = "tsp", IsServingUnit = false }, // Teaspoon
-        new UnitDbModel { Name = "tbsp", IsServingUnit = false },// Tablespoon
-        new UnitDbModel { Name = "cup", IsServingUnit = true },
-        new UnitDbModel { Name = "fl oz", IsServingUnit = false },
-        new UnitDbModel { Name = "pint", IsServingUnit = true },
-        new UnitDbModel { Name = "gallon", IsServingUnit = true },
+            // 1. Zelenina
+            var onion = CreateIng("Onion", unitG.Id, 40, 1.1f, 0.1f, 9.3f, 1.7f);
+            var garlic = CreateIng("Garlic", unitClove.Id, 149, 6.4f, 0.5f, 33.1f, 2.1f); // Kalorie na 100g, ale default je stroužek
+            var carrot = CreateIng("Carrot", unitG.Id, 41, 0.9f, 0.2f, 9.6f, 2.8f);
+            var tomato = CreateIng("Tomato", unitG.Id, 18, 0.9f, 0.2f, 3.9f, 1.2f);
 
-        // --- Pieces / Counts---
-        new UnitDbModel { Name = "pcs", IsServingUnit = false }, // Pieces
-        new UnitDbModel { Name = "slice", IsServingUnit = true },
-        new UnitDbModel { Name = "pinch", IsServingUnit = false },
-        new UnitDbModel { Name = "handful", IsServingUnit = false },
-        new UnitDbModel { Name = "package", IsServingUnit = false },
+            // 2. Maso
+            var chicken = CreateIng("Chicken Breast", unitG.Id, 165, 31f, 3.6f, 0f, 0f);
+            var beef = CreateIng("Beef Steak", unitG.Id, 271, 26f, 17f, 0f, 0f);
 
-        // --- Serving Units---
-        new UnitDbModel { Name = "portion", IsServingUnit = true },
-        new UnitDbModel { Name = "piece", IsServingUnit = true},
-        new UnitDbModel { Name = "serving", IsServingUnit = true },
-        new UnitDbModel { Name = "plate", IsServingUnit = true },
-        new UnitDbModel { Name = "bowl", IsServingUnit = true },
-        new UnitDbModel { Name = "batch", IsServingUnit = true },
-        new UnitDbModel { Name = "drink", IsServingUnit = true }
-    };
+            // 3. Ostatní
+            var egg = CreateIng("Egg", unitPcs.Id, 155, 13f, 11f, 1.1f, 0f); // Hodnoty na 100g (cca 2 vejce)
+            var flour = CreateIng("Flour", unitG.Id, 364, 10f, 1f, 76f, 2.7f);
+            var milk = CreateIng("Milk", unitMl.Id, 42, 3.4f, 1f, 5f, 0f);
+            var oil = CreateIng("Olive Oil", unitMl.Id, 884, 0f, 100f, 0f, 0f);
+            var salt = CreateIng("Salt", unitG.Id, 0, 0, 0, 0, 0);
 
-            await _database.InsertAllAsync(units);
-        }
+            // Vložení surovin do DB (aby dostaly ID)
+            var allIngredients = new List<IngredientDbModel> { onion, garlic, carrot, tomato, chicken, beef, egg, flour, milk, oil, salt };
 
-        private async Task<int> GetUnitId(string unitName)
-        {
-            var unit = await _database.Table<UnitDbModel>()
-                                      .FirstOrDefaultAsync(u => u.Name == unitName);
-            return unit?.Id ?? -1; // Vrať -1, pokud se nenajde
-        }
-
-        public async Task SeedIngredientsAsync()
-        {
-            // Zkontroluj, jestli už data neexistují
-            var count = await _database.Table<IngredientDbModel>().CountAsync();
-            if (count > 0)
+            foreach (var ing in allIngredients)
             {
-                return;
+                await _database.InsertAsync(ing); // Teď má ing.Id hodnotu
             }
 
-            // Získej ID základních jednotek
-            var g = await GetUnitId("g");
-            var ml = await GetUnitId("ml");
-            var pcs = await GetUnitId("pcs");
+            // --- C. SEED INGREDIENT UNITS (VAZBY - MOŽNÉ JEDNOTKY) ---
+            var links = new List<IngredientUnitDbModel>();
 
-            var ingredients = new List<IngredientDbModel>
-    {
-        // Vegetables
-        new IngredientDbModel { Name = "Onion", Quantity = 0, UnitId = g, Calories = 40, Proteins = 1.1f, Fats = 0.1f, Carbohydrates = 9.3f, Fiber = 1.7f },
-        new IngredientDbModel { Name = "Garlic", Quantity = 0, UnitId = g, Calories = 149, Proteins = 6.4f, Fats = 0.5f, Carbohydrates = 33.1f, Fiber = 2.1f },
-        new IngredientDbModel { Name = "Carrot", Quantity = 0, UnitId = g, Calories = 41, Proteins = 0.9f, Fats = 0.2f, Carbohydrates = 9.6f, Fiber = 2.8f },
-        new IngredientDbModel { Name = "Tomato", Quantity = 0, UnitId = g, Calories = 18, Proteins = 0.9f, Fats = 0.2f, Carbohydrates = 3.9f, Fiber = 1.2f },
-        new IngredientDbModel { Name = "Potato", Quantity = 0, UnitId = g, Calories = 77, Proteins = 2f, Fats = 0.1f, Carbohydrates = 17f, Fiber = 2.2f },
+            // Pomocná metoda pro přidání vazby s konverzí
+            // factor = kolikrát se vejde DefaultUnit do této jednotky
+            // Příklad: Default je gram (g). 
+            // Jednotka je kg. Factor = 1000 (1 kg = 1000 g).
+            // Jednotka je lžíce (tbsp). Factor = 15 (1 lžíce vody = 15 g).
+            void AddLink(int ingId, int unitId, float factor)
+            {
+                links.Add(new IngredientUnitDbModel
+                {
+                    IngredientId = ingId,
+                    UnitId = unitId,
+                    ToDefaultUnit = factor
+                });
+            }
 
-        // Fruits
-        new IngredientDbModel { Name = "Apple", Quantity = 0, UnitId = g, Calories = 52, Proteins = 0.3f, Fats = 0.2f, Carbohydrates = 14f, Fiber = 2.4f },
-        new IngredientDbModel { Name = "Banana", Quantity = 0, UnitId = g, Calories = 89, Proteins = 1.1f, Fats = 0.3f, Carbohydrates = 23f, Fiber = 2.6f },
-        new IngredientDbModel { Name = "Lemon", Quantity = 0, UnitId = g, Calories = 29, Proteins = 1.1f, Fats = 0.3f, Carbohydrates = 9f, Fiber = 2.8f },
+            // --- CIBULE (Default: g) ---
+            AddLink(onion.Id, unitG.Id, 1f);       // 1 g = 1 g
+            AddLink(onion.Id, unitPcs.Id, 150f);   // 1 ks cibule = cca 150 g
 
-        // Meats & Fish
-        new IngredientDbModel { Name = "Chicken Breast", Quantity = 0, UnitId = g, Calories = 165, Proteins = 31f, Fats = 3.6f, Carbohydrates = 0, Fiber = 0 },
-        new IngredientDbModel { Name = "Beef Steak", Quantity = 0, UnitId = g, Calories = 271, Proteins = 26f, Fats = 17f, Carbohydrates = 0, Fiber = 0 },
-        new IngredientDbModel { Name = "Salmon", Quantity = 0, UnitId = g, Calories = 208, Proteins = 20f, Fats = 13f, Carbohydrates = 0, Fiber = 0 },
+            // --- ČESNEK (Default: stroužek/clove) ---
+            // Pozor: Default je clove. Takže konverze je vztažená k 1 stroužku.
+            // To je trochu matoucí, lepší by bylo mít default g.
+            // Pokud změníme default česneku na g:
+            // garlic.DefaultUnitId = unitG.Id; (pokud jsi to změnil nahoře)
+            // Pak:
+            AddLink(garlic.Id, unitG.Id, 1f);
+            AddLink(garlic.Id, unitClove.Id, 5f);  // 1 stroužek = 5 g
 
-        // Dairy & Eggs
-        new IngredientDbModel { Name = "Egg", Quantity = 1, UnitId = pcs, Calories = 78, Proteins = 6f, Fats = 5f, Carbohydrates = 0.6f, Fiber = 0 },
-        new IngredientDbModel { Name = "Milk", Quantity = 0, UnitId = ml, Calories = 42, Proteins = 3.4f, Fats = 1f, Carbohydrates = 5f, Fiber = 0 },
-        new IngredientDbModel { Name = "Butter", Quantity = 0, UnitId = g, Calories = 717, Proteins = 0.9f, Fats = 81f, Carbohydrates = 0.1f, Fiber = 0 },
-        new IngredientDbModel { Name = "Cheddar Cheese", Quantity = 0, UnitId = g, Calories = 404, Proteins = 25f, Fats = 33f, Carbohydrates = 1.3f, Fiber = 0 },
+            // --- KUŘE (Default: g) ---
+            AddLink(chicken.Id, unitG.Id, 1f);
+            AddLink(chicken.Id, unitKg.Id, 1000f); // 1 kg = 1000 g
+            AddLink(chicken.Id, unitPcs.Id, 150f); // 1 ks prsa = cca 150 g
 
-        // Grains & Pasta
-        new IngredientDbModel { Name = "All-Purpose Flour", Quantity = 0, UnitId = g, Calories = 364, Proteins = 10f, Fats = 1f, Carbohydrates = 76f, Fiber = 2.7f },
-        new IngredientDbModel { Name = "White Rice", Quantity = 0, UnitId = g, Calories = 130, Proteins = 2.7f, Fats = 0.3f, Carbohydrates = 28f, Fiber = 0.4f },
-        new IngredientDbModel { Name = "Spaghetti", Quantity = 0, UnitId = g, Calories = 158, Proteins = 5.8f, Fats = 0.9f, Carbohydrates = 31f, Fiber = 1.8f },
-        new IngredientDbModel { Name = "Bread", Quantity = 0, UnitId = g, Calories = 265, Proteins = 9f, Fats = 3.2f, Carbohydrates = 49f, Fiber = 2.7f },
+            // --- VEJCE (Default: pcs) ---
+            AddLink(egg.Id, unitPcs.Id, 1f);
+            // Pokud bychom chtěli váhu: 1 vejce = 50 g (ale default je pcs, takže by to bylo obráceně)
+            // Nechme jen pcs.
 
-        // Liquids & Oils
-        new IngredientDbModel { Name = "Water", Quantity = 0, UnitId = ml, Calories = 0, Proteins = 0, Fats = 0, Carbohydrates = 0, Fiber = 0 },
-        new IngredientDbModel { Name = "Olive Oil", Quantity = 0, UnitId = ml, Calories = 884, Proteins = 0, Fats = 0f, Carbohydrates = 0, Fiber = 0 },
-        new IngredientDbModel { Name = "Vegetable Broth", Quantity = 0, UnitId = ml, Calories = 5, Proteins = 0.2f, Fats = 0.1f, Carbohydrates = 1f, Fiber = 0.3f },
-        
-        // Spices & Sugars
-        new IngredientDbModel { Name = "Salt", Quantity = 0, UnitId = g, Calories = 0, Proteins = 0, Fats = 0, Carbohydrates = 0, Fiber = 0 },
-        new IngredientDbModel { Name = "Black Pepper", Quantity = 0, UnitId = g, Calories = 251, Proteins = 10f, Fats = 3.3f, Carbohydrates = 64f, Fiber = 25f },
-        new IngredientDbModel { Name = "Sugar", Quantity = 0, UnitId = g, Calories = 387, Proteins = 0, Fats = 0, Carbohydrates = 0f, Fiber = 0 },
-        
-        // Nuts & Seeds
-        new IngredientDbModel { Name = "Almonds", Quantity = 0, UnitId = g, Calories = 579, Proteins = 21f, Fats = 49f, Carbohydrates = 22f, Fiber = 12.5f },
-        new IngredientDbModel { Name = "Walnuts", Quantity = 0, UnitId = g, Calories = 654, Proteins = 15f, Fats = 65f, Carbohydrates = 14f, Fiber = 7f },
-        
-        // Sweets
-        new IngredientDbModel { Name = "Dark Chocolate", Quantity = 0, UnitId = g, Calories = 546, Proteins = 4.9f, Fats = 31f, Carbohydrates = 61f, Fiber = 7f },
-        new IngredientDbModel { Name = "Honey", Quantity = 0, UnitId = g, Calories = 304, Proteins = 0.3f, Fats = 0, Carbohydrates = 82f, Fiber = 0.2f }
-    };
+            // --- MOUKA (Default: g) ---
+            AddLink(flour.Id, unitG.Id, 1f);
+            AddLink(flour.Id, unitKg.Id, 1000f);
+            AddLink(flour.Id, unitCup.Id, 120f);   // 1 hrnek mouky = 120 g (lehčí než voda)
+            AddLink(flour.Id, unitTbsp.Id, 8f);    // 1 lžíce mouky = cca 8 g
 
-            await _database.InsertAllAsync(ingredients);
-            System.Diagnostics.Debug.WriteLine($"[Seeder] Inserted {ingredients.Count} ingredients.");
+            // --- MLÉKO (Default: ml) ---
+            AddLink(milk.Id, unitMl.Id, 1f);
+            AddLink(milk.Id, unitL.Id, 1000f);     // 1 l = 1000 ml
+            AddLink(milk.Id, unitCup.Id, 240f);    // 1 hrnek = 240 ml
+            AddLink(milk.Id, unitTbsp.Id, 15f);    // 1 lžíce = 15 ml
+
+            // --- OLEJ (Default: ml) ---
+            AddLink(oil.Id, unitMl.Id, 1f);
+            AddLink(oil.Id, unitTbsp.Id, 15f);
+            AddLink(oil.Id, unitTsp.Id, 5f);       // 1 lžička = 5 ml
+
+            // --- SŮL (Default: g) ---
+            AddLink(salt.Id, unitG.Id, 1f);
+            AddLink(salt.Id, unitTsp.Id, 6f);      // 1 lžička soli = cca 6 g (těžší než voda)
+
+
+            // Vložení všech vazeb najednou
+            await _database.InsertAllAsync(links);
+
+            System.Diagnostics.Debug.WriteLine("Seeding complete: Units, Ingredients and Links created.");
+        }
+
+        // Pomocná metoda pro vytvoření objektu (jen pro přehlednost kódu výše)
+        private IngredientDbModel CreateIng(string name, int defaultUnitId, float cal, float prot, float fat, float carb, float fib)
+        {
+            return new IngredientDbModel
+            {
+                Name = name,
+                DefaultUnitId = defaultUnitId,
+                Calories = cal,
+                Proteins = prot,
+                Fats = fat,
+                Carbohydrates = carb,
+                Fiber = fib
+            };
         }
 
 

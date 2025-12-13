@@ -34,11 +34,13 @@ namespace CookRecipesApp
             await database.CreateTableAsync<UserDbModel>();
             await database.CreateTableAsync<UnitDbModel>();
             await database.CreateTableAsync<IngredientDbModel>();
+            await database.CreateTableAsync<IngredientUnitDbModel>();
             await database.CreateTableAsync<RecepieDbModel>();
             await database.CreateTableAsync<CategoryDbModel>();
             await database.CreateTableAsync<CommentDbModel>();
             await database.CreateTableAsync<RecepieCategoryDbModel>();
-            await database.DeleteAllAsync<UnitDbModel>();
+            await database.CreateTableAsync<RecepieIngredientDbModel>();
+
 
             DatabaseSeederService ds = new(database);
             if (await database.Table<CategoryDbModel>().CountAsync() == 0)
@@ -46,8 +48,7 @@ namespace CookRecipesApp
                 await ds.SeedCategoriesAsync();
             }
 
-            await ds.SeedUnitsAsync();
-            await ds.SeedIngredientsAsync();
+            await ds.SeedDataAsync();
 
 
 

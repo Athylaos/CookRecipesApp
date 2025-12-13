@@ -15,6 +15,8 @@ namespace CookRecipesApp.ViewModel
 {
     public partial class AddRecepieViewModel : ObservableObject
     {
+        [ObservableProperty]
+        private Recepie newRecepie;
 
         [ObservableProperty] private string test;
         public ObservableCollection<UnitDbModel> ServingUnits { get; } = new ObservableCollection<UnitDbModel>();
@@ -23,7 +25,7 @@ namespace CookRecipesApp.ViewModel
         public List<DifficultyLevel> DifficultyOptions { get; } = Enum.GetValues(typeof(DifficultyLevel)).Cast<DifficultyLevel>().ToList();
         [ObservableProperty] DifficultyLevel difficulty;
 
-        public ObservableCollection<Ingredient> Ingredients { get; } = new();
+        public ObservableCollection<RecepieIngredient> Ingredients { get; } = new();
 
         public ObservableCollection<Category> Categories { get; set; } = new ObservableCollection<Category>();
 
@@ -52,14 +54,7 @@ namespace CookRecipesApp.ViewModel
             }
 
 
-            var ing = await new IngredientsService(new SQLiteConnectionFactory()).GetAllIngredientsAsync();
-
-            var ingF = ing.Take(5).ToList<Ingredient>();
-
-            foreach(var i in ingF)
-            {
-                Ingredients.Add(i);
-            }
+            
         }
 
 

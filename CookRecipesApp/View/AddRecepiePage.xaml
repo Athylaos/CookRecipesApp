@@ -150,9 +150,9 @@
                         TextColor="{StaticResource Porcelain}"
                         Margin="10, 5, 0, 5"/>
 
-                    <CollectionView ItemsSource="{Binding Ingredients}" Grid.Row="1">
+                    <CollectionView ItemsSource="{Binding NewRecepie.Ingredients}" Grid.Row="1">
                         <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="ingredientModel:Ingredient">
+                            <DataTemplate x:DataType="recepieModel:RecepieIngredient">
                                 <Grid 
                                     MaximumHeightRequest="44"
                                     ColumnDefinitions="Auto, 50, *, 60"
@@ -165,8 +165,8 @@
                                         Margin="0, 0, 4, 0">
                                         <Entry Keyboard="Numeric" TextColor="{StaticResource Porcelain}" Margin="5, 0, 0, 0" Text="{Binding Quantity}"/>
                                     </Border>
-                                    <Picker Grid.Column="1" ItemsSource="{Binding PossibleUnits}" SelectedItem="{Binding Unit}" TextColor="{StaticResource Porcelain}" Margin="0, 0, 10, 0"  VerticalOptions="Center"/>
-                                    <Label Grid.Column="2" Text="{Binding Name}" TextColor="{StaticResource Porcelain}" VerticalOptions="Center"/>
+                                    <Picker Grid.Column="1" ItemsSource="{Binding Ingredient.PossibleUnits}" SelectedItem="{Binding SelectedUnit}" TextColor="{StaticResource Porcelain}" Margin="0, 0, 10, 0"  VerticalOptions="Center"/>
+                                    <Label Grid.Column="2" Text="{Binding Ingredient.Name}" TextColor="{StaticResource Porcelain}" VerticalOptions="Center"/>
                                     <Button 
                                         Grid.Column="3" 
                                         FontSize="15" 

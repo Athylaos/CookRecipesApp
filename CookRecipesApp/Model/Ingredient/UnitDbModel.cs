@@ -15,6 +15,5 @@ namespace CookRecipesApp.Model.Ingredient
         [NotNull]
         public bool IsServingUnit {  get; set; }
 
-        public float ToDefaultUnit { get; set; }
     }
 }
