@@ -14,10 +14,7 @@ namespace CookRecipesApp.Model.Ingredient
         public string Name { get; set; } = string.Empty;
 
         [NotNull]
-        public float Quantity { get; set; }
-
-        [NotNull]
-        public int UnitId { get; set; }
+        public int DefaultUnitId { get; set; }
 
         public float Calories { get; set; }
         public float Proteins { get; set; }

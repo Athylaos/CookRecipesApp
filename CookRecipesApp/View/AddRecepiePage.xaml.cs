@@ -9,4 +9,13 @@ public partial class AddRecepiePage : ContentPage
 		BindingContext = vm;
 		InitializeComponent();
 	}
+
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        if (BindingContext is AddRecepieViewModel vm)
+        {
+            vm.StartAsync();
+        }
+    }
 }

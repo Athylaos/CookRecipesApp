@@ -9,11 +9,11 @@
              x:DataType="viewmodel:RecepiesMainViewModel"
              x:Class="CookRecipesApp.View.RecepiesMainPage"
              Title="RecepiesMainPage"
-             BackgroundColor="{StaticResource DarkEvergreen}"
+             BackgroundColor="#1f1f1f"
              Shell.NavBarIsVisible="False">
 
     <Grid
-        BackgroundColor="#1D1F1D"
+        BackgroundColor="#1f1f1f"
         ColumnDefinitions="*"
         RowDefinitions="55, *, 60"
         ColumnSpacing="0"
@@ -49,15 +49,16 @@
                 HorizontalOptions="Start"
                 WidthRequest="50"
                 HeightRequest="50"
-                StrokeShape="Roundrectangle, 15"
+                StrokeShape="RoundRectangle, 15"
                 Padding="4"
                 Stroke="{StaticResource DarkEvergreen}"
                 BackgroundColor="{StaticResource PineTeal}">
                 <ImageButton
                     Source="plus.png"
                     Command="{Binding AddRecepieBtnCommand}"
-                    Aspect="AspectFit"
-                    Background="Transparent"/>
+                    Aspect="AspectFill"
+                    Background="Transparent"
+                    Padding="1"/>
             </Border>
 
         </Grid>

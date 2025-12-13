@@ -5,7 +5,6 @@ using CookRecipesApp.Model.Recepie;
 using CookRecipesApp.Model.Ingredient;
 using CookRecipesApp.Model.Category;
 using SQLite;
-using CookRecipesApp.Model;
 using System.Threading.Tasks;
 using Microsoft.Maui.Graphics.Text;
 
@@ -15,9 +14,11 @@ namespace CookRecipesApp.Service
     {
         public Task<List<Recepie>> GetAllRecepiesAsync();
         public Task<Recepie> GetRecepieAsync(int id);
+
         public Task SaveRecepieAsync(Recepie recepie);
         public Task DeleteRecepieAsync(int id);
         public Task UpdateRecepieAsync(Recepie recepie);
+
     }
 
     public class RecepiesService : IRecepiesService
@@ -33,68 +34,48 @@ namespace CookRecipesApp.Service
             _categoryService = categoryService;
         }
 
-        public async Task<List<Ingredient>> GetAllIngredientsForRecepieAsync(int recepieId) // would be better to load all recepie-ingredients and match them in memory, but fine for now
+        private async Task<RecepieIngredient> DbToRecepieIngredientAsync(RecepieIngredientDbModel dbModel)
         {
-            var recepieIngredients = await _database
-                .Table<RecepieIngredientDbModel>()
-                .Where(ri => ri.RecepieId == recepieId)
-                .ToListAsync();
+            var ingredient = await _ingredientService.GetIngredientAsync(dbModel.IngredientId);
+            var unit = await _database.Table<UnitDbModel>().FirstOrDefaultAsync(u => u.Id == dbModel.UnitId);
 
-            var ingredients = new List<Ingredient>();
-
-            foreach (var ri in recepieIngredients)
+            return new RecepieIngredient
             {
-                var ing = await _ingredientService.GetIngredientAsync(ri.IngredientId);
-                if (ing != null)
-                {
-                    ingredients.Add(ing);
-                }
+                Id = dbModel.Id,
+                RecepieId = dbModel.RecepieId,
+                Ingredient = ingredient,
+                Quantity = dbModel.Quantity,
+                SelectedUnit = unit,
+            };
+        }
+
+        private RecepieIngredientDbModel RecepieIngredientToDbAsync(RecepieIngredient recepie)
+        {
+            return new RecepieIngredientDbModel
+            {
+                Id = recepie.Id,
+                RecepieId = recepie.RecepieId,
+                IngredientId = recepie.Ingredient.Id,
+                Quantity = recepie.Quantity,
+                UnitId = recepie.SelectedUnit.Id,                            
+            };
+        }
+
+
+
+
+        public async Task<List<RecepieIngredient>> GetAllIngredientsForRecepieAsync(int recepieId)
+        {
+
+            var dbModels = await _database.Table<RecepieIngredientDbModel>().Where(ri => ri.RecepieId == recepieId).ToListAsync();
+
+            var result = new List<RecepieIngredient>();
+            foreach (var model in dbModels)
+            {
+                result.Add(await DbToRecepieIngredientAsync(model));
             }
-
-            return ingredients;
-        }
-
-        public async Task<List<CategoryDbModel>> GetAllCategoriesForRecepie(int recepieId)
-        {
-            var recepieCategories = await _database
-                .Table<RecepieCategoryDbModel>()
-                .Where(rc => rc.RecepieId == recepieId)
-                .ToListAsync();
-
-            if (recepieCategories.Count == 0) return new List<CategoryDbModel>();
-
-            List<int> targetCategoryIds = recepieCategories.Select(rc => rc.CategoryId).ToList();
-
-            var allCategories = await _database.Table<CategoryDbModel>().ToListAsync();
-
-            var result = allCategories
-                .Where(c => targetCategoryIds.Contains(c.Id) && c.ParentCategoryId == null)
-                .ToList();
-
             return result;
-        }
-
-        public async Task<List<CategoryDbModel>> GetAllSubcategoriesForRecepie(int recepieId)
-        {
-            var recepieCategories = await _database
-                .Table<RecepieCategoryDbModel>()
-                .Where(rc => rc.RecepieId == recepieId)
-                .ToListAsync();
-
-            if (recepieCategories.Count == 0) return new List<CategoryDbModel>();
-
-            List<int> targetCategoryIds = recepieCategories.Select(rc => rc.CategoryId).ToList();
-
-            var allCategories = await _database.Table<CategoryDbModel>().ToListAsync();
-
-            var result = allCategories
-                .Where(c => targetCategoryIds.Contains(c.Id) && c.ParentCategoryId == null)
-                .ToList();
-
-            return result;
-        }
-
-
+        }      
 
 
         public async Task<Recepie> RecepieDbModelToRecepieAsync(RecepieDbModel recepieDbModel)
@@ -107,13 +88,17 @@ namespace CookRecipesApp.Service
                 CoockingProcess = recepieDbModel.CoockingProcess,
                 CoockingTime = recepieDbModel.CoockingTime,
                 Servings = recepieDbModel.Servings,
+                ServingUnit = await _database.Table<UnitDbModel>().FirstOrDefaultAsync(x => x.Id == recepieDbModel.ServingUnitId),
                 DifficultyLevel = (DifficultyLevel)recepieDbModel.Difficulty,
                 Ingredients = await GetAllIngredientsForRecepieAsync(recepieDbModel.Id),
+                Categories = await _categoryService.GetRecepieCategoriesAsync(recepieDbModel.Id),
+
                 Calories = recepieDbModel.Calories,
                 Proteins = recepieDbModel.Proteins,
                 Fats = recepieDbModel.Fats,
                 Carbohydrates = recepieDbModel.Carbohydrates,
                 Fiber = recepieDbModel.Fiber,
+
                 RecepieCreated = DateTime.Parse(recepieDbModel.RecepieCreated),
                 Rating = recepieDbModel.Rating,
                 UsersRated = recepieDbModel.UsersRated
@@ -132,12 +117,15 @@ namespace CookRecipesApp.Service
                 CoockingProcess = recepie.CoockingProcess,
                 CoockingTime = recepie.CoockingTime,
                 Servings = recepie.Servings,
+                ServingUnitId = recepie.ServingUnit.Id,
                 Difficulty = (int)recepie.DifficultyLevel,
+
                 Calories = recepie.Calories,
                 Proteins = recepie.Proteins,
                 Fats = recepie.Fats,
                 Carbohydrates = recepie.Carbohydrates,
                 Fiber = recepie.Fiber,
+
                 RecepieCreated = recepie.RecepieCreated.ToString(),
                 Rating = recepie.Rating,
                 UsersRated = recepie.UsersRated
@@ -151,6 +139,8 @@ namespace CookRecipesApp.Service
         public async Task DeleteRecepieAsync(int id)
         {
             await _database.DeleteAsync<RecepieDbModel>(id);
+            await _database.Table<RecepieIngredientDbModel>().DeleteAsync(x => x.RecepieId == id);
+            await _database.Table<RecepieCategoryDbModel>().DeleteAsync(x => x.RecepieId == id);
         }
 
         public async Task<List<Recepie>> GetAllRecepiesAsync()
@@ -179,8 +169,12 @@ namespace CookRecipesApp.Service
             if (recepie == null) throw new ArgumentNullException("Cant save null object to database");
 
             var recepieDbModel = RecepieToRecepieDbModel(recepie);
-
             await _database.InsertAsync(recepieDbModel);
+
+            recepie.Id = recepieDbModel.Id;
+
+            await SaveRecepieIngredientsAsync(recepie.Id, recepie.Ingredients);
+            await SaveRecepieCategoriesAsync(recepie.Id, recepie.Categories);
 
             return;
         }
@@ -190,8 +184,43 @@ namespace CookRecipesApp.Service
             var recepieDbModel = RecepieToRecepieDbModel(recepie);
 
             await _database.UpdateAsync(recepieDbModel);
+            await SaveRecepieIngredientsAsync(recepie.Id, recepie.Ingredients);
+            await SaveRecepieCategoriesAsync(recepie.Id, recepie.Categories);
 
             return;
         }
+
+        public async Task SaveRecepieIngredientsAsync(int recepieId, List<RecepieIngredient> ingredients)
+        {
+            await _database.Table<RecepieIngredientDbModel>().DeleteAsync(x => x.RecepieId == recepieId);
+
+            var dbList = ingredients.Select(i => new RecepieIngredientDbModel
+            {
+                RecepieId = recepieId,
+                IngredientId = i.Ingredient.Id,
+                Quantity = i.Quantity,
+                UnitId = i.SelectedUnit.Id
+            }).ToList();
+
+            await _database.InsertAllAsync(dbList);
+        }
+
+        public async Task SaveRecepieCategoriesAsync(int recepieId, List<Category> categories)
+        {
+            await _database.Table<RecepieCategoryDbModel>().DeleteAsync(rc => rc.RecepieId == recepieId);
+
+            var links = categories.Select(c => new RecepieCategoryDbModel
+            {
+                RecepieId = recepieId,
+                CategoryId = c.Id
+            }).ToList();
+
+            await _database.InsertAllAsync(links);
+        }
+
+
+
+
+
     }
 }

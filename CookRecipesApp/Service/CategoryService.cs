@@ -153,5 +153,15 @@ namespace CookRecipesApp.Service
             return result.OrderBy(c => c.SortOrder).ToList();
         }
 
+        public async Task<List<Category>> GetAllSelectedCategories()
+        {
+            var allCategories = await GetAllCategoriesAsync(false);
+            var result = allCategories.Where(c => c.IsSelected).ToList();
+            return result;
+        }
+
+
+
+
     }
 }

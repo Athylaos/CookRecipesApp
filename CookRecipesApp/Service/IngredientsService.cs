@@ -27,27 +27,40 @@ namespace CookRecipesApp.Service
 
         private async Task<Ingredient> IngredientDbModelToIngredientAsync(IngredientDbModel ingredientDbModel)
         {
-            UnitDbModel unitDbModel = await _database.Table<UnitDbModel>().FirstOrDefaultAsync(x => x.Id == ingredientDbModel.UnitId);
-            return new Ingredient(
-                ingredientDbModel.Id,
-                ingredientDbModel.Name,
-                ingredientDbModel.Quantity,
-                unitDbModel,
-                ingredientDbModel.Calories,
-                ingredientDbModel.Proteins,
-                ingredientDbModel.Fats,
-                ingredientDbModel.Carbohydrates,
-                ingredientDbModel.Fiber);
+            var ingredientUnits = await _database.Table<IngredientUnitDbModel>().Where(x => x.IngredientId == ingredientDbModel.Id).ToListAsync();
+
+            var possibleUnitIds = ingredientUnits.Select(pu => pu.UnitId).ToList();
+            var allUnits = await _database.Table<UnitDbModel>().ToListAsync();
+
+            var possibleUnits = allUnits.Where(u => possibleUnitIds.Contains(u.Id)).ToList();
+            var dfUnit = allUnits.FirstOrDefault(u => u.Id == ingredientDbModel.DefaultUnitId);
+
+            return new Ingredient
+            {
+                Id = ingredientDbModel.Id,
+                Name = ingredientDbModel.Name,
+                PossibleUnits = possibleUnits,
+                DefaultUnit = dfUnit,
+
+                Calories = ingredientDbModel.Calories,
+                Proteins = ingredientDbModel.Proteins,
+                Fats = ingredientDbModel.Fats,
+                Carbohydrates = ingredientDbModel.Carbohydrates,
+                Fiber = ingredientDbModel.Fiber,
+            };
         }
 
-        private async Task<IngredientDbModel> IngredientToIngredientDbModelAsync(Ingredient ingredient)
+
+        private IngredientDbModel IngredientToIngredientDbModel(Ingredient ingredient)
         {
-            return new IngredientDbModel()
+            int defaultUnitId = ingredient.DefaultUnit?.Id ?? 0;
+
+            return new IngredientDbModel
             {
                 Id = ingredient.Id,
                 Name = ingredient.Name,
-                Quantity = ingredient.Quantity,
-                UnitId = ingredient.Unit.Id,
+                DefaultUnitId = defaultUnitId,
+
                 Calories = ingredient.Calories,
                 Proteins = ingredient.Proteins,
                 Fats = ingredient.Fats,
@@ -56,13 +69,14 @@ namespace CookRecipesApp.Service
             };
         }
 
+
         public async Task AddIngredientAsync(Ingredient ingredient)
         {
             if(ingredient == null)
             {
                 return; 
             }
-            var ingredientDbModel = await IngredientToIngredientDbModelAsync(ingredient);
+            var ingredientDbModel = IngredientToIngredientDbModel(ingredient);
             await _database.InsertAsync(ingredientDbModel);
 
             return;
@@ -75,24 +89,49 @@ namespace CookRecipesApp.Service
             {
                 return new List<Ingredient>();
             }
-            var unitsDbModels = await _database.Table<UnitDbModel>().ToListAsync();
 
-            var ingredients = ingredientsDbModels.Select(ingredientDbModel =>
-                new Ingredient(
-                    ingredientDbModel.Id,
-                    ingredientDbModel.Name,
-                    ingredientDbModel.Quantity,
-                    unitsDbModels.Find(u => u.Id == ingredientDbModel.UnitId) ?? new UnitDbModel { Id = 0, Name = "g"},
-                    ingredientDbModel.Calories,
-                    ingredientDbModel.Proteins,
-                    ingredientDbModel.Fats,
-                    ingredientDbModel.Carbohydrates,
-                    ingredientDbModel.Fiber
-                )
-            ).ToList();
+            var unitsDbModels = await _database.Table<UnitDbModel>().ToListAsync();
+            var unitsDict = unitsDbModels.ToDictionary(u => u.Id);
+
+            var allIngredientUnits = await _database.Table<IngredientUnitDbModel>().ToListAsync();
+
+            var ingredientUnitsLookup = allIngredientUnits.ToLookup(iu => iu.IngredientId);
+
+            var ingredients = ingredientsDbModels.Select(dbModel =>
+            {
+                unitsDict.TryGetValue(dbModel.DefaultUnitId, out var defaultUnit);
+                if (defaultUnit == null) defaultUnit = new UnitDbModel { Id = 0, Name = "g" };
+
+                List<UnitDbModel> possibleUnits = new List<UnitDbModel>();
+                if (ingredientUnitsLookup.Contains(dbModel.Id))
+                {
+                    var unitIds = ingredientUnitsLookup[dbModel.Id].Select(iu => iu.UnitId);
+                    foreach (var unitId in unitIds)
+                    {
+                        if (unitsDict.TryGetValue(unitId, out var unit))
+                        {
+                            possibleUnits.Add(unit);
+                        }
+                    }
+                }
+
+                return new Ingredient
+                {
+                    Id = dbModel.Id,
+                    Name = dbModel.Name,
+                    DefaultUnit = defaultUnit,
+                    PossibleUnits = possibleUnits,
+                    Calories = dbModel.Calories,
+                    Proteins = dbModel.Proteins,
+                    Fats = dbModel.Fats,
+                    Carbohydrates = dbModel.Carbohydrates,
+                    Fiber = dbModel.Fiber
+                };
+            }).ToList();
 
             return ingredients;
         }
+
 
         public async Task<Ingredient?> GetIngredientAsync(int id)
         {
@@ -121,11 +160,17 @@ namespace CookRecipesApp.Service
 
         public async Task UpdateIngredientAsync(Ingredient ingredient)
         {
-            var ingredientDbModel = await IngredientToIngredientDbModelAsync(ingredient);
+            var ingredientDbModel = IngredientToIngredientDbModel(ingredient);
 
             await _database.UpdateAsync(ingredientDbModel);
 
             return;
+        }
+
+        public async Task<List<UnitDbModel>> GetAllServingUnitsAsync()
+        {
+            var units = await _database.Table<UnitDbModel>().Where(u => u.IsServingUnit).ToListAsync();
+            return units;
         }
     }
 }

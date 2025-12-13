@@ -7,7 +7,7 @@ namespace CookRecipesApp.Model.User
 {
     public class UserDbModel
     {
-        [NotNull, PrimaryKey, AutoIncrement]
+        [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
 
@@ -20,7 +20,6 @@ namespace CookRecipesApp.Model.User
         [NotNull]
         public string PasswordSalt { get; set; } = string.Empty;
 
-        [NotNull]
         public string Name { get; set; } = string.Empty;
 
         public string Surname { get; set; } = string.Empty;

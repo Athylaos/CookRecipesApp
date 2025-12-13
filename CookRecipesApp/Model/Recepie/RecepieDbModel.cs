@@ -23,6 +23,8 @@ namespace CookRecipesApp.Model.Recepie
         [NotNull]
         public int Servings { get; set; }
         [NotNull]
+        public int ServingUnitId { get; set; }
+        [NotNull]
         public int Difficulty { get; set; }
 
         public float Calories { get; set; }

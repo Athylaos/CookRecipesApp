@@ -7,7 +7,7 @@ namespace CookRecipesApp.Model.User
 {
     public class UserRegistrationDto
     {
-        [NotNull, PrimaryKey, AutoIncrement]
+        [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
         [NotNull, Unique]
