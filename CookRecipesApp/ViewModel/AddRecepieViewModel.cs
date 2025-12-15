@@ -1,24 +1,29 @@
-﻿using CommunityToolkit.Maui.Core.Extensions;
+﻿using CommunityToolkit.Maui;
+using CommunityToolkit.Maui.Core.Extensions;
+using CommunityToolkit.Maui.Extensions;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using CookRecipesApp.Model.Category;
 using CookRecipesApp.Model.Ingredient;
+using CookRecipesApp.Model.Recepie;
+using CookRecipesApp.Service;
+using CookRecipesApp.View.Popups;
+using CookRecipesApp.ViewModel.Popups;
+using Microsoft.Maui.Controls.Shapes;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
-using CookRecipesApp.Service;
-using CookRecipesApp.Model.Category;
-using CommunityToolkit.Mvvm.Input;
-using CookRecipesApp.Model.Recepie;
 
 
 namespace CookRecipesApp.ViewModel
 {
     public partial class AddRecepieViewModel : ObservableObject
     {
+        private IngredientsService _ingredientsService;
+
         [ObservableProperty]
         private Recepie newRecepie;
-
-        [ObservableProperty] private string test;
         public ObservableCollection<UnitDbModel> ServingUnits { get; } = new ObservableCollection<UnitDbModel>();
         [ObservableProperty] private UnitDbModel selectedServingUnit;
 
@@ -33,7 +38,7 @@ namespace CookRecipesApp.ViewModel
 
         public AddRecepieViewModel()
         {
-            Test = "test ok";
+            _ingredientsService = new(new SQLiteConnectionFactory());
         }
 
         public async Task StartAsync()
@@ -67,5 +72,27 @@ namespace CookRecipesApp.ViewModel
             }
 
         }
+
+        [RelayCommand]
+        public async Task OpenAddIngredientPopup()
+        {
+            List<Ingredient> ingredients = await _ingredientsService.GetAllIngredientsAsync();
+
+            var popupVm = new AddIngredientPopupViewModel(ingredients);
+
+            popupVm.OnCloseRequest += (resultData) =>
+            {
+                if (resultData is RecepieIngredient newIngredient)
+                {
+                    this.Ingredients.Add(newIngredient);
+                }
+            };
+
+            var popup = new AddIngredientPopup();
+            popup.BindingContext = popupVm;
+
+            await Shell.Current.ShowPopupAsync(popup);
+        }
+
     }
 }

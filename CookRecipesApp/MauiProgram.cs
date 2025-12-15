@@ -3,7 +3,9 @@ using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Mvvm;
 using CookRecipesApp.Service;
 using CookRecipesApp.View;
+using CookRecipesApp.View.Popups;
 using CookRecipesApp.ViewModel;
+using CookRecipesApp.ViewModel.Popups;
 using Microsoft.Extensions.Logging;
 using Sharpnado.MaterialFrame;
 using Sharpnado.Shades;
@@ -63,6 +65,9 @@ namespace CookRecipesApp
 
             builder.Services.AddSingleton<AddRecepiePage>();
             builder.Services.AddTransient<AddRecepieViewModel>();
+
+            builder.Services.AddSingleton<AddIngredientPopup>();
+            builder.Services.AddTransient<AddIngredientPopupViewModel>();
 
 
             return builder.Build();
