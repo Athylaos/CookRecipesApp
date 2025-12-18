@@ -85,7 +85,7 @@ namespace CookRecipesApp.Service
                 Id = recepieDbModel.Id,
                 UserId = recepieDbModel.UserId,
                 Title = recepieDbModel.Title,
-                CoockingProcess = recepieDbModel.CoockingProcess,
+                //Add cookingStep
                 CoockingTime = recepieDbModel.CoockingTime,
                 Servings = recepieDbModel.Servings,
                 ServingUnit = await _database.Table<UnitDbModel>().FirstOrDefaultAsync(x => x.Id == recepieDbModel.ServingUnitId),
@@ -114,7 +114,7 @@ namespace CookRecipesApp.Service
                 Id = recepie.Id,
                 UserId = recepie.UserId,
                 Title = recepie.Title,
-                CoockingProcess = recepie.CoockingProcess,
+                //Add cookingStep
                 CoockingTime = recepie.CoockingTime,
                 Servings = recepie.Servings,
                 ServingUnitId = recepie.ServingUnit.Id,

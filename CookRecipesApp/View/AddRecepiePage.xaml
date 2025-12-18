@@ -24,7 +24,7 @@
             Grid.Row="0" Grid.Column="0"
             Margin="10, 10">
             <Grid
-                RowDefinitions="45, 60, 250, 90, Auto">
+                RowDefinitions="45, 60, 250, 90, Auto, Auto, 20, 70">
                 <Label
                     Grid.Row="0"
                     Text="Recipe name"
@@ -43,6 +43,7 @@
                     <Entry
                         FontSize="19"
                         TextColor="{StaticResource Porcelain}"
+                        Text="{Binding Title}"
                         Margin="7, 0, 0, 0"/>
                 </Border>
                 <Grid
@@ -73,7 +74,7 @@
                                 Stroke="Transparent"
                                 BackgroundColor="#212121"
                                 Margin="0, 0, 7, 0">
-                                <Entry Keyboard="Numeric" TextColor="{StaticResource Porcelain}" Margin="05, 0, 0, 0"/>
+                                <Entry Keyboard="Numeric" TextColor="{StaticResource Porcelain}" Margin="05, 0, 0, 0" Text="{Binding Time}"/>
                             </Border>
                             <Label Grid.Column="1" Text="Minutes" VerticalOptions="Center" HorizontalOptions="Start"/>
                         </Grid>
@@ -87,7 +88,7 @@
                                 Stroke="Transparent"
                                 BackgroundColor="#212121"
                                 Margin="0, 0, 7, 0">
-                                <Entry Keyboard="Numeric" TextColor="{StaticResource Porcelain}" Margin="05, 0, 0, 0"/>
+                                <Entry Keyboard="Numeric" TextColor="{StaticResource Porcelain}" Margin="05, 0, 0, 0" Text="{Binding Servings}"/>
                             </Border>
                             <Picker Grid.Column="1" TextColor="{StaticResource Porcelain}" Margin="5, 0" ItemsSource="{Binding ServingUnits}" SelectedItem="{Binding SelectedServingUnit}" TitleColor="{StaticResource Porcelain}" Title="Select unit" ItemDisplayBinding="{Binding Name}"/>
                         </Grid>
@@ -152,7 +153,7 @@
                         TextColor="{StaticResource Porcelain}"
                         Margin="10, 5, 0, 5"/>
 
-                    <CollectionView ItemsSource="{Binding Ingredients}" Grid.Row="1">
+                    <CollectionView ItemsSource="{Binding Ingredients}" Grid.Row="1" MinimumHeightRequest="80">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="recepieModel:RecepieIngredient">
                                 <Grid 
@@ -179,7 +180,9 @@
                                         Margin="2"
                                         BorderColor="{StaticResource Evergreen}"
                                         BorderWidth="1"
-                                        HorizontalOptions="Center"/>
+                                        HorizontalOptions="Center"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DelIngredientBtnCommand}"
+                                        CommandParameter="{Binding .}" />
                                     <Label Text="x" Grid.Column="3" VerticalOptions="Center" HorizontalOptions="Center"/>
                                 </Grid>
                             </DataTemplate>
@@ -198,9 +201,101 @@
                         BorderWidth="1"/>
 
                 </Grid>
+                <Grid
+                    Grid.Row="5"
+                    RowDefinitions="40, Auto, 47">
+                    <Label 
+                        Grid.Row="0" 
+                        Text="Cooking process" 
+                        FontSize="20" 
+                        FontFamily="Alegreya"
+                        TextColor="{StaticResource Porcelain}"
+                        Margin="10, 5, 0, 5"/>
 
-                
-                
+                    <CollectionView ItemsSource="{Binding RecepieSteps}" Grid.Row="1">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="recepieModel:RecepieStep">
+                                <Border
+                                    StrokeShape="RoundRectangle, 7"
+                                    Stroke="Transparent"
+                                    BackgroundColor="Transparent">
+                                    <Grid 
+                                        ColumnDefinitions="20,*"
+                                        Margin="0,2"
+                                        MinimumHeightRequest="100">
+                                        <Label
+                                            Grid.Column="0"
+                                            Text="{Binding Order}"
+                                            HorizontalOptions="Center"
+                                            FontFamily="Alegreya"
+                                            FontAttributes="Bold"
+                                            FontSize="25"
+                                            Margin="0, 5, 0, 0"/>
+                                        <Border
+                                            Grid.Column="1"
+                                            BackgroundColor="#212121"
+                                            StrokeShape="RoundRectangle, 20"
+                                            Stroke="Transparent"
+                                            Padding="7, 3">
+                                            <Editor  TextColor="{StaticResource Porcelain}" Text="{Binding ContentText}" AutoSize="TextChanges"/>
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+
+                    <Grid
+                        Grid.Row="2"
+                        ColumnDefinitions="*,97, 97"
+                        >
+                        <Button
+                            Grid.Column="1"
+                            BackgroundColor="{StaticResource PineTeal}"
+                            WidthRequest="90"
+                            Margin="0, 7, 0, 0"
+                            Text="Remove"
+                            Command="{Binding RemoveCookingStepBtnCommand}"
+                            BorderColor="{StaticResource Evergreen}"
+                            BorderWidth="1"/>
+                        <Button
+                            Grid.Column="2"
+                            BackgroundColor="{StaticResource PineTeal}"
+                            WidthRequest="70"
+                            Margin="0, 7, 20, 0"
+                            Text="Add"
+                            Command="{Binding AddCookingStepBtnCommand}"
+                            BorderColor="{StaticResource Evergreen}"
+                            BorderWidth="1"/>
+
+                    </Grid>
+
+
+                </Grid>
+
+                <Label
+                    Grid.Row="6"
+                    TextColor="DarkRed"
+                    FontFamily="Nunito"
+                    FontAttributes="Bold"
+                    FontSize="15"
+                    Margin="15, 0, 0, 0"
+                    Text="{Binding WarningText}"
+                    IsVisible="{Binding WarningEnabled}"
+                    />
+
+                <Button
+                    Grid.Row="7"
+                    Margin="60, 13"
+                    BackgroundColor="{StaticResource PineTeal}"
+                    BorderColor="{StaticResource Evergreen}"
+                    BorderWidth="1"
+                    Text="Finish recepie"
+                    Command="{Binding FinishRecepieBtnCommand}"/>
+
+
+
+
             </Grid>
         </ScrollView>
     </Grid>

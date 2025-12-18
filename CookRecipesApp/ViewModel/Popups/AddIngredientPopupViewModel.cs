@@ -26,6 +26,7 @@ namespace CookRecipesApp.ViewModel.Popups
         public AddIngredientPopupViewModel(List<Ingredient> il)
         {
             _allIngredientsSource = il;
+            OnSearchTextChanged(string.Empty);
         }
 
         partial void OnSearchTextChanged(string value)

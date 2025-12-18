@@ -38,8 +38,11 @@ namespace CookRecipesApp
 #if ANDROID
                 h.PlatformView.BackgroundTintList = Android.Content.Res.ColorStateList.ValueOf(Android.Graphics.Color.Transparent);
 #endif
-#if IOS
-                h.PlatformView.BorderStyle = UIKit.UITextBorderStyle.None;
+            });
+            Microsoft.Maui.Handlers.EditorHandler.Mapper.AppendToMapping("Placeholder", (h, v) =>
+            {
+#if ANDROID
+                h.PlatformView.BackgroundTintList = Android.Content.Res.ColorStateList.ValueOf(Android.Graphics.Color.Transparent);
 #endif
             });
 

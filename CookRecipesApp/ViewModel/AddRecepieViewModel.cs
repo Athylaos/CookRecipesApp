@@ -21,24 +21,32 @@ namespace CookRecipesApp.ViewModel
     public partial class AddRecepieViewModel : ObservableObject
     {
         private IngredientsService _ingredientsService;
-
-        [ObservableProperty]
         private Recepie newRecepie;
+
+        [ObservableProperty] string title;
+        [ObservableProperty] string time;
+        [ObservableProperty] string servings;
         public ObservableCollection<UnitDbModel> ServingUnits { get; } = new ObservableCollection<UnitDbModel>();
         [ObservableProperty] private UnitDbModel selectedServingUnit;
 
         public List<DifficultyLevel> DifficultyOptions { get; } = Enum.GetValues(typeof(DifficultyLevel)).Cast<DifficultyLevel>().ToList();
-        [ObservableProperty] DifficultyLevel difficulty;
+        [ObservableProperty] DifficultyLevel difficulty = DifficultyLevel.Medium;
 
         public ObservableCollection<RecepieIngredient> Ingredients { get; } = new();
 
         public ObservableCollection<Category> Categories { get; set; } = new ObservableCollection<Category>();
+
+        public ObservableCollection<RecepieStep> RecepieSteps { get; } = new ObservableCollection<RecepieStep>();
+
+        [ObservableProperty] string warningText;
+        [ObservableProperty] bool warningEnabled;
 
 
 
         public AddRecepieViewModel()
         {
             _ingredientsService = new(new SQLiteConnectionFactory());
+            AddCookingStepBtn();
         }
 
         public async Task StartAsync()
@@ -92,6 +100,77 @@ namespace CookRecipesApp.ViewModel
             popup.BindingContext = popupVm;
 
             await Shell.Current.ShowPopupAsync(popup);
+        }
+
+        [RelayCommand]
+        public void DelIngredientBtn(RecepieIngredient ingredient)
+        {
+            Ingredients.Remove(ingredient);
+        }
+
+        [RelayCommand]
+        public void AddCookingStepBtn()
+        {
+            RecepieSteps.Add(new RecepieStep { Order = (RecepieSteps.Count+1)});
+        }
+
+        [RelayCommand]
+        public void RemoveCookingStepBtn()
+        {
+            if(RecepieSteps.Count > 1)
+            {
+                RecepieSteps.RemoveAt(RecepieSteps.Count - 1);
+            }
+        }
+
+        [RelayCommand]
+        public void FinishRecepieBtn()
+        {
+            if (string.IsNullOrWhiteSpace(Title))
+            {
+                WarningEnabled = true;
+                WarningText = "Title is mandatory";
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(Time))
+            {
+                WarningEnabled = true;
+                WarningText = "Time is mandatory";
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(Servings))
+            {
+                WarningEnabled = true;
+                WarningText = "Number of servings is mandatory";
+                return;
+            }
+            if(Categories.Where(c => c.IsSelected == true) == null)
+            {
+                WarningEnabled = true;
+                WarningText = "Recepie must have at least one category";
+                return;
+            }
+            if(Ingredients.Count == 0)
+            {
+                WarningEnabled = true;
+                WarningText = "Recepie must have at least one ingredient";
+                return;
+            }
+            foreach(var rs in RecepieSteps)
+            {
+                if (string.IsNullOrEmpty(rs.ContentText))
+                {
+                    WarningEnabled = true;
+                    WarningText = $"Cooking step can't be empty ({rs.Order})";
+                    return;
+                }
+            }
+
+
+
+
+
+
         }
 
     }
