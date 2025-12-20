@@ -58,9 +58,9 @@
                             Stroke="{StaticResource Black}"
                             StrokeShape="RoundRectangle, 15"
                             StrokeThickness="1">
-                            <Image Source="default_picture.png"/>
+                            <Image Source="{Binding PhotoPath}" Aspect="AspectFill"/>
                         </Border>
-                        <Button Text="Add photo" Background="{StaticResource PineTeal}" BorderColor="{StaticResource Evergreen}" BorderWidth="1"/>
+                        <Button Text="Add photo" Background="{StaticResource PineTeal}" BorderColor="{StaticResource Evergreen}" BorderWidth="1" Command="{Binding AddPhotoBtnCommand}"/>
                     </VerticalStackLayout>
                     <VerticalStackLayout
                         Grid.Column="0" Grid.Row="0">

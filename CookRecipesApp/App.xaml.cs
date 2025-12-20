@@ -40,6 +40,7 @@ namespace CookRecipesApp
             await database.CreateTableAsync<CommentDbModel>();
             await database.CreateTableAsync<RecepieCategoryDbModel>();
             await database.CreateTableAsync<RecepieIngredientDbModel>();
+            await database.CreateTableAsync<RecepieStepDbModel>();
 
 
             DatabaseSeederService ds = new(database);

@@ -6,10 +6,7 @@
                xmlns:viewmodel="clr-namespace:CookRecipesApp.ViewModel.Popups"
                x:Class="CookRecipesApp.View.Popups.AddIngredientPopup"
                x:DataType="viewmodel:AddIngredientPopupViewModel"
-               BackgroundColor="#1f1f1f"
-               
-               Opened="OnPopupOpened"
-               Closed="Popup_Closed"               
+               BackgroundColor="#1f1f1f"            
                >
 
     

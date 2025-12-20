@@ -119,25 +119,7 @@ namespace CookRecipesApp.Service
             var ingredientsToInsert = new List<IngredientDbModel>();
             var ingredientUnitsToInsert = new List<IngredientUnitDbModel>();
 
-            // Pomocná lokální funkce pro přidání suroviny a jejích vazeb
-            void AddIng(string name, int defaultUnitId, float cal, float prot, float fat, float carb, float fib, params int[] otherUnitIds)
-            {
-                var ing = new IngredientDbModel
-                {
-                    Name = name,
-                    DefaultUnitId = defaultUnitId,
-                    Calories = cal,
-                    Proteins = prot,
-                    Fats = fat,
-                    Carbohydrates = carb,
-                    Fiber = fib
-                };
-                ingredientsToInsert.Add(ing);
 
-                // Vazby přidáme až po vložení suroviny (kvůli získání ID), takže si je zatím uložíme bokem
-                // Ale pozor: Tady ještě nemáme ID ingredience. Musíme to udělat ve dvou krocích.
-                // Proto si uložíme "akci", která se provede až budeme mít ID.
-            }
 
             // Definice surovin (Nutriční hodnoty jsou orientační na 100g/ml nebo 1ks)
 

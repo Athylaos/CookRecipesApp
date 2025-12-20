@@ -9,6 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using System.Runtime.CompilerServices;
+using CookRecipesApp.Model.Recepie;
 
 
 
@@ -76,7 +78,16 @@ namespace CookRecipesApp.ViewModel
             {
                 System.Diagnostics.Debug.WriteLine($"ID: {c.Id}, Name: '{c.Name}', Image: {c.PictureUrl}");
             }
+        }
 
+        [RelayCommand]
+        public async Task RecepieDbBtn()
+        {
+            var recepies = await _database.Table<RecepieDbModel>().ToListAsync();
+            foreach (var r in recepies)
+            {
+                System.Diagnostics.Debug.WriteLine($"ID: {r.Id}, Name: '{r.Title}', Image: {r.PhotoPath}");
+            }
         }
 
 

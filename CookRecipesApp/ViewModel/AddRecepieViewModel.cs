@@ -21,11 +21,12 @@ namespace CookRecipesApp.ViewModel
     public partial class AddRecepieViewModel : ObservableObject
     {
         private IngredientsService _ingredientsService;
-        private Recepie newRecepie;
+        private RecepiesService _recepiesService;
 
         [ObservableProperty] string title;
         [ObservableProperty] string time;
         [ObservableProperty] string servings;
+        [ObservableProperty] string photoPath;
         public ObservableCollection<UnitDbModel> ServingUnits { get; } = new ObservableCollection<UnitDbModel>();
         [ObservableProperty] private UnitDbModel selectedServingUnit;
 
@@ -45,8 +46,11 @@ namespace CookRecipesApp.ViewModel
 
         public AddRecepieViewModel()
         {
-            _ingredientsService = new(new SQLiteConnectionFactory());
+            SQLiteConnectionFactory cf = new();
+            _ingredientsService = new(cf);
+            _recepiesService = new(cf, _ingredientsService, new CategoryService(cf));
             AddCookingStepBtn();
+            PhotoPath = "default_picture.png";
         }
 
         public async Task StartAsync()
@@ -68,6 +72,34 @@ namespace CookRecipesApp.ViewModel
 
 
             
+        }
+
+        [RelayCommand]
+        public async Task AddPhotoBtn()
+        {
+            try
+            {
+                var result = await MediaPicker.PickPhotosAsync(new MediaPickerOptions
+                {
+                    Title = "Choose a photo for the recipe"
+                });
+
+                if (result != null)
+                {
+                    // Lokální cesta k souboru
+                    PhotoPath = result.First().FullPath;
+
+                    var newPath = System.IO.Path.Combine(FileSystem.AppDataDirectory, result.First().FileName);
+                    using var source = await result.First().OpenReadAsync();
+                    using var dest = File.OpenWrite(newPath);
+                    await source.CopyToAsync(dest);
+                    PhotoPath = newPath;
+                }
+            }
+            catch (Exception ex)
+            {
+                
+            }
         }
 
 
@@ -124,24 +156,27 @@ namespace CookRecipesApp.ViewModel
         }
 
         [RelayCommand]
-        public void FinishRecepieBtn()
+        public async Task FinishRecepieBtn()
         {
+            int timeInt = int.TryParse(Time, out var q) ? q : 0;
+            int servingsInt = int.TryParse(Servings, out var p) ? p : 0;
+
             if (string.IsNullOrWhiteSpace(Title))
             {
                 WarningEnabled = true;
                 WarningText = "Title is mandatory";
                 return;
             }
-            if (string.IsNullOrWhiteSpace(Time))
+            if (string.IsNullOrWhiteSpace(Time) || q == 0)
             {
                 WarningEnabled = true;
-                WarningText = "Time is mandatory";
+                WarningText = "Time is mandatory and can't be 0";
                 return;
             }
-            if (string.IsNullOrWhiteSpace(Servings))
+            if (string.IsNullOrWhiteSpace(Servings) || p == 0)
             {
                 WarningEnabled = true;
-                WarningText = "Number of servings is mandatory";
+                WarningText = "Number of servings is mandatory and can't be 0";
                 return;
             }
             if(Categories.Where(c => c.IsSelected == true) == null)
@@ -166,6 +201,30 @@ namespace CookRecipesApp.ViewModel
                 }
             }
 
+            Recepie rc = new Recepie
+            {
+                Title = Title,
+                CoockingTime = timeInt,
+                Servings = servingsInt,
+                ServingUnit = SelectedServingUnit,
+                DifficultyLevel = Difficulty,
+                Categories = Categories.Where(c => c.IsSelected).ToList(),
+                Ingredients = Ingredients.ToList(),
+                Steps = RecepieSteps.ToList(),
+                PhotoPath = PhotoPath,
+            };
+
+            await _recepiesService.SaveRecepieAsync(rc);
+            Title = string.Empty;
+            Time = string.Empty;
+            Servings = string.Empty;
+            Difficulty = DifficultyLevel.Medium;
+            Categories.Clear();
+            Ingredients.Clear();
+            RecepieSteps.Clear();
+
+
+            await Shell.Current.Navigation.PopAsync(true);
 
 
 

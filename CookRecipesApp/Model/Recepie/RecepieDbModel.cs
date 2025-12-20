@@ -15,6 +15,7 @@ namespace CookRecipesApp.Model.Recepie
         public int UserId { get; set; }
         [NotNull]
         public string Title { get; set; } = string.Empty;
+        public string PhotoPath { get; set; } = "default_picture.png";
 
         [NotNull]
         public string CoockingProcess { get; set; } = string.Empty;

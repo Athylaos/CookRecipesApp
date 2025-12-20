@@ -75,7 +75,42 @@ namespace CookRecipesApp.Service
                 result.Add(await DbToRecepieIngredientAsync(model));
             }
             return result;
-        }      
+        }     
+        
+        public async Task<List<RecepieStep>> GetAllStepsForRecepieAsync(int recepieId)
+        {
+            var rsDbModels = await _database.Table<RecepieStepDbModel>().Where(rs => recepieId == rs.RecepieId).ToListAsync();
+            List<RecepieStep> result= new();
+
+            foreach(var model in rsDbModels)
+            {
+                result.Add(new RecepieStep
+                {
+                    Id = model.Id,
+                    RecepieId = model.RecepieId,
+                    ContentText = model.ContentText,
+                    Order = model.Order,
+                });
+            }
+
+            return result;            
+        }
+
+        public async Task SaveAllRecepieStepsAsync(Recepie recepie)
+        {
+            await _database.Table<RecepieStepDbModel>()
+               .DeleteAsync(x => x.RecepieId == recepie.Id);
+
+            foreach (var rs in recepie.Steps)
+            {
+                await _database.InsertAsync(new RecepieStepDbModel
+                {
+                    RecepieId = rs.RecepieId,
+                    ContentText = rs.ContentText,
+                    Order = rs.Order
+                });
+            }
+        }
 
 
         public async Task<Recepie> RecepieDbModelToRecepieAsync(RecepieDbModel recepieDbModel)
@@ -85,7 +120,8 @@ namespace CookRecipesApp.Service
                 Id = recepieDbModel.Id,
                 UserId = recepieDbModel.UserId,
                 Title = recepieDbModel.Title,
-                //Add cookingStep
+                PhotoPath = recepieDbModel.PhotoPath,
+                Steps = await GetAllStepsForRecepieAsync(recepieDbModel.Id),
                 CoockingTime = recepieDbModel.CoockingTime,
                 Servings = recepieDbModel.Servings,
                 ServingUnit = await _database.Table<UnitDbModel>().FirstOrDefaultAsync(x => x.Id == recepieDbModel.ServingUnitId),
@@ -114,7 +150,7 @@ namespace CookRecipesApp.Service
                 Id = recepie.Id,
                 UserId = recepie.UserId,
                 Title = recepie.Title,
-                //Add cookingStep
+                //steps
                 CoockingTime = recepie.CoockingTime,
                 Servings = recepie.Servings,
                 ServingUnitId = recepie.ServingUnit.Id,
@@ -129,7 +165,7 @@ namespace CookRecipesApp.Service
                 RecepieCreated = recepie.RecepieCreated.ToString(),
                 Rating = recepie.Rating,
                 UsersRated = recepie.UsersRated
-            };            
+            };
 
             return recepieDbModel;
         }
@@ -173,6 +209,7 @@ namespace CookRecipesApp.Service
 
             recepie.Id = recepieDbModel.Id;
 
+            await SaveAllRecepieStepsAsync(recepie);
             await SaveRecepieIngredientsAsync(recepie.Id, recepie.Ingredients);
             await SaveRecepieCategoriesAsync(recepie.Id, recepie.Categories);
 

@@ -12,7 +12,7 @@ namespace CookRecipesApp.Model.Recepie
         [NotNull]
         public int RecepieId { get; set; }
         public string ContentText { get; set; } = string.Empty;
-        public int Orded {  get; set; }
+        public int Order {  get; set; }
 
 
     }
