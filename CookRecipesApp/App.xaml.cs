@@ -5,6 +5,7 @@ using CookRecipesApp.Model.User;
 using CookRecipesApp.Service;
 using Microsoft.Extensions.DependencyInjection;
 using SQLite;
+using System.Diagnostics;
 
 namespace CookRecipesApp
 {
@@ -42,14 +43,15 @@ namespace CookRecipesApp
             await database.CreateTableAsync<RecepieIngredientDbModel>();
             await database.CreateTableAsync<RecepieStepDbModel>();
 
+            CategoryService cas = new(_connectionFactory);
+            IngredientsService ins = new(_connectionFactory);
+            RecepiesService res = new(_connectionFactory, ins, cas);
 
-            DatabaseSeederService ds = new(database);
-            if (await database.Table<CategoryDbModel>().CountAsync() == 0)
-            {
-                await ds.SeedCategoriesAsync();
-            }
+            DatabaseSeederService ds = new(database, res, cas, ins);
 
-            await ds.SeedDataAsync();
+            await ds.SeedAllAsync();
+
+            Debug.WriteLine("Seeding done");
 
 
 
