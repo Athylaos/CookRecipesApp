@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
 
 namespace CookRecipesApp.Model.Category
@@ -16,7 +17,8 @@ namespace CookRecipesApp.Model.Category
 
         [ObservableProperty] bool isSelected;
 
-        public int? ParentCategory { get; set; }
-        public List<Category> SubCategories = new List<Category>();
+        public int? ParentCategoryId { get; set; }
+        public ObservableCollection<Category> SubCategories = new();
+            
     }
 }

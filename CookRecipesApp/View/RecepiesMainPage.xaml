@@ -6,6 +6,7 @@
              xmlns:sharpnado="clr-namespace:Sharpnado.MaterialFrame;assembly=Maui.MaterialFrame"
              xmlns:models="clr-namespace:CookRecipesApp.ViewModel"
              xmlns:categoryModels="clr-namespace:CookRecipesApp.Model.Category"
+             xmlns:recepieModels="clr-namespace:CookRecipesApp.Model.Recepie"
              x:DataType="viewmodel:RecepiesMainViewModel"
              x:Class="CookRecipesApp.View.RecepiesMainPage"
              Title="RecepiesMainPage"
@@ -71,78 +72,76 @@
             Padding="10,60, 10, 60">
             <Grid
                 RowDefinitions="Auto, Auto">
-         <ScrollView
-            Orientation="Horizontal"
-            Grid.Row="0"
-            Grid.Column="0"
-            HeightRequest="420"
-            HorizontalScrollBarVisibility="Never"
-            VerticalScrollBarVisibility="Never">
+                <ScrollView
+                    Orientation="Horizontal"
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    HeightRequest="420"
+                    HorizontalScrollBarVisibility="Never"
+                    VerticalScrollBarVisibility="Never">
 
-            <CollectionView ItemsSource="{Binding Categories}">
-                <CollectionView.ItemsLayout>
-                    <GridItemsLayout
-                        Orientation="Horizontal"
-                        Span="3"/>
-                </CollectionView.ItemsLayout>
+                    <CollectionView ItemsSource="{Binding Categories}">
+                    <CollectionView.ItemsLayout>
+                        <GridItemsLayout
+                            Orientation="Horizontal"
+                            Span="3"/>
+                    </CollectionView.ItemsLayout>
 
-                <CollectionView.ItemTemplate>
-                    <DataTemplate 
-                        x:DataType="categoryModels:Category">
-                        <Border
-                            Padding="7"
-                            Shadow="2, 2, 7, Black 0.3"
-                            StrokeThickness="0">
-                            <Border
-                                StrokeShape="RoundRectangle, 15"
-                                StrokeThickness="0"
-                                HorizontalOptions="Fill"
-                                VerticalOptions="Fill"
-                                HeightRequest="130"
-                                WidthRequest="160">    
-                                <Border.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding CategoryBtnCommand}" CommandParameter="{Binding Id}"/>
-                                </Border.GestureRecognizers>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate 
+                            x:DataType="categoryModels:Category">
+                                <Border
+                                Padding="7"
+                                Shadow="2, 2, 7, Black 0.3"
+                                StrokeThickness="0">
+                                    <Border
+                                    StrokeShape="RoundRectangle, 15"
+                                    StrokeThickness="0"
+                                    HorizontalOptions="Fill"
+                                    VerticalOptions="Fill"
+                                    HeightRequest="130"
+                                    WidthRequest="160">
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding CategoryBtnCommand}" CommandParameter="{Binding Id}"/>
+                                        </Border.GestureRecognizers>
 
-                                <Grid>
-                                    <Image 
-                                        Source="{Binding PictureUrl}"
-                                        Aspect="AspectFill"/>
-                                    <Border StrokeThickness="0" BackgroundColor="Transparent">
-                                        <Border.Background>
-                                            <LinearGradientBrush StartPoint="0,0" EndPoint="0.2,1">
-                                                <GradientStop Color="#cc000000" Offset="0.0" />
-                                                <GradientStop Color="Transparent" Offset="1" />
-                                            </LinearGradientBrush>
-                                        </Border.Background>
+                                        <Grid>
+                                            <Image 
+                                            Source="{Binding PictureUrl}"
+                                            Aspect="AspectFill"/>
+                                            <Border StrokeThickness="0" BackgroundColor="Transparent">
+                                                <Border.Background>
+                                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0.2,1">
+                                                        <GradientStop Color="#cc000000" Offset="0.0" />
+                                                        <GradientStop Color="Transparent" Offset="1" />
+                                                    </LinearGradientBrush>
+                                                </Border.Background>
+                                            </Border>
+                                            <Label 
+                                            Text="{Binding Name}"
+                                            HorizontalOptions="Start"
+                                            VerticalOptions="Start"
+                                            FontFamily="Alegreya"
+                                            FontAttributes="Bold"
+                                            TextColor="{StaticResource Porcelain}"
+                                            FontSize="27"                            
+                                            Margin="9, 5"
+                                            Shadow="3, 3, 3, Black 1"/>
+                                        </Grid>
                                     </Border>
-                                    <Label 
-                                        Text="{Binding Name}"
-                                        HorizontalOptions="Start"
-                                        VerticalOptions="Start"
-                                        FontFamily="Alegreya"
-                                        FontAttributes="Bold"
-                                        TextColor="{StaticResource Porcelain}"
-                                        FontSize="27"                            
-                                        Margin="9, 5"
-                                        Shadow="3, 3, 3, Black 1"/>
-                                </Grid>
-                            </Border>                            
-                        </Border>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
 
 
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-                
-                
-            </CollectionView>
+                    </CollectionView>
             
         </ScrollView>
 
         <Grid
             Grid.Column="0"
             Grid.Row="1"
-            RowDefinitions="40,100,40,100,40,100,40,100">
+            RowDefinitions="40,150,40,100,40,100,40,100">
             <Label
                 Text="Favourite"                
                 TextColor="{StaticResource Porcelain}"
@@ -152,12 +151,68 @@
                 FontSize="30"
                 Grid.Row="0"
                 />
-            <ScrollView
-                Grid.Row="1"
-                BackgroundColor="Pink">
-            </ScrollView>
+                <CollectionView ItemsSource="{Binding FavouriteRecipes}"
+                    Grid.Row="1"               
+                    ItemsLayout="HorizontalList"
+                    Margin="0,0,0,8">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="recepieModels:Recepie">
+                                <Border
+                                    StrokeShape="RoundRectangle, 20"
+                                    WidthRequest="200"
+                                    HeightRequest="150"
+                                    Margin="6,0"
+                                    StrokeThickness="0">
+                                    <Grid
+                                        BackgroundColor="Wheat">
+                                        <Image 
+                                            Source="{Binding PhotoPath}"
+                                            Aspect="AspectFill"/>
+                                        <Border StrokeThickness="0" BackgroundColor="Transparent">
+                                            <Border.Background>
+                                                <LinearGradientBrush StartPoint="0.3, 1" EndPoint="0.5, 0">
+                                                    <GradientStop Color="#cc000000" Offset="0.0" />
+                                                    <GradientStop Color="Transparent" Offset="1" />
+                                                </LinearGradientBrush>
+                                            </Border.Background>
+                                        </Border>
+                                        <Label
+                                            Text="{Binding Title}"
+                                            TextColor="{StaticResource Porcelain}"
+                                            FontAttributes="Bold"
+                                            Margin="8"
+                                            FontSize="20"  
+                                            VerticalOptions="End"
+                                            Shadow="3, 3, 3, Black 1"
+                                            FontFamily="Alegreya"/>
+                                        <HorizontalStackLayout
+                                            HorizontalOptions="End"
+                                            Margin="0,8,10,0">
+                                            <Label
+                                                Text="{Binding CoockingTime}"
+                                                TextColor="{StaticResource Porcelain}"
+                                                FontAttributes="Bold"
+                                                Shadow="3, 3, 3, Black 1"
+                                                FontSize="17"
+                                                FontFamily="Alegreya"
+                                                HorizontalOptions="Start"
+                                                VerticalOptions="Start"
+                                                Margin="0, -2, 5, 0"/>                                            
+                                            <Image
+                                                HorizontalOptions="Start"
+                                                VerticalOptions="Start"
+                                                WidthRequest="20"
+                                                HeightRequest="20"
+                                                Aspect="AspectFit"
+                                                Source="time.png"/>
+                                        </HorizontalStackLayout>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
 
-            <Label
+                    <Label
                 Text="From your fridge"
                 TextColor="{StaticResource Porcelain}"
                 FontFamily="Alegreya"

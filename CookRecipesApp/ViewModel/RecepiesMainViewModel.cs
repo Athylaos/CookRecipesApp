@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CookRecipesApp.Model.Category;
+using CookRecipesApp.Model.Recepie;
 using CookRecipesApp.Service;
 using CookRecipesApp.View;
 using SQLite;
@@ -17,17 +18,21 @@ namespace CookRecipesApp.ViewModel
         private SQLiteConnectionFactory _factory = new();
         private ISQLiteAsyncConnection _database;
         private CategoryService _categoryService;
+        private IngredientsService _ingredientsService;
+        private RecepiesService _recepiesService;
         private UserService _userService;
         [ObservableProperty] private string test;
 
         public ObservableCollection<Category> Categories { get; set; } = new();
+        public ObservableCollection<Recepie> FavouriteRecipes { get; set; } = new();
 
         public RecepiesMainViewModel()
         {
             _database = _factory.CreateConnection();
             _categoryService = new(_factory);
+            _ingredientsService = new(_factory);
+            _recepiesService = new(_factory, _ingredientsService, _categoryService);
             _userService = new(_factory);
-
         }
 
         public async void StartAsync()
@@ -38,6 +43,15 @@ namespace CookRecipesApp.ViewModel
             {
                 Categories.Add(ct);
             }
+
+            var rcps = await _recepiesService.GetAllRecepiesAsync();
+            rcps = rcps.Take(10).ToList();
+
+            foreach (var r in rcps)
+            {
+                FavouriteRecipes.Add(r);
+            }
+
         }
 
         [RelayCommand]

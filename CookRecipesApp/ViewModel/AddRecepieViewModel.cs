@@ -191,6 +191,22 @@ namespace CookRecipesApp.ViewModel
                 WarningText = "Recepie must have at least one ingredient";
                 return;
             }
+            foreach(var ing in Ingredients)
+            {
+                if(ing.Quantity == 0)
+                {
+                    WarningEnabled = true;
+                    WarningText = $"Ingredient can't has zero quantity ({ing.Ingredient.Name})";
+                    return;
+                }
+                if (ing.SelectedUnit == null)
+                {
+                    WarningEnabled = true;
+                    WarningText = $"Ingredient must have unit ({ing.Ingredient.Name})";
+                    return;
+                }
+            }
+
             foreach(var rs in RecepieSteps)
             {
                 if (string.IsNullOrEmpty(rs.ContentText))

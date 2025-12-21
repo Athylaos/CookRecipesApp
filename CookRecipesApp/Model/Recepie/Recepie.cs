@@ -20,11 +20,11 @@ namespace CookRecipesApp.Model.Recepie
         public int Id { get; set; }
         public int UserId { get; set; }
         public string Title { get; set; } = string.Empty;
-        public string PhotoPath { get; set; } = string.Empty; //dodelat
+        public string PhotoPath { get; set; } = string.Empty;
         public List<RecepieStep> Steps { get; set; } = new List<RecepieStep>();
         public int CoockingTime { get; set; }
         public int Servings { get; set; }
-        public UnitDbModel ServingUnit { get; set; } = new(); //dodelat v service
+        public UnitDbModel ServingUnit { get; set; } = new();
         public DifficultyLevel DifficultyLevel { get; set; }
         public List<RecepieIngredient> Ingredients { get; set; } = new List<RecepieIngredient>();
 

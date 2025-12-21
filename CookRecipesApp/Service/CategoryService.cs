@@ -1,8 +1,10 @@
-﻿using CookRecipesApp.Model.Category;
+﻿using CommunityToolkit.Maui.Core.Extensions;
+using CookRecipesApp.Model.Category;
 using CookRecipesApp.Model.Recepie;
 using SQLite;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
 
 
@@ -32,7 +34,7 @@ namespace CookRecipesApp.Service
                                                  .Where(c => c.ParentCategoryId == categoryDbModel.Id)
                                                  .ToListAsync();
 
-            List<Category> subCategories = new List<Category>();
+            ObservableCollection<Category> subCategories = new();
             foreach (var subDb in subCategoriesDb)
             {
                 subCategories.Add(await CategoryDbToCategoryAsync(subDb));
@@ -42,7 +44,7 @@ namespace CookRecipesApp.Service
             {
                 Id = categoryDbModel.Id,
                 Name = categoryDbModel.Name,
-                ParentCategory = categoryDbModel.ParentCategoryId,
+                ParentCategoryId = categoryDbModel.ParentCategoryId,
                 SubCategories = subCategories,
                 SortOrder = categoryDbModel.SortOrder
             };
@@ -57,12 +59,11 @@ namespace CookRecipesApp.Service
                 Id = category.Id,
                 Name = category.Name,
                 PictureUrl = category.PictureUrl,
-                ParentCategoryId = category.ParentCategory,
+                ParentCategoryId = category.ParentCategoryId,
                 SortOrder = category.SortOrder
                 
             };
         }
-
 
         public async Task<List<Category>> GetAllCategoriesAsync(bool root)
         {
@@ -73,24 +74,23 @@ namespace CookRecipesApp.Service
                 Id = db.Id,
                 Name = db.Name,
                 PictureUrl = db.PictureUrl,
-                ParentCategory = db.ParentCategoryId,
-                SortOrder= db.SortOrder
+                ParentCategoryId = db.ParentCategoryId,
+                SortOrder = db.SortOrder
             }).ToList();
 
             var lookup = allCategories.ToDictionary(c => c.Id);
 
-            List<Category> rootCategories = new List<Category>();
+            var rootCategories = new List<Category>();
 
             foreach (var dbModel in allDbModels)
             {
                 var currentCategory = lookup[dbModel.Id];
 
-                if (dbModel.ParentCategoryId != null && lookup.ContainsKey(dbModel.ParentCategoryId.Value))
+                if (dbModel.ParentCategoryId != null &&
+                    lookup.TryGetValue(dbModel.ParentCategoryId.Value, out var parent))
                 {
-                    var parent = lookup[dbModel.ParentCategoryId.Value];
                     parent.SubCategories.Add(currentCategory);
-
-                    currentCategory.ParentCategory = parent.Id;
+                    currentCategory.ParentCategoryId = parent.Id;
                 }
                 else
                 {
@@ -98,22 +98,17 @@ namespace CookRecipesApp.Service
                 }
             }
 
-            if (root)
-            {
-                return rootCategories.OrderBy(c => c.SortOrder).ToList();
-            }
-            return allCategories.OrderBy(c => c.SortOrder).ToList();
+            return (root ? rootCategories : allCategories)
+                .OrderBy(c => c.SortOrder)
+                .ToList();
         }
-
 
         public async Task<Category?> GetCategoryByIdAsync(int id)
         {
-            var categoryDb = await _database.Table<CategoryDbModel>().FirstOrDefaultAsync(c => c.Id == id);
-            if (categoryDb == null) return null;
+            var all = await GetAllCategoriesAsync(false);
 
-            return await CategoryDbToCategoryAsync(categoryDb);
+            return all.FirstOrDefault(c => c.Id == id);
         }
-
 
         public async Task<List<Category>> GetRecepieCategoriesAsync(int recepieId)
         {
@@ -121,44 +116,21 @@ namespace CookRecipesApp.Service
                                        .Where(rc => rc.RecepieId == recepieId)
                                        .ToListAsync();
 
-            if (links.Count == 0) return new List<Category>();
+            if (links.Count == 0)
+                return new List<Category>();
 
-            var categoryIds = links.Select(l => l.CategoryId).ToList();
+            var categoryIds = links.Select(l => l.CategoryId).ToHashSet();
 
-            var allDbModels = await _database.Table<CategoryDbModel>().ToListAsync();
-
-            var allCategories = allDbModels.Select(db => new Category
-            {
-                Id = db.Id,
-                Name = db.Name,
-                PictureUrl = db.PictureUrl,
-                SortOrder = db.SortOrder,
-            }).ToList();
-
-            var lookup = allCategories.ToDictionary(c => c.Id);
-
-            foreach (var dbModel in allDbModels)
-            {
-                if (dbModel.ParentCategoryId != null && lookup.ContainsKey(dbModel.ParentCategoryId.Value))
-                {
-                    var child = lookup[dbModel.Id];
-                    var parent = lookup[dbModel.ParentCategoryId.Value];
-                    parent.SubCategories.Add(child);
-                    child.ParentCategory = parent.Id;
-                }
-            }
-
-            var result = allCategories.Where(c => categoryIds.Contains(c.Id)).ToList();
-
-            return result.OrderBy(c => c.SortOrder).ToList();
-        }
-
-        public async Task<List<Category>> GetAllSelectedCategories()
-        {
             var allCategories = await GetAllCategoriesAsync(false);
-            var result = allCategories.Where(c => c.IsSelected).ToList();
+
+            var result = allCategories
+                .Where(c => categoryIds.Contains(c.Id))
+                .OrderBy(c => c.SortOrder)
+                .ToList();
+
             return result;
         }
+
 
 
 

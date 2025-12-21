@@ -80,7 +80,7 @@ namespace CookRecipesApp.Service
                     PictureUrl = "salad_icon.png",
                     SortOrder = 8,
                     ParentCategoryId = null
-                }
+                },
             };
                 await _database.InsertAllAsync(categoriesToSeed);
             }
