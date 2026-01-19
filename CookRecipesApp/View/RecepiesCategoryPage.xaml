@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodel="clr-namespace:CookRecipesApp.ViewModel"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:sharpnado="clr-namespace:Sharpnado.MaterialFrame;assembly=Maui.MaterialFrame"
+             xmlns:models="clr-namespace:CookRecipesApp.ViewModel"
+             xmlns:categoryModels="clr-namespace:CookRecipesApp.Model.Category"
+             xmlns:recepieModels="clr-namespace:CookRecipesApp.Model.Recepie"
+             x:DataType="viewmodel:RecepiesCategoryViewModel"
+             x:Class="CookRecipesApp.View.RecepiesCategoryPage"
+             Title="RecepiesCategoryPage"
+             Shell.NavBarIsVisible="False">
+
+
+    <Grid
+        BackgroundColor="#1f1f1f"
+        ColumnDefinitions="*"
+        RowDefinitions="*, 60"
+        ColumnSpacing="0"
+        RowSpacing="0"
+        MaximumWidthRequest="1300"
+        >
+
+        <ScrollView
+            Grid.Row="0"
+            Padding="5">
+
+            <Grid
+                RowDefinitions="60, 60, 300, 300, 150, 150">
+
+                <Border
+                    Grid.Row="0"
+                    StrokeThickness="0"
+                    StrokeShape="RoundRectangle, 7">
+                    <Image
+                        Source="{Binding SelectedCategory.PictureUrl}"
+                        Aspect="AspectFill"
+                        Opacity="0.4"/>
+                </Border>
+
+
+                <Label
+                    Grid.Row="0"
+                    Text="{Binding SelectedCategory.Name}"
+                    FontFamily="Alegreya"
+                    FontAttributes="Bold"
+                    TextColor="{StaticResource Porcelain}"
+                    FontSize="35"                            
+                    Margin="9, 5"
+                    Shadow="3, 3, 3, Black 1"/>
+
+                <Grid
+                    Grid.Row="1" Grid.Column="0"
+                    ColumnDefinitions="*, 50"
+                    Margin="5, 5"
+                    ZIndex="10"
+                    VerticalOptions="Start">
+                    <Border
+                        Grid.Column="0"
+                        Margin="7, 0"
+                        StrokeShape="RoundRectangle, 30"
+                        BackgroundColor="#212121"
+                        Stroke="Transparent"
+                        VerticalOptions="Center"
+                        HeightRequest="50">
+                        <SearchBar
+                            TextColor="{StaticResource Porcelain}"
+                            Margin=" -5, 5, 0, 0"
+                            PlaceholderColor="{StaticResource PineTeal}"
+                            Placeholder="Search"
+                            SearchIconColor="{StaticResource PineTeal}"
+                            CancelButtonColor="{StaticResource PineTeal}"/>
+                    </Border>
+                    <Border
+                        Grid.Column="2"
+                        VerticalOptions="Center"
+                        HorizontalOptions="Start"
+                        WidthRequest="50"
+                        HeightRequest="50"
+                        StrokeShape="RoundRectangle, 15"
+                        Padding="4"
+                        Stroke="{StaticResource DarkEvergreen}"
+                        BackgroundColor="{StaticResource PineTeal}">
+                        <ImageButton
+                            Source="filter.png"
+                            Command=""
+                            Aspect="AspectFill"
+                            Background="Transparent"
+                            Padding="1"/>
+                    </Border>
+                </Grid>
+
+                <Grid
+                    Margin="5"
+                    HorizontalOptions="Start"
+                    MaximumWidthRequest="280"
+                    Grid.Row="2"
+                    RowDefinitions="187.5, 100">
+                    <Border
+                        Grid.Row="0"
+                        StrokeShape="RoundRectangle, 15, 15, 0, 0"
+                        StrokeThickness="0">
+                        <Image
+                            Source="default_picture.png"
+                            WidthRequest="250"
+                            HeightRequest="187.5"
+                            Aspect="AspectFill"/>
+                    </Border>
+                    <Border
+                        StrokeThickness="0"
+                        BackgroundColor="Transparent"
+                        Grid.Row="0"
+                        StrokeShape="RoundRectangle, 14, 14, 0, 0">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0.2, 1" EndPoint="0.5, 0">
+                                <GradientStop Color="#cc000000" Offset="0.0" />
+                                <GradientStop Color="Transparent" Offset="1" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+                    </Border>
+
+                    <Label
+                        Text="Test"
+                        TextColor="{StaticResource Porcelain}"
+                        FontAttributes="Bold"
+                        Margin="8"
+                        FontSize="20"  
+                        VerticalOptions="End"
+                        Shadow="3, 3, 3, Black 1"
+                        FontFamily="Alegreya"/>
+
+                    <Border
+                        Grid.Row="1"
+                        StrokeShape="RoundRectangle, 0, 0, 15, 15"
+                        StrokeThickness="0"
+                        BackgroundColor="#212121">
+                        <Grid
+                            RowDefinitions="*, *, *"
+                            ColumnDefinitions="*, *">
+                            <HorizontalStackLayout Grid.Row="0" Grid.Column="0" Margin="5, 0, 0, 0">
+                                <Image Source="time.png" Margin="5"/>
+                                <Label Text="12" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Grid.Row="1" Grid.Column="0" Margin="5, 0, 0, 0">
+                                <Image Source="spoon_fork.png" Margin="5"/>
+                                <Label Text="3" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Grid.Row="2" Grid.Column="0" Margin="5, 0, 0, 0">
+                                <Image Source="rating.png" Margin="5"/>
+                                <Label Text="4,3/5" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Grid.Row="0" Grid.Column="1">
+                                <Image Source="difficulty.png" Margin="5"/>
+                                <Label Text="Normal" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Grid.Row="1" Grid.Column="1">
+                                <Image Source="calories.png" Margin="5"/>
+                                <Label Text="438 kcal" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Grid.Row="2" Grid.Column="1">
+                                <Image Source="fridge.png" Margin="5"/>
+                                <Label Text="Everything" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
+                            </HorizontalStackLayout>
+
+                        </Grid>
+                    </Border>
+
+                </Grid>
+
+                <Grid
+                    Margin="5"
+                    HorizontalOptions="Start"
+                    MaximumWidthRequest="280"
+                    Grid.Row="3"
+                    RowDefinitions="187.5, 100">
+                    <Border
+                        Grid.Row="0"
+                        StrokeShape="RoundRectangle, 15, 15, 0, 0"
+                        StrokeThickness="0">
+                        <Image
+                            Source="default_picture.png"
+                            WidthRequest="250"
+                            HeightRequest="187.5"
+                            Aspect="AspectFill"/>
+                    </Border>
+                    <Border
+                        StrokeThickness="0"
+                        BackgroundColor="Transparent"
+                        Grid.Row="0"
+                        StrokeShape="RoundRectangle, 14, 14, 0, 0">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0.2, 1" EndPoint="0.5, 0">
+                                <GradientStop Color="#cc000000" Offset="0.0" />
+                                <GradientStop Color="Transparent" Offset="1" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+                    </Border>
+
+                    <Label
+                        Text="Test"
+                        TextColor="{StaticResource Porcelain}"
+                        FontAttributes="Bold"
+                        Margin="8"
+                        FontSize="20"  
+                        VerticalOptions="End"
+                        Shadow="3, 3, 3, Black 1"
+                        FontFamily="Alegreya"/>
+
+                    <Border
+                        Grid.Row="1"
+                        StrokeShape="RoundRectangle, 0, 0, 15, 15"
+                        StrokeThickness="0"
+                        BackgroundColor="#212121">
+                        <Grid
+                            RowDefinitions="*, *, *"
+                            ColumnDefinitions="*, *">
+                            <HorizontalStackLayout Grid.Row="0" Grid.Column="0" Margin="5, 0, 0, 0">
+                                <Image Source="time.png" Margin="5"/>
+                                <Label Text="12" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Grid.Row="1" Grid.Column="0" Margin="5, 0, 0, 0">
+                                <Image Source="spoon_fork.png" Margin="5"/>
+                                <Label Text="3" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Grid.Row="2" Grid.Column="0" Margin="5, 0, 0, 0">
+                                <Image Source="rating.png" Margin="5"/>
+                                <Label Text="4,3/5" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Grid.Row="0" Grid.Column="1">
+                                <Image Source="difficulty.png" Margin="5"/>
+                                <Label Text="Normal" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Grid.Row="1" Grid.Column="1">
+                                <Image Source="calories.png" Margin="5"/>
+                                <Label Text="438 kcal" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Grid.Row="2" Grid.Column="1">
+                                <Image Source="fridge.png" Margin="5"/>
+                                <Label Text="Everything" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
+                            </HorizontalStackLayout>
+
+                        </Grid>
+                    </Border>
+
+                </Grid>
+
+
+                <Border
+                    Grid.Row="4">
+
+                </Border>
+
+            </Grid>
+        </ScrollView>
+
+
+
+        <sharpnado:MaterialFrame
+            Grid.Column="0" Grid.Row="1"
+            CornerRadius="23"
+            MaterialTheme="AcrylicBlur"
+            MaterialBlurStyle="Dark"
+            Elevation="10"
+            Margin="6, 0">
+            <Grid
+                Padding="4,0"
+                RowDefinitions="*"
+                ColumnDefinitions="*, *, *, *, *"
+                HeightRequest="60"
+                ZIndex="100">
+                <ImageButton
+                    Grid.Column="0"
+                    Source="fridge.png"
+                    Aspect="AspectFit"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Center"
+                    BackgroundColor="{StaticResource PineTeal}"
+                    Padding="8"
+                    CornerRadius="23"
+                    WidthRequest="65"
+                    HeightRequest="52"
+                    BorderWidth="1"
+                    BorderColor="{StaticResource DarkEvergreen}"
+                    Command="{Binding FridgePageBtnCommand}"/>
+                <ImageButton
+                    Grid.Column="1"
+                    Source="book.png"
+                    Aspect="AspectFit"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Center"
+                    BackgroundColor="{StaticResource Evergreen}"
+                    Padding="8"
+                    CornerRadius="23"
+                    WidthRequest="65"
+                    HeightRequest="52"
+                    BorderWidth="1"
+                    BorderColor="{StaticResource DarkEvergreen}"
+                    Command="{Binding RecepiesPageBtnCommand}"/>
+                <ImageButton
+                    Grid.Column="2"
+                    Source="home.png"
+                    Aspect="AspectFit"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Center"
+                    BackgroundColor="{StaticResource PineTeal}"
+                    Padding="8"
+                    CornerRadius="23"
+                    WidthRequest="65"
+                    HeightRequest="52"
+                    BorderWidth="1"
+                    BorderColor="{StaticResource DarkEvergreen}"
+                    Command="{Binding HomePageBtnCommand}"/>
+                <ImageButton
+                    Grid.Column="3"
+                    Source="nutrition.png"
+                    Aspect="AspectFit"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Center"
+                    BackgroundColor="{StaticResource PineTeal}"
+                    Padding="8"
+                    CornerRadius="23"
+                    WidthRequest="65"
+                    HeightRequest="52"
+                    BorderWidth="1"
+                    BorderColor="{StaticResource DarkEvergreen}"
+                    Command="{Binding CaloriesPageBtnCommand}"/>
+                <ImageButton
+                    Grid.Column="4"
+                    Source="calendar.png"
+                    Aspect="AspectFit"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Center"
+                    BackgroundColor="{StaticResource PineTeal}"
+                    Padding="8"
+                    CornerRadius="23"
+                    WidthRequest="65"
+                    HeightRequest="52"
+                    BorderWidth="1"
+                    BorderColor="{StaticResource DarkEvergreen}"
+                    Command="{Binding PlannerPageBtnCommand}"/>
+            </Grid>
+        </sharpnado:MaterialFrame>
+
+    </Grid>
+</ContentPage>

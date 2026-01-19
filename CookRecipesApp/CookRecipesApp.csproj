@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net10.0-android;net10.0-ios;net10.0-maccatalyst</TargetFrameworks>
+		<TargetFrameworks>net10.0-android;net10.0-maccatalyst</TargetFrameworks>
 		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net10.0-windows10.0.19041.0</TargetFrameworks>
 
 		<!-- Note for MacCatalyst:
@@ -66,8 +66,12 @@
 	  <None Remove="Resources\Images\Categories\snack_icon.png" />
 	  <None Remove="Resources\Images\Categories\soup_icon.png" />
 	  <None Remove="Resources\Images\Icons\add_recepie.png" />
+	  <None Remove="Resources\Images\Icons\calories.png" />
+	  <None Remove="Resources\Images\Icons\difficulty.png" />
+	  <None Remove="Resources\Images\Icons\filter.png" />
 	  <None Remove="Resources\Images\Icons\home.png" />
 	  <None Remove="Resources\Images\Icons\plus.png" />
+	  <None Remove="Resources\Images\Icons\rating.png" />
 	  <None Remove="Resources\Images\Icons\time.png" />
 	</ItemGroup>
 
@@ -84,10 +88,15 @@
 	  <MauiImage Include="Resources\Images\Icons\add_recepie.png" />
 	  <MauiImage Include="Resources\Images\Icons\book.png" />
 	  <MauiImage Include="Resources\Images\Icons\calendar.png" />
+	  <MauiImage Include="Resources\Images\Icons\calories.png" />
+	  <MauiImage Include="Resources\Images\Icons\difficulty.png" />
+	  <MauiImage Include="Resources\Images\Icons\filter.png" />
 	  <MauiImage Include="Resources\Images\Icons\fridge.png" />
 	  <MauiImage Include="Resources\Images\Icons\home.png" />
 	  <MauiImage Include="Resources\Images\Icons\nutrition.png" />
 	  <MauiImage Include="Resources\Images\Icons\plus.png" />
+	  <MauiImage Include="Resources\Images\Icons\rating.png" />
+	  <MauiImage Include="Resources\Images\Icons\spoon_fork.png" />
 	  <MauiImage Include="Resources\Images\Icons\time.png" />
 	</ItemGroup>
 
@@ -95,14 +104,20 @@
 		<PackageReference Include="CommunityToolkit.Maui" Version="13.0.0" />
 		<PackageReference Include="CommunityToolkit.Maui.Core" Version="13.0.0" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.11" />
-		<PackageReference Include="Microsoft.Maui.Essentials" Version="10.0.11" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.30" />
+		<PackageReference Include="Microsoft.Maui.Essentials" Version="10.0.30" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.2" />
 		<PackageReference Include="Sharpnado.MaterialFrame.Maui" Version="3.0.2" />
 		<PackageReference Include="Sharpnado.Maui.Shadows" Version="2.0.2" />
 		<PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
 		<PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.11" />
-		<PackageReference Include="UraniumUI.Blurs" Version="2.13.0" />
+		<PackageReference Include="UraniumUI.Blurs" Version="2.14.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="View\RecepiesCategoryPage.xaml.cs">
+	    <DependentUpon>RecepiesCategoryPage.xaml</DependentUpon>
+	  </Compile>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -113,6 +128,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="View\Popups\AddIngredientPopup.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="View\RecepiesCategoryPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="View\RecepiesMainPage.xaml">

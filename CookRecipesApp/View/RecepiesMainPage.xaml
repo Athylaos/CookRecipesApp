@@ -102,7 +102,9 @@
                                     HeightRequest="130"
                                     WidthRequest="160">
                                         <Border.GestureRecognizers>
-                                            <TapGestureRecognizer Command="{Binding CategoryBtnCommand}" CommandParameter="{Binding Id}"/>
+                                            <TapGestureRecognizer
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}},Path=BindingContext.CategoryBtnCommand}"
+                                                    CommandParameter="{Binding .}" />
                                         </Border.GestureRecognizers>
 
                                         <Grid>
@@ -175,6 +177,7 @@
                                                     <GradientStop Color="Transparent" Offset="1" />
                                                 </LinearGradientBrush>
                                             </Border.Background>
+                                            
                                         </Border>
                                         <Label
                                             Text="{Binding Title}"

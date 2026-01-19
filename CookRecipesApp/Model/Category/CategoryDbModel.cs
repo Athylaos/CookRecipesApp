@@ -12,7 +12,7 @@ namespace CookRecipesApp.Model.Category
         public int Id { get; set; }
 
         [NotNull]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
         public string PictureUrl { get; set; } = "default_picture.png";
         public int SortOrder { get; set; }
 

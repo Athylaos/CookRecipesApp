@@ -72,6 +72,9 @@ namespace CookRecipesApp
             builder.Services.AddSingleton<AddIngredientPopup>();
             builder.Services.AddTransient<AddIngredientPopupViewModel>();
 
+            builder.Services.AddSingleton<RecepiesCategoryPage>();
+            builder.Services.AddTransient<RecepiesCategoryViewModel>();
+
 
             return builder.Build();
         }

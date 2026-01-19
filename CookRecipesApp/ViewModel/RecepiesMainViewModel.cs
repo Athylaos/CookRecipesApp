@@ -67,5 +67,13 @@ namespace CookRecipesApp.ViewModel
                 await Shell.Current.GoToAsync((nameof(AddRecepiePage)));
             }
         }
+
+        [RelayCommand]
+        public async Task CategoryBtn(Category category)
+        {
+            if (category == null) return;
+
+            await Shell.Current.GoToAsync($"{nameof(RecepiesCategoryPage)}?CategoryId={category.Id}",true);
+        }
     }
 }

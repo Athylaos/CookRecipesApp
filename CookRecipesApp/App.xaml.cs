@@ -43,6 +43,7 @@ namespace CookRecipesApp
             await database.CreateTableAsync<RecepieIngredientDbModel>();
             await database.CreateTableAsync<RecepieStepDbModel>();
 
+            /*
             CategoryService cas = new(_connectionFactory);
             IngredientsService ins = new(_connectionFactory);
             RecepiesService res = new(_connectionFactory, ins, cas);
@@ -53,7 +54,7 @@ namespace CookRecipesApp
 
             Debug.WriteLine("Seeding done");
 
-
+            */
 
             base.OnStart();
         }
