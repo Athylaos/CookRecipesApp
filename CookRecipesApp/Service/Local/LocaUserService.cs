@@ -1,4 +1,5 @@
 ﻿using CookRecipesApp.Model.User;
+using CookRecipesApp.Service.Interface;
 using SQLite;
 using System;
 using System.Collections.Generic;
@@ -7,32 +8,7 @@ using System.Text;
 
 namespace CookRecipesApp.Service
 {
-    public interface IUserService
-    {
-        Task<bool> RegisterAsync(UserRegistrationDto registration);
-
-        Task<User?> LoginAsync(string email, string password);
-
-        Task LogoutAsync();
-
-        Task<User?> GetCurrentUserAsync();
-
-        Task RememberCurrentUserAsync(User user);
-
-        Task<bool> IsUserLoggedInAsync();
-
-        Task<User?> GetUserByIdAsync(int userId);
-
-        Task UpdateUserAsync(User user);
-
-        Task ChangePasswordAsync(int userId, string oldPassword, string newPassword);
-
-        Task<bool> IsEmailRegistredAsync(string email);
-    }
-
-
-
-    public class UserService : IUserService
+    public class LocalUserService : IUserService
     {
         private ISQLiteAsyncConnection _database;
 
@@ -40,7 +16,7 @@ namespace CookRecipesApp.Service
         private const int KeySize = 32;
         private const int Iterations = 100_000;
 
-        public UserService(SQLiteConnectionFactory factory)
+        public LocalUserService(SQLiteConnectionFactory factory)
         {
             _database = factory.CreateConnection();
         }

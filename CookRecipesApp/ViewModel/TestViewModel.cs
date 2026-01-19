@@ -2,7 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using CookRecipesApp.Model.User;
 using CookRecipesApp.Model.Category;
-using CookRecipesApp.Service;
+using CookRecipesApp.Service.Interface;
 using CookRecipesApp.View;
 using SQLite;
 using System;
@@ -18,8 +18,8 @@ namespace CookRecipesApp.ViewModel
 {
     public partial class TestViewModel : ObservableObject
     {
-        private UserService _userService;
-        private CategoryService _categoryService;
+        private IUserService _userService;
+        private ICategoryService _categoryService;
 
         private ISQLiteAsyncConnection _database;
 
@@ -28,11 +28,10 @@ namespace CookRecipesApp.ViewModel
         [ObservableProperty] private string userName;
 
 
-        public TestViewModel()
+        public TestViewModel(IUserService userService, ICategoryService categoryService)
         {
-            _database = new SQLiteConnectionFactory().CreateConnection();
-            _userService = new(new SQLiteConnectionFactory());
-            _categoryService = new(new SQLiteConnectionFactory());
+            _userService = userService;
+            _categoryService = categoryService;
 
         }
 

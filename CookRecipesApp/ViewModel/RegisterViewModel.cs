@@ -2,7 +2,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CookRecipesApp.Model.User;
-using CookRecipesApp.Service;
+using CookRecipesApp.Service.Interface;
 using CookRecipesApp.View;
 using System;
 using System.Collections.Generic;
@@ -13,8 +13,7 @@ namespace CookRecipesApp.ViewModel
 {
     public partial class RegisterViewModel : ObservableObject
     {
-        private UserService _userService;
-        private SQLiteConnectionFactory _connectionFactory;
+        private IUserService _userService;
 
         private User newUser;
 
@@ -31,10 +30,9 @@ namespace CookRecipesApp.ViewModel
         [ObservableProperty] string? indicatorText;
 
 
-        public RegisterViewModel()
+        public RegisterViewModel(IUserService userService)
         {
-            _connectionFactory = new SQLiteConnectionFactory();
-            _userService = new(_connectionFactory);
+            _userService = userService;
             newUser = new();
 
         }

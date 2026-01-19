@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CookRecipesApp.Service;
+using CookRecipesApp.Service.Interface;
 using CookRecipesApp.View;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace CookRecipesApp.ViewModel
 {
     public partial class LoginViewModel : ObservableObject
     {
-        private UserService _userService;
+        private readonly IUserService _userService;
         private SQLiteConnectionFactory _connectionFactory;
 
         [ObservableProperty] string? email;
@@ -20,11 +21,9 @@ namespace CookRecipesApp.ViewModel
         [ObservableProperty] string? indicatorText;
 
 
-        public LoginViewModel()
+        public LoginViewModel(IUserService userService)
         {
-            _connectionFactory = new SQLiteConnectionFactory();
-            _userService = new(_connectionFactory);
-
+            _userService = userService;
             IndicatorVisibility = false;
             Email = string.Empty;
             Password = string.Empty;

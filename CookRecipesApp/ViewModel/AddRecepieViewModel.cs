@@ -7,6 +7,7 @@ using CookRecipesApp.Model.Category;
 using CookRecipesApp.Model.Ingredient;
 using CookRecipesApp.Model.Recepie;
 using CookRecipesApp.Service;
+using CookRecipesApp.Service.Interface;
 using CookRecipesApp.View.Popups;
 using CookRecipesApp.ViewModel.Popups;
 using Microsoft.Maui.Controls.Shapes;
@@ -20,8 +21,9 @@ namespace CookRecipesApp.ViewModel
 {
     public partial class AddRecepieViewModel : ObservableObject
     {
-        private IngredientsService _ingredientsService;
-        private RecepiesService _recepiesService;
+        private readonly IIngredientService _ingredientsService;
+        private readonly IRecepieService _recepiesService;
+        private readonly ICategoryService _categoryService;
 
         [ObservableProperty] string title;
         [ObservableProperty] string time;
@@ -44,27 +46,27 @@ namespace CookRecipesApp.ViewModel
 
 
 
-        public AddRecepieViewModel()
+        public AddRecepieViewModel(IIngredientService ingredientsService, IRecepieService recepieService, ICategoryService categoryService)
         {
-            SQLiteConnectionFactory cf = new();
-            _ingredientsService = new(cf);
-            _recepiesService = new(cf, _ingredientsService, new CategoryService(cf));
+            _ingredientsService = ingredientsService;
+            _recepiesService = recepieService;
+            _categoryService = categoryService;
             AddCookingStepBtn();
             PhotoPath = "default_picture.png";
         }
 
         public async Task StartAsync()
         {
-            var su = await new IngredientsService(new SQLiteConnectionFactory()).GetAllServingUnitsAsync();
-
-            foreach(var s in su)
+            var su = await _ingredientsService.GetAllServingUnitsAsync();
+            ServingUnits.Clear();
+            foreach (var s in su)
             {
                 ServingUnits.Add(s);
             }
             SelectedServingUnit = ServingUnits.FirstOrDefault(su => su.Name == "portion") ?? ServingUnits.First();
 
-            var ca = await new CategoryService(new SQLiteConnectionFactory()).GetAllCategoriesAsync(false);
-
+            var ca = await _categoryService.GetAllCategoriesAsync(false);
+            Categories.Clear();
             foreach(var c in ca)
             {
                 Categories.Add(c);
@@ -143,7 +145,7 @@ namespace CookRecipesApp.ViewModel
         [RelayCommand]
         public void AddCookingStepBtn()
         {
-            RecepieSteps.Add(new RecepieStep { Order = (RecepieSteps.Count+1)});
+            RecepieSteps.Add(new RecepieStep { StepNumber = (RecepieSteps.Count+1)});
         }
 
         [RelayCommand]
@@ -179,7 +181,7 @@ namespace CookRecipesApp.ViewModel
                 WarningText = "Number of servings is mandatory and can't be 0";
                 return;
             }
-            if(Categories.Where(c => c.IsSelected == true) == null)
+            if (!Categories.Any(c => c.IsSelected))
             {
                 WarningEnabled = true;
                 WarningText = "Recepie must have at least one category";
@@ -209,10 +211,10 @@ namespace CookRecipesApp.ViewModel
 
             foreach(var rs in RecepieSteps)
             {
-                if (string.IsNullOrEmpty(rs.ContentText))
+                if (string.IsNullOrEmpty(rs.Description))
                 {
                     WarningEnabled = true;
-                    WarningText = $"Cooking step can't be empty ({rs.Order})";
+                    WarningText = $"Cooking step can't be empty ({rs.StepNumber})";
                     return;
                 }
             }
@@ -220,7 +222,7 @@ namespace CookRecipesApp.ViewModel
             Recepie rc = new Recepie
             {
                 Title = Title,
-                CoockingTime = timeInt,
+                CookingTime = timeInt,
                 Servings = servingsInt,
                 ServingUnit = SelectedServingUnit,
                 DifficultyLevel = Difficulty,
@@ -235,7 +237,7 @@ namespace CookRecipesApp.ViewModel
             Time = string.Empty;
             Servings = string.Empty;
             Difficulty = DifficultyLevel.Medium;
-            Categories.Clear();
+            foreach (var cat in Categories) cat.IsSelected = false;
             Ingredients.Clear();
             RecepieSteps.Clear();
 

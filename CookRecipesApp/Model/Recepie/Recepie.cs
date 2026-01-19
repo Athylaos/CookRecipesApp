@@ -22,7 +22,7 @@ namespace CookRecipesApp.Model.Recepie
         public string Title { get; set; } = string.Empty;
         public string PhotoPath { get; set; } = string.Empty;
         public List<RecepieStep> Steps { get; set; } = new List<RecepieStep>();
-        public int CoockingTime { get; set; }
+        public int CookingTime { get; set; }
         public int Servings { get; set; }
         public UnitDbModel ServingUnit { get; set; } = new();
         public DifficultyLevel DifficultyLevel { get; set; }
@@ -35,7 +35,7 @@ namespace CookRecipesApp.Model.Recepie
         public float Fiber { get; set; }
 
         public DateTime RecepieCreated = DateTime.Now;
-        public int Rating { get; set; }
+        public float Rating { get; set; }
         public int UsersRated { get; set; }
         public List<Comment> Comments { get; set; } = new(); // dodelat
 

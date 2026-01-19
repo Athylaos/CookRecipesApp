@@ -6,10 +6,12 @@ using CookRecipesApp.View;
 using CookRecipesApp.View.Popups;
 using CookRecipesApp.ViewModel;
 using CookRecipesApp.ViewModel.Popups;
+using CookRecipesApp.Service.Interface;
 using Microsoft.Extensions.Logging;
 using Sharpnado.MaterialFrame;
 using Sharpnado.Shades;
 using UraniumUI;
+using Android.Net.Sip;
 
 namespace CookRecipesApp
 {
@@ -50,9 +52,10 @@ namespace CookRecipesApp
             builder.Logging.AddDebug();
 #endif
             builder.Services.AddSingleton<SQLiteConnectionFactory>();
-            builder.Services.AddSingleton<IIngredientsService, IngredientsService>();
-            builder.Services.AddSingleton<IRecepiesService,RecepiesService>();
-            builder.Services.AddSingleton<ICategoryService, CategoryService>();
+            builder.Services.AddSingleton<IIngredientService, LocalIngredientService>();
+            builder.Services.AddSingleton<IRecepieService, LocalRecepieService>();
+            builder.Services.AddSingleton<ICategoryService, LocalCategoryService>();
+            builder.Services.AddSingleton<IUserService, LocalUserService>();
 
             builder.Services.AddSingleton<LoginPage>();
             builder.Services.AddTransient<LoginViewModel>();

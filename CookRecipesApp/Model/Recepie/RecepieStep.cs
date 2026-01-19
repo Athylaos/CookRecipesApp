@@ -9,8 +9,8 @@ namespace CookRecipesApp.Model.Recepie
     {
         public int Id { get; set; }
         public int RecepieId { get; set; }
-        public string ContentText { get; set; } = string.Empty;
-        public int Order { get; set; }
+        public string Description { get; set; } = string.Empty;
+        public int StepNumber { get; set; }
 
     }
 }

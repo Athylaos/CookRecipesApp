@@ -1,46 +1,44 @@
-﻿using CookRecipesApp.Model.Ingredient;
+﻿
+using CookRecipesApp.Model.Ingredient;
+using CookRecipesApp.Service.Interface;
 using SQLite;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CookRecipesApp.Service
 {
-    public interface IIngredientsService
-    {
-        public Task AddIngredientAsync(Ingredient ingredient);
-        public Task RemoveIngredientAsync(int id);
-        public Task UpdateIngredientAsync(Ingredient ingredient);
-        public Task<List<Ingredient>> GetAllIngredientsAsync();
-        public Task<Ingredient?> GetIngredientAsync(int id);
-
-    }
-    public class IngredientsService : IIngredientsService
+    public class LocalIngredientService : IIngredientService
     {
 
         private readonly ISQLiteAsyncConnection _database;
 
-        public IngredientsService(SQLiteConnectionFactory factory)
+        public LocalIngredientService(SQLiteConnectionFactory factory)
         {
             _database = factory.CreateConnection();
         }
 
         private async Task<Ingredient> IngredientDbModelToIngredientAsync(IngredientDbModel ingredientDbModel)
         {
-            var ingredientUnits = await _database.Table<IngredientUnitDbModel>().Where(x => x.IngredientId == ingredientDbModel.Id).ToListAsync();
+            var ingredientUnitsLinks = await _database.Table<IngredientUnitDbModel>().Where(x => x.IngredientId == ingredientDbModel.Id).ToListAsync();
 
-            var possibleUnitIds = ingredientUnits.Select(pu => pu.UnitId).ToList();
+            var unitIds = ingredientUnitsLinks.Select(u => u.UnitId).ToList();
+            if (!unitIds.Contains(ingredientDbModel.DefaultUnitId))
+            {
+                unitIds.Add(ingredientDbModel.DefaultUnitId);
+            }
+
             var allUnits = await _database.Table<UnitDbModel>().ToListAsync();
 
-            var possibleUnits = allUnits.Where(u => possibleUnitIds.Contains(u.Id)).ToList();
-            var dfUnit = allUnits.FirstOrDefault(u => u.Id == ingredientDbModel.DefaultUnitId);
+            var possibleIngredientUnits = ingredientUnitsLinks.Select(link => new Ingredient.IngredientUnitInfo
+            {
+                Unit = allUnits.FirstOrDefault(u => u.Id == link.UnitId),
+                ConversionFactor = link.ToDefaultUnit
+            }).ToList();
 
             return new Ingredient
             {
                 Id = ingredientDbModel.Id,
                 Name = ingredientDbModel.Name,
-                PossibleUnits = possibleUnits,
-                DefaultUnit = dfUnit,
+                PossibleUnits = possibleIngredientUnits,
+                DefaultUnit = allUnits.FirstOrDefault(u => u.Id == ingredientDbModel.DefaultUnitId),
 
                 Calories = ingredientDbModel.Calories,
                 Proteins = ingredientDbModel.Proteins,
@@ -49,6 +47,7 @@ namespace CookRecipesApp.Service
                 Fiber = ingredientDbModel.Fiber,
             };
         }
+
 
 
         private IngredientDbModel IngredientToIngredientDbModel(Ingredient ingredient)
@@ -77,7 +76,21 @@ namespace CookRecipesApp.Service
                 return; 
             }
             var ingredientDbModel = IngredientToIngredientDbModel(ingredient);
+
             await _database.InsertAsync(ingredientDbModel);
+
+            if (ingredient.PossibleUnits != null && ingredient.PossibleUnits.Any())
+            {
+                var ingredientUnitLinks = ingredient.PossibleUnits.Select(unit =>
+                    new IngredientUnitDbModel
+                    {
+                        IngredientId = ingredientDbModel.Id,
+                        UnitId = unit.Unit.Id,
+                        ToDefaultUnit = unit.ConversionFactor
+                    }).ToList();
+
+                await _database.InsertAllAsync(ingredientUnitLinks);
+            }
 
             return;
         }
@@ -91,26 +104,29 @@ namespace CookRecipesApp.Service
             }
 
             var unitsDbModels = await _database.Table<UnitDbModel>().ToListAsync();
-            var unitsDict = unitsDbModels.ToDictionary(u => u.Id);
-
             var allIngredientUnits = await _database.Table<IngredientUnitDbModel>().ToListAsync();
 
+            var unitsDict = unitsDbModels.ToDictionary(u => u.Id);
             var ingredientUnitsLookup = allIngredientUnits.ToLookup(iu => iu.IngredientId);
 
             var ingredients = ingredientsDbModels.Select(dbModel =>
             {
                 unitsDict.TryGetValue(dbModel.DefaultUnitId, out var defaultUnit);
-                if (defaultUnit == null) defaultUnit = new UnitDbModel { Id = 0, Name = "g" };
+                if (defaultUnit == null) defaultUnit = new UnitDbModel { Id = 0, Name = "unknown" };
 
-                List<UnitDbModel> possibleUnits = new List<UnitDbModel>();
+                var possibleUnitsInfo = new List<Ingredient.IngredientUnitInfo>();
+
                 if (ingredientUnitsLookup.Contains(dbModel.Id))
                 {
-                    var unitIds = ingredientUnitsLookup[dbModel.Id].Select(iu => iu.UnitId);
-                    foreach (var unitId in unitIds)
+                    foreach (var link in ingredientUnitsLookup[dbModel.Id])
                     {
-                        if (unitsDict.TryGetValue(unitId, out var unit))
+                        if (unitsDict.TryGetValue(link.UnitId, out var unit))
                         {
-                            possibleUnits.Add(unit);
+                            possibleUnitsInfo.Add(new Ingredient.IngredientUnitInfo
+                            {
+                                Unit = unit,
+                                ConversionFactor = link.ToDefaultUnit
+                            });
                         }
                     }
                 }
@@ -120,7 +136,8 @@ namespace CookRecipesApp.Service
                     Id = dbModel.Id,
                     Name = dbModel.Name,
                     DefaultUnit = defaultUnit,
-                    PossibleUnits = possibleUnits,
+                    PossibleUnits = possibleUnitsInfo,
+
                     Calories = dbModel.Calories,
                     Proteins = dbModel.Proteins,
                     Fats = dbModel.Fats,
@@ -131,6 +148,7 @@ namespace CookRecipesApp.Service
 
             return ingredients;
         }
+
 
 
         public async Task<Ingredient?> GetIngredientAsync(int id)

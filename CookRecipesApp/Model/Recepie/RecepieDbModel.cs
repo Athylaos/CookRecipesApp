@@ -18,9 +18,7 @@ namespace CookRecipesApp.Model.Recepie
         public string PhotoPath { get; set; } = "default_picture.png";
 
         [NotNull]
-        public string CoockingProcess { get; set; } = string.Empty;
-        [NotNull]
-        public int CoockingTime { get; set; }
+        public int CookingTime { get; set; }
         [NotNull]
         public int Servings { get; set; }
         [NotNull]
@@ -35,7 +33,7 @@ namespace CookRecipesApp.Model.Recepie
         public float Fiber { get; set; }
 
         public string RecepieCreated { get; set; } = string.Empty;
-        public int Rating { get; set; }
+        public float Rating { get; set; }
         public int UsersRated { get; set; }
 
 

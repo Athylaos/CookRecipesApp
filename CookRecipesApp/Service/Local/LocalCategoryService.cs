@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Maui.Core.Extensions;
 using CookRecipesApp.Model.Category;
 using CookRecipesApp.Model.Recepie;
+using CookRecipesApp.Service.Interface;
 using SQLite;
 using System;
 using System.Collections.Generic;
@@ -11,19 +12,11 @@ using System.Text;
 namespace CookRecipesApp.Service
 {
 
-    public interface ICategoryService
-    {
-        public Task<List<Category>> GetRecepieCategoriesAsync(int recepieId);
-
-        public Task<List<Category>> GetAllCategoriesAsync(bool root);
-        public Task<Category?> GetCategoryByIdAsync(int id);
-    }
-
-    public class CategoryService : ICategoryService
+    public class LocalCategoryService : ICategoryService
     {
         private readonly ISQLiteAsyncConnection _database;
 
-        public CategoryService(SQLiteConnectionFactory factory)
+        public LocalCategoryService(SQLiteConnectionFactory factory)
         {
             _database = factory.CreateConnection();
         }

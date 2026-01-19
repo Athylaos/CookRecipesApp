@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CookRecipesApp.Service;
+using CookRecipesApp.Service.Interface;
 using CookRecipesApp.Model.Category;
 using System;
 using System.Collections.Generic;
@@ -10,11 +11,11 @@ namespace CookRecipesApp.ViewModel
     [QueryProperty(nameof(CategoryId), "CategoryId")]
     public partial class RecepiesCategoryViewModel : ObservableObject
     {
-        private readonly CategoryService _categoryService;
+        private readonly ICategoryService _categoryService;
 
-        public RecepiesCategoryViewModel()
+        public RecepiesCategoryViewModel(ICategoryService categoryService)
         {
-            _categoryService = new(new SQLiteConnectionFactory());
+            _categoryService = categoryService;
         }
 
         int categoryId;
