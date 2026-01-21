@@ -6,7 +6,8 @@
                xmlns:viewmodel="clr-namespace:CookRecipesApp.ViewModel.Popups"
                x:Class="CookRecipesApp.View.Popups.AddIngredientPopup"
                x:DataType="viewmodel:AddIngredientPopupViewModel"
-               BackgroundColor="#1f1f1f"            
+               BackgroundColor="#1f1f1f"
+               Shadow="Transparent 0 0"
                >
 
     
@@ -70,8 +71,8 @@
                     Grid.Column="1" 
                     Title="Unit"
                     ItemsSource="{Binding SelectedIngredient.PossibleUnits}"
-                    ItemDisplayBinding="{Binding Name}"
-                    SelectedItem="{Binding SelectedUnit}"
+                    ItemDisplayBinding="{Binding Unit.Name}"
+                    SelectedItem="{Binding SelectedUnitInfo}"
                     TextColor="{StaticResource Porcelain}"
                     TitleColor="Gray"
                     Margin="7, 0, 7, 0"/>

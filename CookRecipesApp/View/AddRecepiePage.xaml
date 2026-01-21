@@ -168,7 +168,14 @@
                                         Margin="0, 0, 4, 0">
                                         <Entry Keyboard="Numeric" TextColor="{StaticResource Porcelain}" Margin="5, 0, 0, 0" Text="{Binding Quantity}"/>
                                     </Border>
-                                    <Picker Grid.Column="1" ItemsSource="{Binding Ingredient.PossibleUnits}" ItemDisplayBinding="{Binding Name}" SelectedItem="{Binding SelectedUnit}" TextColor="{StaticResource Porcelain}" Margin="0, 0, 10, 0"  VerticalOptions="Center"/>
+                                    <!--<Label Grid.Column="1" Text="{Binding SelectedUnit.Name}" VerticalOptions="Center" TextColor="{StaticResource Porcelain}" FontFamily="Nunito"></Label>-->
+                                    <Picker Grid.Column="1" 
+                                        ItemsSource="{Binding Ingredient.PossibleUnits}" 
+                                        ItemDisplayBinding="{Binding Unit.Name}" 
+                                        SelectedItem="{Binding SelectedUnitInfo}"
+                                        TextColor="{StaticResource Porcelain}" 
+                                        Margin="0, 0, 10, 0"  
+                                        VerticalOptions="Center"/>
                                     <Label Grid.Column="2" Text="{Binding Ingredient.Name}" TextColor="{StaticResource Porcelain}" VerticalOptions="Center"/>
                                     <Button 
                                         Grid.Column="3" 
@@ -225,7 +232,7 @@
                                         MinimumHeightRequest="100">
                                         <Label
                                             Grid.Column="0"
-                                            Text="{Binding Order}"
+                                            Text="{Binding StepNumber}"
                                             HorizontalOptions="Center"
                                             FontFamily="Alegreya"
                                             FontAttributes="Bold"
@@ -237,7 +244,7 @@
                                             StrokeShape="RoundRectangle, 20"
                                             Stroke="Transparent"
                                             Padding="7, 3">
-                                            <Editor  TextColor="{StaticResource Porcelain}" Text="{Binding ContentText}" AutoSize="TextChanges"/>
+                                            <Editor  TextColor="{StaticResource Porcelain}" Text="{Binding Description}" AutoSize="TextChanges"/>
                                         </Border>
                                     </Grid>
                                 </Border>

@@ -18,5 +18,7 @@ namespace CookRecipesApp.Model.Recepie
 
         public float Quantity { get; set; }
         public int UnitId { get; set; }
+
+        public float ConversionFactor { get; set; }
     }
 }

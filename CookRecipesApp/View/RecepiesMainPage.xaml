@@ -143,7 +143,7 @@
         <Grid
             Grid.Column="0"
             Grid.Row="1"
-            RowDefinitions="40,150,40,100,40,100,40,100">
+            RowDefinitions="40,160,40,100,40,100,40,100">
             <Label
                 Text="Favourite"                
                 TextColor="{StaticResource Porcelain}"
@@ -192,7 +192,7 @@
                                             HorizontalOptions="End"
                                             Margin="0,8,10,0">
                                             <Label
-                                                Text="{Binding CoockingTime}"
+                                                Text="{Binding CookingTime}"
                                                 TextColor="{StaticResource Porcelain}"
                                                 FontAttributes="Bold"
                                                 Shadow="3, 3, 3, Black 1"

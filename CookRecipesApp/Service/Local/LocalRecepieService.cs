@@ -30,13 +30,15 @@ namespace CookRecipesApp.Service
             var ingredient = await _ingredientService.GetIngredientAsync(dbModel.IngredientId);
             var unit = await _database.Table<UnitDbModel>().FirstOrDefaultAsync(u => u.Id == dbModel.UnitId);
 
+            var sui = new Ingredient.IngredientUnitInfo{ Unit = unit, ConversionFactor = dbModel.ConversionFactor };
+
             return new RecepieIngredient
             {
                 Id = dbModel.Id,
                 RecepieId = dbModel.RecepieId,
                 Ingredient = ingredient,
                 Quantity = dbModel.Quantity,
-                SelectedUnit = unit,
+                SelectedUnitInfo = sui
             };
         }
 
@@ -48,7 +50,8 @@ namespace CookRecipesApp.Service
                 RecepieId = recepie.RecepieId,
                 IngredientId = recepie.Ingredient.Id,
                 Quantity = recepie.Quantity,
-                UnitId = recepie.SelectedUnit.Id,                            
+                UnitId = recepie.SelectedUnitInfo.Unit.Id,
+                ConversionFactor = recepie.SelectedUnitInfo.ConversionFactor
             };
         }
 
@@ -265,7 +268,8 @@ namespace CookRecipesApp.Service
                 RecepieId = recepieId,
                 IngredientId = i.Ingredient.Id,
                 Quantity = i.Quantity,
-                UnitId = i.SelectedUnit.Id
+                UnitId = i.SelectedUnitInfo.Unit.Id,
+                ConversionFactor = i.SelectedUnitInfo.ConversionFactor,
             }).ToList();
 
             await _database.InsertAllAsync(dbList);

@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
 
+using System.Diagnostics;
+
 namespace CookRecipesApp.Model.Category
 {
     public partial class Category : ObservableObject
@@ -19,6 +21,12 @@ namespace CookRecipesApp.Model.Category
 
         public int? ParentCategoryId { get; set; }
         public ObservableCollection<Category> SubCategories = new();
-            
+
+
+        partial void OnIsSelectedChanged(bool value)
+        {
+            Debug.WriteLine($"Category {Name} IsSelected changed to: {value}");
+        }
+
     }
 }

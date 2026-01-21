@@ -31,7 +31,7 @@ namespace CookRecipesApp
         protected override async void OnStart()
         {
             ISQLiteAsyncConnection database = _connectionFactory.CreateConnection();
-
+            //await new SQLiteConnectionFactory().ResetDatabaseAsync();
             await database.CreateTableAsync<UserDbModel>();
             await database.CreateTableAsync<UnitDbModel>();
             await database.CreateTableAsync<IngredientDbModel>();
@@ -43,18 +43,14 @@ namespace CookRecipesApp
             await database.CreateTableAsync<RecepieIngredientDbModel>();
             await database.CreateTableAsync<RecepieStepDbModel>();
 
-            /*
-            CategoryService cas = new(_connectionFactory);
-            IngredientsService ins = new(_connectionFactory);
-            RecepiesService res = new(_connectionFactory, ins, cas);
+            
 
-            DatabaseSeederService ds = new(database, res, cas, ins);
+            DatabaseSeederService ds = new(new SQLiteConnectionFactory().CreateConnection());
 
-            await ds.SeedAllAsync();
+            await ds.SeedCompleteRecipesAsync();
 
             Debug.WriteLine("Seeding done");
 
-            */
 
             base.OnStart();
         }

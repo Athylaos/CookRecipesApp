@@ -11,6 +11,8 @@ using System.Diagnostics;
 using System.Text;
 using System.Runtime.CompilerServices;
 using CookRecipesApp.Model.Recepie;
+using System.Threading.Tasks.Dataflow;
+using CookRecipesApp.Service;
 
 
 
@@ -20,6 +22,7 @@ namespace CookRecipesApp.ViewModel
     {
         private IUserService _userService;
         private ICategoryService _categoryService;
+        private IRecepieService _recepieService;
 
         private ISQLiteAsyncConnection _database;
 
@@ -28,10 +31,12 @@ namespace CookRecipesApp.ViewModel
         [ObservableProperty] private string userName;
 
 
-        public TestViewModel(IUserService userService, ICategoryService categoryService)
+        public TestViewModel(IUserService userService, ICategoryService categoryService, IRecepieService recepieService)
         {
             _userService = userService;
             _categoryService = categoryService;
+            _recepieService = recepieService;
+            _database = new SQLiteConnectionFactory().CreateConnection();
 
         }
 
@@ -83,9 +88,14 @@ namespace CookRecipesApp.ViewModel
         public async Task RecepieDbBtn()
         {
             var recepies = await _database.Table<RecepieDbModel>().ToListAsync();
+            var recepiesDb = await _recepieService.GetRecepiesAsync(-1);
             foreach (var r in recepies)
             {
                 System.Diagnostics.Debug.WriteLine($"ID: {r.Id}, Name: '{r.Title}', Image: {r.PhotoPath}");
+            }
+            foreach (var r in recepiesDb)
+            {
+                System.Diagnostics.Debug.WriteLine($"From service ID: {r.Id}, Name: '{r.Title}', Image: {r.PhotoPath}");
             }
         }
 

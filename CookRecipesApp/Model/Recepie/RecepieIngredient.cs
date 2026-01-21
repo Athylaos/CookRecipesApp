@@ -3,6 +3,7 @@ using CookRecipesApp.Model.Ingredient;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using static CookRecipesApp.Model.Ingredient.Ingredient;
 
 namespace CookRecipesApp.Model.Recepie
 {
@@ -18,9 +19,7 @@ namespace CookRecipesApp.Model.Recepie
         private float quantity;
 
         [ObservableProperty]
-        private UnitDbModel selectedUnit;
-
-
+        private IngredientUnitInfo selectedUnitInfo;
 
 
     }

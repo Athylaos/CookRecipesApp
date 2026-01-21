@@ -43,6 +43,7 @@ namespace CookRecipesApp.ViewModel
 
         [ObservableProperty] string warningText;
         [ObservableProperty] bool warningEnabled;
+        private bool _isInitialized = false;
 
 
 
@@ -57,6 +58,9 @@ namespace CookRecipesApp.ViewModel
 
         public async Task StartAsync()
         {
+
+            if (_isInitialized) return;
+
             var su = await _ingredientsService.GetAllServingUnitsAsync();
             ServingUnits.Clear();
             foreach (var s in su)
@@ -71,9 +75,8 @@ namespace CookRecipesApp.ViewModel
             {
                 Categories.Add(c);
             }
-
-
-            
+            _isInitialized = true;
+           
         }
 
         [RelayCommand]
@@ -126,8 +129,9 @@ namespace CookRecipesApp.ViewModel
             {
                 if (resultData is RecepieIngredient newIngredient)
                 {
-                    this.Ingredients.Add(newIngredient);
+                    Ingredients.Add(newIngredient);
                 }
+                OnPropertyChanged(nameof(Categories));
             };
 
             var popup = new AddIngredientPopup();
@@ -201,7 +205,7 @@ namespace CookRecipesApp.ViewModel
                     WarningText = $"Ingredient can't has zero quantity ({ing.Ingredient.Name})";
                     return;
                 }
-                if (ing.SelectedUnit == null)
+                if (ing.SelectedUnitInfo == null)
                 {
                     WarningEnabled = true;
                     WarningText = $"Ingredient must have unit ({ing.Ingredient.Name})";

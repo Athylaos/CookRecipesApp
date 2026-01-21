@@ -11,7 +11,6 @@ using Microsoft.Extensions.Logging;
 using Sharpnado.MaterialFrame;
 using Sharpnado.Shades;
 using UraniumUI;
-using Android.Net.Sip;
 
 namespace CookRecipesApp
 {

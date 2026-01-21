@@ -19,7 +19,8 @@ namespace CookRecipesApp.ViewModel.Popups
 
         [ObservableProperty] Ingredient selectedIngredient;
         [ObservableProperty] float quantity;
-        [ObservableProperty] UnitDbModel selectedUnit;
+
+        [ObservableProperty] Ingredient.IngredientUnitInfo selectedUnitInfo;
 
         public event Action<object> OnCloseRequest;
 
@@ -58,7 +59,7 @@ namespace CookRecipesApp.ViewModel.Popups
             {
                 Ingredient = SelectedIngredient,
                 Quantity = Quantity,
-                SelectedUnit = SelectedUnit
+                SelectedUnitInfo = SelectedUnitInfo??null,              
             };
 
             OnCloseRequest?.Invoke(result);
