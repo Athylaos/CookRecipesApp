@@ -18,6 +18,8 @@ namespace CookRecipesApp
 
             Routing.RegisterRoute(nameof(RecepiesCategoryPage), typeof(RecepiesCategoryPage));
 
+            Routing.RegisterRoute(nameof(RecepieDetailsPage), typeof(RecepieDetailsPage));
+
 
         }
     }

@@ -23,6 +23,7 @@
         <Button Text="RecepiesMainPage" Command="{Binding RecepiesMainPageBtnCommand}"/>
         <Button Text="Debug print all categories" Command="{Binding CategoryDbBtnCommand}"/>
         <Button Text="Debug print all recepies" Command="{Binding RecepieDbBtnCommand}"/>
+        <Button Text="Test recepiedetail page" Command="{Binding RecepieDetailPageBtnCommand}"></Button>
 
     </VerticalStackLayout>
 </ContentPage>

@@ -106,5 +106,11 @@ namespace CookRecipesApp.ViewModel
             Shell.Current.GoToAsync("//RecepiesMainPage");
         }
 
+        [RelayCommand]
+        public void RecepieDetailPageBtn()
+        {
+            Shell.Current.GoToAsync(nameof(RecepieDetailPageBtn));
+        }
+
     }
 }
