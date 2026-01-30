@@ -17,12 +17,14 @@ namespace CookRecipesApp.Service
         private readonly ISQLiteAsyncConnection _database;
         private readonly IIngredientService _ingredientService;
         private readonly ICategoryService _categoryService;
+        private readonly IUserService _userService;
 
-        public LocalRecepieService(SQLiteConnectionFactory factory, IIngredientService ingredientsService, ICategoryService categoryService)
+        public LocalRecepieService(SQLiteConnectionFactory factory, IIngredientService ingredientsService, ICategoryService categoryService, IUserService userService)
         {
             _database = factory.CreateConnection();
             _ingredientService = ingredientsService;
             _categoryService = categoryService;
+            _userService = userService;
         }
 
         private async Task<RecepieIngredient> DbToRecepieIngredientAsync(RecepieIngredientDbModel dbModel)
@@ -97,12 +99,15 @@ namespace CookRecipesApp.Service
 
             foreach (var model in cDbModels)
             {
+                var user = await _userService.GetUserByIdAsync(model.UserId);
                 result.Add(new Comment
                 {
                     Id = model.Id,
                     RecepieId = model.RecepieId,
                     UserId = model.UserId,
+                    UserName =  user.Name ?? "null",
                     Text = model.Text,
+                    Rating = model.Rating,
                     CreatedAt = DateTime.TryParse(model.CreatedAt, out var date) ? date : DateTime.Now,
                 });
             }
@@ -284,6 +289,7 @@ namespace CookRecipesApp.Service
                 RecepieId = recepieId,
                 UserId = c.UserId,
                 Text = c.Text,
+                Rating = c.Rating,
                 CreatedAt = c.CreatedAt.ToString()
             });
 

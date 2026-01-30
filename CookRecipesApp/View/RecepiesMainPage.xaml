@@ -165,6 +165,12 @@
                                     HeightRequest="150"
                                     Margin="6,0"
                                     StrokeThickness="0">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}},Path=BindingContext.RecepieBtnCommand}"
+                                                    CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
+
                                     <Grid
                                         BackgroundColor="Wheat">
                                         <Image 

@@ -21,6 +21,11 @@ namespace CookRecipesApp.Model.Recepie
         [ObservableProperty]
         private IngredientUnitInfo selectedUnitInfo;
 
+        //UI
+
+        [ObservableProperty]
+        private bool isReady;
+
 
     }
 }

@@ -1,58 +1,48 @@
 ﻿using CookRecipesApp.Model.Category;
 using CookRecipesApp.Model.Ingredient;
 using CookRecipesApp.Model.Recepie;
+using CookRecipesApp.Model.User;
 using SQLite;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Diagnostics;
 
 namespace CookRecipesApp.Service
 {
     public class DatabaseSeederService
+    {
+        private readonly ISQLiteAsyncConnection _database;
+
+        public DatabaseSeederService(ISQLiteAsyncConnection database)
         {
-            private readonly ISQLiteAsyncConnection _database;
-
-            public DatabaseSeederService(ISQLiteAsyncConnection database)
-            {
-                _database = database;
-            }
-
-        public async Task ClearSeedDataAsync()
-        {
-
-            await _database.DeleteAllAsync<CommentDbModel>();
-            await _database.DeleteAllAsync<RecepieStepDbModel>();
-            await _database.DeleteAllAsync<RecepieIngredientDbModel>();
-
-            await _database.DeleteAllAsync<RecepieDbModel>();
-
-            await _database.DeleteAllAsync<IngredientUnitDbModel>();
-
-            await _database.DeleteAllAsync<IngredientDbModel>();
-
-            await _database.DeleteAllAsync<UnitDbModel>();
-
-            // await _database.DeleteAllAsync<CategoryDbModel>(); 
-            await ResetDatabaseAsync();
+            _database = database;
         }
         public async Task ResetDatabaseAsync()
         {
-            var dbPath = Path.Combine(FileSystem.AppDataDirectory, "userData.db3");
-            if (File.Exists(dbPath))
-            {
-                File.Delete(dbPath);
-            }
+            await _database.DropTableAsync<RecepieCategoryDbModel>();
+            await _database.DropTableAsync<CommentDbModel>();
+            await _database.DropTableAsync<RecepieStepDbModel>();
+            await _database.DropTableAsync<RecepieIngredientDbModel>();
+            await _database.DropTableAsync<RecepieDbModel>();
+            await _database.DropTableAsync<IngredientUnitDbModel>();
+            await _database.DropTableAsync<IngredientDbModel>();
+            await _database.DropTableAsync<UnitDbModel>();
+            await _database.DropTableAsync<CategoryDbModel>();
+            await _database.DropTableAsync<UserDbModel>();
 
+            await _database.CreateTableAsync<CategoryDbModel>();
             await _database.CreateTableAsync<UnitDbModel>();
             await _database.CreateTableAsync<IngredientDbModel>();
             await _database.CreateTableAsync<IngredientUnitDbModel>();
+            await _database.CreateTableAsync<UserDbModel>();
             await _database.CreateTableAsync<RecepieDbModel>();
             await _database.CreateTableAsync<RecepieIngredientDbModel>();
             await _database.CreateTableAsync<RecepieStepDbModel>();
             await _database.CreateTableAsync<CommentDbModel>();
+            await _database.CreateTableAsync<RecepieCategoryDbModel>();
         }
         public async Task SeedCompleteRecipesAsync()
         {
@@ -71,6 +61,7 @@ namespace CookRecipesApp.Service
             await SeedRecipeStepsAsync();
             await SeedRecipeCategoriesAsync(); // <--- NOVÉ: Propojení receptů a kategorií
             await SeedCommentsAsync();
+            await SeedUsersAsync();
 
             Debug.WriteLine("✅ Complete seeding done! 5 recipes with ingredients, categories, steps, comments ready.");
         }
@@ -370,22 +361,126 @@ namespace CookRecipesApp.Service
         {
             var comments = new[]
             {
-                new CommentDbModel { RecepieId = 1, UserId = 2, Text = "Best bolognese I've ever made! Family loved it.", CreatedAt = DateTime.Now.AddDays(-14).ToString("o") },
-                new CommentDbModel { RecepieId = 1, UserId = 3, Text = "Great recipe but I added more garlic. Still perfect!", CreatedAt = DateTime.Now.AddDays(-12).ToString("o") },
-                new CommentDbModel { RecepieId = 1, UserId = 4, Text = "Good but needed more cooking time for the sauce", CreatedAt = DateTime.Now.AddDays(-7).ToString("o") },
-                new CommentDbModel { RecepieId = 2, UserId = 2, Text = "Healthy and delicious! Perfect for lunch prep", CreatedAt = DateTime.Now.AddDays(-7).ToString("o") },
-                new CommentDbModel { RecepieId = 2, UserId = 5, Text = "Very fresh, chicken was tender and juicy", CreatedAt = DateTime.Now.AddDays(-5).ToString("o") },
-                new CommentDbModel { RecepieId = 3, UserId = 3, Text = "Quick weeknight dinner winner!", CreatedAt = DateTime.Now.AddDays(-2).ToString("o") },
-                new CommentDbModel { RecepieId = 3, UserId = 6, Text = "Added mushrooms too, was amazing", CreatedAt = DateTime.Now.AddDays(-1).ToString("o") },
-                new CommentDbModel { RecepieId = 4, UserId = 2, Text = "Salmon cooked perfectly, very moist!", CreatedAt = DateTime.Now.AddDays(-19).ToString("o") },
-                new CommentDbModel { RecepieId = 4, UserId = 4, Text = "Great omega-3 meal, will make again", CreatedAt = DateTime.Now.AddDays(-16).ToString("o") },
-                new CommentDbModel { RecepieId = 4, UserId = 7, Text = "Rice was fluffy, salmon tender. 10/10", CreatedAt = DateTime.Now.AddDays(-10).ToString("o") },
-                new CommentDbModel { RecepieId = 5, UserId = 5, Text = "Perfect breakfast! Made it 3 times this week", CreatedAt = DateTime.Now.AddDays(-4).ToString("o") },
-                new CommentDbModel { RecepieId = 5, UserId = 3, Text = "Simple and tasty, added spinach too", CreatedAt = DateTime.Now.AddDays(-3).ToString("o") },
+                new CommentDbModel { RecepieId = 1, UserId = 2, Text = "Best bolognese I've ever made! Family loved it.", Rating = 5.0f, CreatedAt = "2026-01-16T10:00:00Z" },
+                new CommentDbModel { RecepieId = 1, UserId = 3, Text = "Great recipe but I added more garlic. Still perfect!", Rating = 4.5f, CreatedAt = "2026-01-18T10:00:00Z" },
+                new CommentDbModel { RecepieId = 1, UserId = 4, Text = "Good but needed more cooking time for the sauce", Rating = 3.5f, CreatedAt = "2026-01-23T10:00:00Z" },
+                new CommentDbModel { RecepieId = 2, UserId = 2, Text = "Healthy and delicious! Perfect for lunch prep", Rating = 5.0f, CreatedAt = "2026-01-23T10:00:00Z" },
+                new CommentDbModel { RecepieId = 2, UserId = 5, Text = "Very fresh, chicken was tender and juicy", Rating = 4.8f, CreatedAt = "2026-01-25T10:00:00Z" },
+                new CommentDbModel { RecepieId = 3, UserId = 3, Text = "Quick weeknight dinner winner!", Rating = 5.0f, CreatedAt = "2026-01-28T10:00:00Z" },
+                new CommentDbModel { RecepieId = 3, UserId = 6, Text = "Added mushrooms too, was amazing", Rating = 4.7f, CreatedAt = "2026-01-29T10:00:00Z" },
+                new CommentDbModel { RecepieId = 4, UserId = 2, Text = "Salmon cooked perfectly, very moist!", Rating = 4.9f, CreatedAt = "2026-01-11T10:00:00Z" },
+                new CommentDbModel { RecepieId = 4, UserId = 4, Text = "Great omega-3 meal, will make again", Rating = 4.5f, CreatedAt = "2026-01-14T10:00:00Z" },
+                new CommentDbModel { RecepieId = 4, UserId = 7, Text = "Rice was fluffy, salmon tender. 10/10", Rating = 5.0f, CreatedAt = "2026-01-20T10:00:00Z" },
+                new CommentDbModel { RecepieId = 5, UserId = 5, Text = "Perfect breakfast! Made it 3 times this week", Rating = 5.0f, CreatedAt = "2026-01-26T10:00:00Z" },
+                new CommentDbModel { RecepieId = 5, UserId = 3, Text = "Simple and tasty, added spinach too", Rating = 4.6f, CreatedAt = "2026-01-27T10:00:00Z" },
             };
             await _database.InsertAllAsync(comments);
             Debug.WriteLine($"✅ {comments.Length} comments");
         }
         #endregion
+
+        #region 8. USERS
+        private async Task SeedUsersAsync()
+        {
+            var users = new[]
+            {
+                new UserDbModel
+                {
+                    Email = "jan.novak@test.cz",
+                    PasswordHash = "abc123hash",
+                    PasswordSalt = "abc123salt",
+                    Name = "Jan",
+                    Surname = "Novák",
+                    RecepiesAdded = 3,
+                    UserCreated = DateOnly.FromDateTime(DateTime.Parse("2026-01-01")).ToString("o"),
+                    Role = "User",
+                    AvatarUrl = "avatar_jan.png"
+                }, // ID=2
+        
+                new UserDbModel
+                {
+                    Email = "petra.smith@test.cz",
+                    PasswordHash = "def456hash",
+                    PasswordSalt = "def456salt",
+                    Name = "Petra",
+                    Surname = "Smithová",
+                    RecepiesAdded = 5,
+                    UserCreated = DateOnly.FromDateTime(DateTime.Parse("2026-01-05")).ToString("o"),
+                    Role = "User",
+                    AvatarUrl = "avatar_petra.png"
+                }, // ID=3
+        
+                new UserDbModel
+                {
+                    Email = "miroslav.kovac@test.cz",
+                    PasswordHash = "ghi789hash",
+                    PasswordSalt = "ghi789salt",
+                    Name = "Miroslav",
+                    Surname = "Kováč",
+                    RecepiesAdded = 2,
+                    UserCreated = DateOnly.FromDateTime(DateTime.Parse("2026-01-10")).ToString("o"),
+                    Role = "User",
+                    AvatarUrl = "avatar_miro.png"
+                }, // ID=4
+        
+                new UserDbModel
+                {
+                    Email = "anna.dvorak@test.cz",
+                    PasswordHash = "jkl012hash",
+                    PasswordSalt = "jkl012salt",
+                    Name = "Anna",
+                    Surname = "Dvořáková",
+                    RecepiesAdded = 4,
+                    UserCreated = DateOnly.FromDateTime(DateTime.Parse("2026-01-15")).ToString("o"),
+                    Role = "User",
+                    AvatarUrl = "avatar_anna.png"
+                }, // ID=5
+        
+                new UserDbModel
+                {
+                    Email = "tomas.bayer@test.cz",
+                    PasswordHash = "mno345hash",
+                    PasswordSalt = "mno345salt",
+                    Name = "Tomáš",
+                    Surname = "Bayer",
+                    RecepiesAdded = 1,
+                    UserCreated = DateOnly.FromDateTime(DateTime.Parse("2026-01-20")).ToString("o"),
+                    Role = "User",
+                    AvatarUrl = "avatar_tomas.png"
+                }, // ID=6
+        
+                new UserDbModel
+                {
+                    Email = "klara.zeman@test.cz",
+                    PasswordHash = "pqr678hash",
+                    PasswordSalt = "pqr678salt",
+                    Name = "Klára",
+                    Surname = "Zemanová",
+                    RecepiesAdded = 6,
+                    UserCreated = DateOnly.FromDateTime(DateTime.Parse("2026-01-08")).ToString("o"),
+                    Role = "User",
+                    AvatarUrl = "avatar_klara.png"
+                }, // ID=7
+        
+                // Bonus: Admin uživatel
+                new UserDbModel
+                {
+                    Email = "admin@test.cz",
+                    PasswordHash = "admin123hash",
+                    PasswordSalt = "admin123salt",
+                    Name = "Admin",
+                    Surname = "Admin",
+                    RecepiesAdded = 12,
+                    UserCreated = DateOnly.FromDateTime(DateTime.Parse("2025-12-01")).ToString("o"),
+                    Role = "Admin",
+                    AvatarUrl = null
+                } // ID=1 (pro testování)
+            };
+
+            await _database.InsertAllAsync(users);
+            Debug.WriteLine($"✅ {users.Length} users seeded");
+        }
+        #endregion
+
     }
 }

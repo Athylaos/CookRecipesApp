@@ -16,7 +16,7 @@ namespace CookRecipesApp.Model.User
 
         public int RecepiesAdded { get; set; } = 0;
 
-        //public DateOnly UserCreated { get; set; }
+        public DateOnly UserCreated { get; set; }
 
         public string Role { get; set; } = "User";
 

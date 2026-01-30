@@ -107,9 +107,9 @@ namespace CookRecipesApp.ViewModel
         }
 
         [RelayCommand]
-        public void RecepieDetailPageBtn()
+        public async Task RecepieDetailPageBtn()
         {
-            Shell.Current.GoToAsync(nameof(RecepieDetailPageBtn));
+            await Shell.Current.GoToAsync(nameof(RecepieDetailsPage));
         }
 
     }

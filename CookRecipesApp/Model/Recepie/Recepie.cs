@@ -37,10 +37,10 @@ namespace CookRecipesApp.Model.Recepie
         public DateTime RecepieCreated = DateTime.Now;
         public float Rating { get; set; }
         public int UsersRated { get; set; }
-        public List<Comment> Comments { get; set; } = new(); // dodelat
+        public List<Comment> Comments { get; set; } = new();
 
         public List<Category.Category> Categories { get; set; } = new();
-        public List<Category.Category> SubCategories { get; set; } = new(); //dodelat v service vyzaduje predelani i categoryService
+        public List<Category.Category> SubCategories { get; set; } = new();
 
 
     }

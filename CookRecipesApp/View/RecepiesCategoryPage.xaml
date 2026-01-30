@@ -38,8 +38,6 @@
                         Aspect="AspectFill"
                         Opacity="0.4"/>
                 </Border>
-
-
                 <Label
                     Grid.Row="0"
                     Text="{Binding SelectedCategory.Name}"
@@ -84,7 +82,6 @@
                         BackgroundColor="{StaticResource PineTeal}">
                         <ImageButton
                             Source="filter.png"
-                            Command=""
                             Aspect="AspectFill"
                             Background="Transparent"
                             Padding="1"/>

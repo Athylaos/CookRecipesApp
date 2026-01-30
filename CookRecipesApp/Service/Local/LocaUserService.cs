@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
+using static Android.Graphics.ColorSpace;
 
 namespace CookRecipesApp.Service
 {
@@ -19,8 +20,13 @@ namespace CookRecipesApp.Service
         public LocalUserService(SQLiteConnectionFactory factory)
         {
             _database = factory.CreateConnection();
+            _ = InitializeDatabaseAsync();
         }
 
+        private async Task InitializeDatabaseAsync()
+        {
+            await _database.CreateTableAsync<UserDbModel>();
+        }
         private (string Hash, string Salt) HashPassword(string password)
         {
             byte[] saltBytes = RandomNumberGenerator.GetBytes(SaltSize);
@@ -65,7 +71,7 @@ namespace CookRecipesApp.Service
                 Name = userDbModel.Name,
                 Surname = userDbModel.Surname,
                 RecepiesAdded = userDbModel.RecepiesAdded,
-                //UserCreated = userDbModel.UserCreated,
+                UserCreated = DateOnly.TryParse(userDbModel.UserCreated, out var date) ? date : DateOnly.FromDateTime(DateTime.Now),
                 Role = userDbModel.Role,
                 AvatarUrl = userDbModel.AvatarUrl
             };
@@ -83,7 +89,7 @@ namespace CookRecipesApp.Service
                 userDbModel.Name = user.Name;
                 userDbModel.Surname = user.Surname;
                 userDbModel.RecepiesAdded = user.RecepiesAdded;
-                //userDbModel.UserCreated = user.UserCreated;
+                userDbModel.UserCreated = user.UserCreated.ToString("o");
                 userDbModel.Role = user.Role;
                 userDbModel.AvatarUrl = user.AvatarUrl;
             }
@@ -96,6 +102,7 @@ namespace CookRecipesApp.Service
                 }
                 userDbModel.PasswordHash = userDto.PasswordHash;
                 userDbModel.PasswordSalt = userDto.PasswordSalt;
+                userDbModel.UserCreated = DateOnly.FromDateTime(DateTime.Now).ToString("o");
             }
 
             return userDbModel;
