@@ -310,5 +310,37 @@ namespace CookRecipesApp.Service
 
             await _database.InsertAllAsync(links);
         }
+
+        public async Task ChangeFavoriteAsync(int recepieId, int userId)
+        {
+            var ru = await _database.Table<RecepieUserDbModel>().FirstOrDefaultAsync(u => u.RecepieId == recepieId &&  u.UserId == userId);
+            if(ru == null)
+            {
+                ru = new RecepieUserDbModel()
+                {
+                    RecepieId = recepieId,
+                    UserId = userId,
+                    IsFavorite = true
+                };
+                await _database.InsertAsync(ru);
+            }
+            
+            ru.IsFavorite = !ru.IsFavorite;
+            await _database.UpdateAsync(ru);
+        }
+
+        public async Task<bool> IsFavoriteAsync(int recepieId, int userId)
+        {
+            var ru = await _database.Table<RecepieUserDbModel>().FirstOrDefaultAsync(u => u.RecepieId == recepieId && u.UserId == userId);
+            if( ru == null)
+            {
+                return false;
+            }
+            else
+            {
+                return ru.IsFavorite;
+            }
+        }
+
     }
 }

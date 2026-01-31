@@ -11,5 +11,8 @@ namespace CookRecipesApp.Service.Interface
 
         public Task<List<Recepie>> GetRecepiesAsync(int amount);
 
+        public Task ChangeFavoriteAsync(int recepieId, int userId);
+        public Task<bool> IsFavoriteAsync(int recepieId, int userId);
+
     }
 }

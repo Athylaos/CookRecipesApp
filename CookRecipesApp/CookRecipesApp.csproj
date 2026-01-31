@@ -100,6 +100,7 @@
 	  <MauiImage Include="Resources\Images\Icons\cooking.png" />
 	  <MauiImage Include="Resources\Images\Icons\difficulty.png" />
 	  <MauiImage Include="Resources\Images\Icons\favorite.png" />
+	  <MauiImage Include="Resources\Images\Icons\favorite_full.png" />
 	  <MauiImage Include="Resources\Images\Icons\filter.png" />
 	  <MauiImage Include="Resources\Images\Icons\fridge.png" />
 	  <MauiImage Include="Resources\Images\Icons\home.png" />

@@ -48,8 +48,8 @@ namespace CookRecipesApp
 
             DatabaseSeederService ds = new(new SQLiteConnectionFactory().CreateConnection());
 
-            await ds.ResetDatabaseAsync();
-            await ds.SeedCompleteRecipesAsync();
+            //await ds.ResetDatabaseAsync();
+            //await ds.SeedCompleteRecipesAsync();
 
             Debug.WriteLine("Seeding done");
 

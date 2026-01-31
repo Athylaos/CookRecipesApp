@@ -31,7 +31,7 @@
                     <GradientStop Color="{StaticResource PineTeal}" Offset="1" />
                 </RadialGradientBrush>
             </Border.Background>
-            <ImageButton WidthRequest="65" HeightRequest="65" Source="back.png" />
+            <ImageButton WidthRequest="65" HeightRequest="65" Source="back.png" Command="{Binding GoBackBtnCommand}"/>
         </Border>
 
         <ScrollView Grid.Row="0" Grid.RowSpan="3">
@@ -77,10 +77,11 @@
                     Spacing="10"
                     Margin="7, 5">
                     <ImageButton
-                        Source="favorite.png"
+                        Source="{Binding FavoriteIconPath}"
                         MaximumHeightRequest="30"
                         MaximumWidthRequest="30"
-                        Aspect="AspectFit"/>
+                        Aspect="AspectFit"
+                        Command="{Binding FavoriteBtnCommand}"/>
                     <ImageButton
                         Source="share.png"
                         MaximumHeightRequest="30"

@@ -27,7 +27,7 @@
             Padding="5">
 
             <Grid
-                RowDefinitions="60, 60, 300, 300, 150, 150">
+                RowDefinitions="60, 60, 50, 300, 50, 300, 65">
 
                 <Border
                     Grid.Row="0"
@@ -88,165 +88,215 @@
                     </Border>
                 </Grid>
 
-                <Grid
-                    Margin="5"
-                    HorizontalOptions="Start"
-                    MaximumWidthRequest="280"
+                <Label
+                    Text="Favorite"                
+                    TextColor="{StaticResource Porcelain}"
+                    FontFamily="Alegreya"
+                    Margin="5, 0, 0, 2"
+                    VerticalOptions="End"
+                    FontSize="30"
                     Grid.Row="2"
-                    RowDefinitions="187.5, 100">
-                    <Border
-                        Grid.Row="0"
-                        StrokeShape="RoundRectangle, 15, 15, 0, 0"
-                        StrokeThickness="0">
-                        <Image
-                            Source="default_picture.png"
-                            WidthRequest="250"
-                            HeightRequest="187.5"
-                            Aspect="AspectFill"/>
-                    </Border>
-                    <Border
-                        StrokeThickness="0"
-                        BackgroundColor="Transparent"
-                        Grid.Row="0"
-                        StrokeShape="RoundRectangle, 14, 14, 0, 0">
-                        <Border.Background>
-                            <LinearGradientBrush StartPoint="0.2, 1" EndPoint="0.5, 0">
-                                <GradientStop Color="#cc000000" Offset="0.0" />
-                                <GradientStop Color="Transparent" Offset="1" />
-                            </LinearGradientBrush>
-                        </Border.Background>
-                    </Border>
+                    FontAttributes="Bold"
+                    Shadow="3, 3, 3, #011D04 0.5"                    
+                />
 
-                    <Label
-                        Text="Test"
-                        TextColor="{StaticResource Porcelain}"
-                        FontAttributes="Bold"
-                        Margin="8"
-                        FontSize="20"  
-                        VerticalOptions="End"
-                        Shadow="3, 3, 3, Black 1"
-                        FontFamily="Alegreya"/>
+                <CollectionView Grid.Row="3" ItemsSource="{Binding FavoriteRecepies}" ItemsLayout="HorizontalList">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="recepieModels:Recepie">
+                            <Grid
+                                Margin="5"
+                                HorizontalOptions="Start"
+                                MaximumWidthRequest="280"
+                                Grid.Row="3"
+                                RowDefinitions="187.5, 100">
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}},Path=BindingContext.RecepieBtnCommand}"
+                                        CommandParameter="{Binding .}" />
+                                </Grid.GestureRecognizers>
+                                <Border
+                                    Grid.Row="0"
+                                    StrokeShape="RoundRectangle, 15, 15, 0, 0"
+                                    StrokeThickness="0">
+                                    <Image
+                                        Source="{Binding PhotoPath}"
+                                        WidthRequest="250"
+                                        HeightRequest="187.5"
+                                        Aspect="AspectFill"/>
+                                </Border>
+                                <Border
+                                    StrokeThickness="0"
+                                    BackgroundColor="Transparent"
+                                    Grid.Row="0"
+                                    StrokeShape="RoundRectangle, 14, 14, 0, 0">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0.2, 1" EndPoint="0.5, 0">
+                                            <GradientStop Color="#cc000000" Offset="0.0" />
+                                            <GradientStop Color="Transparent" Offset="1" />
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                </Border>
 
-                    <Border
-                        Grid.Row="1"
-                        StrokeShape="RoundRectangle, 0, 0, 15, 15"
-                        StrokeThickness="0"
-                        BackgroundColor="#212121">
-                        <Grid
-                            RowDefinitions="*, *, *"
-                            ColumnDefinitions="*, *">
-                            <HorizontalStackLayout Grid.Row="0" Grid.Column="0" Margin="5, 0, 0, 0">
-                                <Image Source="time.png" Margin="5"/>
-                                <Label Text="12" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
-                            </HorizontalStackLayout>
-                            <HorizontalStackLayout Grid.Row="1" Grid.Column="0" Margin="5, 0, 0, 0">
-                                <Image Source="spoon_fork.png" Margin="5"/>
-                                <Label Text="3" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
-                            </HorizontalStackLayout>
-                            <HorizontalStackLayout Grid.Row="2" Grid.Column="0" Margin="5, 0, 0, 0">
-                                <Image Source="rating.png" Margin="5"/>
-                                <Label Text="4,3/5" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
-                            </HorizontalStackLayout>
-                            <HorizontalStackLayout Grid.Row="0" Grid.Column="1">
-                                <Image Source="difficulty.png" Margin="5"/>
-                                <Label Text="Normal" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
-                            </HorizontalStackLayout>
-                            <HorizontalStackLayout Grid.Row="1" Grid.Column="1">
-                                <Image Source="calories.png" Margin="5"/>
-                                <Label Text="438 kcal" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
-                            </HorizontalStackLayout>
-                            <HorizontalStackLayout Grid.Row="2" Grid.Column="1">
-                                <Image Source="fridge.png" Margin="5"/>
-                                <Label Text="Everything" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
-                            </HorizontalStackLayout>
+                                <Label
+                                    Text="{Binding Title}"
+                                    TextColor="{StaticResource Porcelain}"
+                                    FontAttributes="Bold"
+                                    Margin="8"
+                                    FontSize="20"  
+                                    VerticalOptions="End"
+                                    Shadow="3, 3, 3, Black 1"
+                                    FontFamily="Alegreya"/>
 
-                        </Grid>
-                    </Border>
+                                <Border
+                                    Grid.Row="1"
+                                    StrokeShape="RoundRectangle, 0, 0, 15, 15"
+                                    StrokeThickness="0"
+                                    BackgroundColor="#212121">
+                                    <Grid
+                                        RowDefinitions="*, *, *"
+                                        ColumnDefinitions="*, *">
+                                        <HorizontalStackLayout Grid.Row="0" Grid.Column="0" Margin="5, 0, 0, 0">
+                                            <Image Source="time.png" Margin="5"/>
+                                            <Label Text="{Binding CookingTime}" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
+                                            <Label Text="m" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
+                                        </HorizontalStackLayout>
+                                        <HorizontalStackLayout Grid.Row="1" Grid.Column="0" Margin="5, 0, 0, 0">
+                                            <Image Source="spoon_fork.png" Margin="5"/>
+                                            <Label Text="{Binding Servings}" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
+                                        </HorizontalStackLayout>
+                                        <HorizontalStackLayout Grid.Row="2" Grid.Column="0" Margin="5, 0, 0, 0">
+                                            <Image Source="rating.png" Margin="5"/>
+                                            <Label Text="{Binding Rating}" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
+                                            <Label Text="/5" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
+                                        </HorizontalStackLayout>
+                                        <HorizontalStackLayout Grid.Row="0" Grid.Column="1">
+                                            <Image Source="difficulty.png" Margin="5"/>
+                                            <Label Text="{Binding DifficultyLevel}" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
+                                        </HorizontalStackLayout>
+                                        <HorizontalStackLayout Grid.Row="1" Grid.Column="1">
+                                            <Image Source="calories.png" Margin="5"/>
+                                            <Label Text="{Binding Calories}" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
+                                            <Label Text=" kcal" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
+                                        </HorizontalStackLayout>
+                                        <HorizontalStackLayout Grid.Row="2" Grid.Column="1">
+                                            <Image Source="fridge.png" Margin="5"/>
+                                            <Label Text="NotImplemented" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
+                                        </HorizontalStackLayout>
 
-                </Grid>
+                                    </Grid>
+                                </Border>
+                            </Grid>
 
-                <Grid
-                    Margin="5"
-                    HorizontalOptions="Start"
-                    MaximumWidthRequest="280"
-                    Grid.Row="3"
-                    RowDefinitions="187.5, 100">
-                    <Border
-                        Grid.Row="0"
-                        StrokeShape="RoundRectangle, 15, 15, 0, 0"
-                        StrokeThickness="0">
-                        <Image
-                            Source="default_picture.png"
-                            WidthRequest="250"
-                            HeightRequest="187.5"
-                            Aspect="AspectFill"/>
-                    </Border>
-                    <Border
-                        StrokeThickness="0"
-                        BackgroundColor="Transparent"
-                        Grid.Row="0"
-                        StrokeShape="RoundRectangle, 14, 14, 0, 0">
-                        <Border.Background>
-                            <LinearGradientBrush StartPoint="0.2, 1" EndPoint="0.5, 0">
-                                <GradientStop Color="#cc000000" Offset="0.0" />
-                                <GradientStop Color="Transparent" Offset="1" />
-                            </LinearGradientBrush>
-                        </Border.Background>
-                    </Border>
-
-                    <Label
-                        Text="Test"
-                        TextColor="{StaticResource Porcelain}"
-                        FontAttributes="Bold"
-                        Margin="8"
-                        FontSize="20"  
-                        VerticalOptions="End"
-                        Shadow="3, 3, 3, Black 1"
-                        FontFamily="Alegreya"/>
-
-                    <Border
-                        Grid.Row="1"
-                        StrokeShape="RoundRectangle, 0, 0, 15, 15"
-                        StrokeThickness="0"
-                        BackgroundColor="#212121">
-                        <Grid
-                            RowDefinitions="*, *, *"
-                            ColumnDefinitions="*, *">
-                            <HorizontalStackLayout Grid.Row="0" Grid.Column="0" Margin="5, 0, 0, 0">
-                                <Image Source="time.png" Margin="5"/>
-                                <Label Text="12" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
-                            </HorizontalStackLayout>
-                            <HorizontalStackLayout Grid.Row="1" Grid.Column="0" Margin="5, 0, 0, 0">
-                                <Image Source="spoon_fork.png" Margin="5"/>
-                                <Label Text="3" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
-                            </HorizontalStackLayout>
-                            <HorizontalStackLayout Grid.Row="2" Grid.Column="0" Margin="5, 0, 0, 0">
-                                <Image Source="rating.png" Margin="5"/>
-                                <Label Text="4,3/5" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
-                            </HorizontalStackLayout>
-                            <HorizontalStackLayout Grid.Row="0" Grid.Column="1">
-                                <Image Source="difficulty.png" Margin="5"/>
-                                <Label Text="Normal" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
-                            </HorizontalStackLayout>
-                            <HorizontalStackLayout Grid.Row="1" Grid.Column="1">
-                                <Image Source="calories.png" Margin="5"/>
-                                <Label Text="438 kcal" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
-                            </HorizontalStackLayout>
-                            <HorizontalStackLayout Grid.Row="2" Grid.Column="1">
-                                <Image Source="fridge.png" Margin="5"/>
-                                <Label Text="Everything" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
-                            </HorizontalStackLayout>
-
-                        </Grid>
-                    </Border>
-
-                </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
 
 
-                <Border
-                    Grid.Row="4">
 
-                </Border>
+                <Label
+                     Text="Favorite"                
+                     TextColor="{StaticResource Porcelain}"
+                     FontFamily="Alegreya"
+                     Margin="5, 0, 0, 2"
+                     VerticalOptions="End"
+                     FontSize="30"
+                     Grid.Row="4"
+                     FontAttributes="Bold"
+                     Shadow="3, 3, 3, #011D04 0.5"/>
+
+                <CollectionView Grid.Row="5" ItemsSource="{Binding FavoriteRecepies}" ItemsLayout="HorizontalList">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="recepieModels:Recepie">
+                            <Grid
+                                 Margin="5"
+                                 HorizontalOptions="Start"
+                                 MaximumWidthRequest="280"
+                                 RowDefinitions="187.5, 100">
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}},Path=BindingContext.RecepieBtnCommand}"
+                                        CommandParameter="{Binding .}" />
+                                </Grid.GestureRecognizers>
+                                <Border
+                                 Grid.Row="0"
+                                 StrokeShape="RoundRectangle, 15, 15, 0, 0"
+                                 StrokeThickness="0">
+                                    <Image
+                                     Source="{Binding PhotoPath}"
+                                     WidthRequest="250"
+                                     HeightRequest="187.5"
+                                     Aspect="AspectFill"/>
+                                </Border>
+                                <Border
+                                     StrokeThickness="0"
+                                     BackgroundColor="Transparent"
+                                     Grid.Row="0"
+                                     StrokeShape="RoundRectangle, 14, 14, 0, 0">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0.2, 1" EndPoint="0.5, 0">
+                                            <GradientStop Color="#cc000000" Offset="0.0" />
+                                            <GradientStop Color="Transparent" Offset="1" />
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                </Border>
+
+                                <Label
+                                     Text="{Binding Title}"
+                                     TextColor="{StaticResource Porcelain}"
+                                     FontAttributes="Bold"
+                                     Margin="8"
+                                     FontSize="20"  
+                                     VerticalOptions="End"
+                                     Shadow="3, 3, 3, Black 1"
+                                     FontFamily="Alegreya"/>
+
+                                <Border
+                                     Grid.Row="1"
+                                     StrokeShape="RoundRectangle, 0, 0, 15, 15"
+                                     StrokeThickness="0"
+                                     BackgroundColor="#212121">
+                                                    <Grid
+                                         RowDefinitions="*, *, *"
+                                         ColumnDefinitions="*, *">
+                                        <HorizontalStackLayout Grid.Row="0" Grid.Column="0" Margin="5, 0, 0, 0">
+                                            <Image Source="time.png" Margin="5"/>
+                                            <Label Text="{Binding CookingTime}" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
+                                            <Label Text="m" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
+                                        </HorizontalStackLayout>
+                                        <HorizontalStackLayout Grid.Row="1" Grid.Column="0" Margin="5, 0, 0, 0">
+                                            <Image Source="spoon_fork.png" Margin="5"/>
+                                            <Label Text="{Binding Servings}" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
+                                        </HorizontalStackLayout>
+                                        <HorizontalStackLayout Grid.Row="2" Grid.Column="0" Margin="5, 0, 0, 0">
+                                            <Image Source="rating.png" Margin="5"/>
+                                            <Label Text="{Binding Rating}" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
+                                            <Label Text="/5" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
+                                        </HorizontalStackLayout>
+                                        <HorizontalStackLayout Grid.Row="0" Grid.Column="1">
+                                            <Image Source="difficulty.png" Margin="5"/>
+                                            <Label Text="{Binding DifficultyLevel}" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
+                                        </HorizontalStackLayout>
+                                        <HorizontalStackLayout Grid.Row="1" Grid.Column="1">
+                                            <Image Source="calories.png" Margin="5"/>
+                                            <Label Text="{Binding Calories}" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
+                                            <Label Text=" kcal" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
+                                        </HorizontalStackLayout>
+                                        <HorizontalStackLayout Grid.Row="2" Grid.Column="1">
+                                            <Image Source="fridge.png" Margin="5"/>
+                                            <Label Text="NotImplemented" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
+                                        </HorizontalStackLayout>
+
+                                    </Grid>
+                                </Border>
+                            </Grid>
+
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+
+
+
 
             </Grid>
         </ScrollView>
@@ -293,7 +343,7 @@
                     HeightRequest="52"
                     BorderWidth="1"
                     BorderColor="{StaticResource DarkEvergreen}"
-                    Command="{Binding RecepiesPageBtnCommand}"/>
+                    Command="{Binding RecepiesMainPageBtnCommand}"/>
                 <ImageButton
                     Grid.Column="2"
                     Source="home.png"

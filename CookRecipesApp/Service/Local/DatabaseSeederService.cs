@@ -32,6 +32,7 @@ namespace CookRecipesApp.Service
             await _database.DropTableAsync<UnitDbModel>();
             await _database.DropTableAsync<CategoryDbModel>();
             await _database.DropTableAsync<UserDbModel>();
+            await _database.DropTableAsync<RecepieUserDbModel>();
 
             await _database.CreateTableAsync<CategoryDbModel>();
             await _database.CreateTableAsync<UnitDbModel>();
@@ -43,6 +44,7 @@ namespace CookRecipesApp.Service
             await _database.CreateTableAsync<RecepieStepDbModel>();
             await _database.CreateTableAsync<CommentDbModel>();
             await _database.CreateTableAsync<RecepieCategoryDbModel>();
+            await _database.CreateTableAsync<RecepieUserDbModel>();
         }
         public async Task SeedCompleteRecipesAsync()
         {
