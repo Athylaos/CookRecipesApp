@@ -6,6 +6,7 @@
             xmlns:sharpnado="clr-namespace:Sharpnado.MaterialFrame;assembly=Maui.MaterialFrame"
             xmlns:models="clr-namespace:CookRecipesApp.ViewModel"
             xmlns:recepieModels="clr-namespace:CookRecipesApp.Model.Recepie"
+            xmlns:helpModels="clr-namespace:CookRecipesApp.Model.Help"
             x:DataType="viewmodel:RecepieDetailsViewModel"
             x:Class="CookRecipesApp.View.RecepieDetailsPage"
             Title="RecepieDetailsPage"
@@ -15,8 +16,16 @@
 
     <Grid RowDefinitions="70, *, 90">
 
+        <Grid Grid.RowSpan="3" BackgroundColor="#1f1f1f" ZIndex="100" IsVisible="{Binding IsLoading}">
+            <ActivityIndicator
+                IsRunning="{Binding IsLoading}" 
+                HorizontalOptions="Center"
+                VerticalOptions="Center"
+                Scale="2"/>
+        </Grid>
+        
         <Border
-            ZIndex="100"
+            ZIndex="90"
             Grid.Row="0"
             Margin="6, 0"
             StrokeShape="RoundRectangle, 23"
@@ -36,7 +45,7 @@
 
         <ScrollView Grid.Row="0" Grid.RowSpan="3">
             <Grid
-                RowDefinitions="300, 140, 125, 50, Auto, 50, Auto, 25, 50, 50, 400"
+                RowDefinitions="300, 140, 125, 50, Auto, 50, Auto, 25, 50, 50, 400, 50, Auto, 75"
                 Padding="5">
 
                 <Border
@@ -286,7 +295,7 @@
                                         <Label Text="{Binding UserName}" TextColor="{StaticResource PineTeal}" FontSize="21" FontFamily="Nunito" FontAttributes="Bold" Shadow="3, 3, 3, #021f04 0.4"></Label>
                                         <Label Text=" - " TextColor="{StaticResource PineTeal}" FontSize="21" FontFamily="Nunito" Shadow="3, 3, 3, #021f04 0.4"></Label>
                                         <Label Text="{Binding Rating}" TextColor="{StaticResource PineTeal}" FontSize="21" FontFamily="Nunito" Shadow="3, 3, 3, #021f04 0.4"></Label>
-                                        <Image Source="favorite.png" WidthRequest="20" HeightRequest="20" Margin="7, 0, 0, 0"></Image>
+                                        <Image Source="favorite_full.png" WidthRequest="20" HeightRequest="20" Margin="7, 0, 0, 0"></Image>
                                     </HorizontalStackLayout>
                                     <Label Margin="5, 3, 0, 0" Text="{Binding Text}" FontSize="21" FontFamily="Nunito"></Label>
                                 </VerticalStackLayout>
@@ -294,6 +303,57 @@
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
+
+                <Label Grid.Row="11" VerticalOptions="Center" Margin="5, 0, 0, 5" Text="My Rating" TextColor="{StaticResource Porcelain}" FontAttributes="Bold" FontSize="28" FontFamily="Alegreya" Shadow="3, 3, 3, #184022 1"/>
+
+
+                <Border BackgroundColor="#212121" StrokeShape="RoundRectangle, 15" Padding="10" Grid.Row="12" Stroke="Transparent" Margin="5">
+                    <Grid RowDefinitions="Auto, 40, Auto, Auto">
+                        <Grid ColumnDefinitions="*, *" IsVisible="False">
+                            <ImageButton Grid.Column="1" HorizontalOptions="End" Aspect="AspectFit" MaximumHeightRequest="35" MaximumWidthRequest="35" Source="delete.png" />
+                            <Label Grid.Column="0" HorizontalOptions="Start" Text="2-12-2025" TextColor="{StaticResource PineTeal}" FontSize="21" FontFamily="Nunito"></Label>
+                        </Grid>
+                        
+                        <CollectionView Grid.Row="1"
+                            ItemsSource="{Binding RatingStars}"
+                            ItemsLayout="HorizontalList"
+                            HorizontalOptions="Center">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="helpModels:RatingStar">
+                                    <ImageButton 
+                                        Source="{Binding Icon}"
+                                        WidthRequest="28" 
+                                        HeightRequest="28"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}},Path=BindingContext.SelectRatingCommand}"
+                                        CommandParameter="{Binding RatingValue}"
+                                        Aspect="AspectFit"
+                                        Margin="6"
+                                        Padding="4"/>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                                                
+                        
+                        <Editor
+                            Grid.Row="2" 
+                            Text="{Binding CommentText}" 
+                            Placeholder="Write a rating..."
+                            TextColor="{StaticResource Porcelain}"
+                            PlaceholderColor="Grey"
+                            MinimumHeightRequest="120"
+                            VerticalTextAlignment="Start"
+                            FontFamily="Nunito"
+                            FontSize="21"
+                            AutoSize="TextChanges"
+                            IsEnabled="False"/>
+
+                        <Button Grid.Row="3" IsVisible="True" MaximumHeightRequest="45" Text="Post" Background="{StaticResource PineTeal}" BorderColor="{StaticResource Evergreen}" BorderWidth="1" Command="{Binding AddPhotoBtnCommand}" Margin="30, 0"/>
+                    </Grid>
+                </Border>
+
+
+
+
             </Grid>
         </ScrollView>
 

@@ -112,5 +112,11 @@ namespace CookRecipesApp.ViewModel
             await Shell.Current.GoToAsync(nameof(RecepieDetailsPage));
         }
 
+        [RelayCommand]
+        public async Task LogoutBtn()
+        {
+            await _userService.LogoutAsync();
+        }
+
     }
 }

@@ -24,6 +24,7 @@
         <Button Text="Debug print all categories" Command="{Binding CategoryDbBtnCommand}"/>
         <Button Text="Debug print all recepies" Command="{Binding RecepieDbBtnCommand}"/>
         <Button Text="Test recepiedetail page" Command="{Binding RecepieDetailPageBtnCommand}"></Button>
+        <Button Text="Logout" Command="{Binding LogoutBtnCommand}"></Button>
 
     </VerticalStackLayout>
 </ContentPage>

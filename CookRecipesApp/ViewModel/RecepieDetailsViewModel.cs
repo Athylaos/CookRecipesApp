@@ -3,10 +3,11 @@ using CommunityToolkit.Mvvm.Input;
 using CookRecipesApp.Model.Category;
 using CookRecipesApp.Model.Recepie;
 using CookRecipesApp.Service.Interface;
+using CookRecipesApp.View;
+using CookRecipesApp.Model.Help;
 using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Text;
 
 namespace CookRecipesApp.ViewModel
 {
@@ -32,42 +33,53 @@ namespace CookRecipesApp.ViewModel
         private Recepie selectedRecepie;
         [ObservableProperty]
         private string favoriteIconPath;
+        [ObservableProperty]
+        private bool isLoading;
+
+        [ObservableProperty]
+        private string commentText;
+        [ObservableProperty]
+        private ObservableCollection<RatingStar> ratingStars = new ObservableCollection<RatingStar>
+        {
+            new RatingStar { RatingValue = 1, Icon = "favorite.png" },
+            new RatingStar { RatingValue = 2, Icon = "favorite.png" },
+            new RatingStar { RatingValue = 3, Icon = "favorite.png" },
+            new RatingStar { RatingValue = 4, Icon = "favorite.png" },
+            new RatingStar { RatingValue = 5, Icon = "favorite.png" }
+        };
 
 
         private async Task LoadRecepieAsync(int id)
         {
-            SelectedRecepie = await _recepieService.GetRecepieAsync(id);
+            IsLoading = true;
 
-            if (!await _userService.IsUserLoggedInAsync())
+            try
             {
-                FavoriteIconPath = "favorite.png";
-            }
-            else
-            {
+                SelectedRecepie = await _recepieService.GetRecepieAsync(id);
 
-                var user = await _userService.GetCurrentUserAsync();
-                var fv = await _recepieService.IsFavoriteAsync(selectedRecepie.Id, user.Id);
-
-                if (fv)
-                {
-                    FavoriteIconPath = "favorite_full.png";
-                }
-                else
+                if (!await _userService.IsUserLoggedInAsync())
                 {
                     FavoriteIconPath = "favorite.png";
                 }
+                else
+                {
+                    var user = await _userService.GetCurrentUserAsync();
+                    var fv = await _recepieService.IsFavoriteAsync(SelectedRecepie.Id, user.Id);
+
+                    FavoriteIconPath = fv ? "favorite_full.png" : "favorite.png";
+                }
             }
-
-
+            finally
+            {
+                IsLoading = false;
+            }
         }
-
 
         public RecepieDetailsViewModel(IRecepieService recepieService, IUserService userService)
         {
             _recepieService = recepieService;
             _userService = userService;
         }
-
 
         [RelayCommand]
         public void IngredientTappedCommand(RecepieIngredient ig)
@@ -84,7 +96,7 @@ namespace CookRecipesApp.ViewModel
 
             if(!await _userService.IsUserLoggedInAsync())
             {
-                return; 
+                Shell.Current.GoToAsync(nameof(LoginPage));
             }
             else
             {
@@ -108,5 +120,33 @@ namespace CookRecipesApp.ViewModel
             await Shell.Current.GoToAsync("..");
         }
 
+        [RelayCommand]
+        public async  Task ShowAddCommandBtn()
+        {
+
+        }
+
+        [RelayCommand]
+        private void SelectRating(int selectedRating)
+        {
+            UpdateRatingStars(selectedRating);
+        }
+
+        private void UpdateRatingStars(int rating)
+        {
+            Debug.WriteLine($"Hvezda cislo:{rating}");
+            RatingStars.Clear();
+            for (int i = 1; i <= 5; i++)
+            {
+                var star = new RatingStar
+                {
+                    RatingValue = i,
+                    Icon = i <= rating ? "favorite_full.png" : "favorite.png"
+                };
+                RatingStars.Add(star);
+            }
+        }
     }
+
 }
+

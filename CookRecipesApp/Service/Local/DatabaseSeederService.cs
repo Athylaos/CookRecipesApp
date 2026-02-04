@@ -34,6 +34,8 @@ namespace CookRecipesApp.Service
             await _database.DropTableAsync<UserDbModel>();
             await _database.DropTableAsync<RecepieUserDbModel>();
 
+            SecureStorage.Default.RemoveAll();
+
             await _database.CreateTableAsync<CategoryDbModel>();
             await _database.CreateTableAsync<UnitDbModel>();
             await _database.CreateTableAsync<IngredientDbModel>();
