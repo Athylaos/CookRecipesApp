@@ -35,7 +35,21 @@ namespace CookRecipesApp.ViewModel
         private string favoriteIconPath;
         [ObservableProperty]
         private bool isLoading;
+        [ObservableProperty]
+        private ObservableCollection<Comment> visibleComments = new();
 
+
+        private int ratingValue;
+        [ObservableProperty]
+        private DateOnly commentTime;
+        [ObservableProperty]
+        private Comment commentOfUser;
+        [ObservableProperty]
+        private bool editorEditable = true;
+        [ObservableProperty]
+        private bool postBtnVisible = true;
+        [ObservableProperty]
+        private bool delGridVisible = false;
         [ObservableProperty]
         private string commentText;
         [ObservableProperty]
@@ -68,6 +82,12 @@ namespace CookRecipesApp.ViewModel
 
                     FavoriteIconPath = fv ? "favorite_full.png" : "favorite.png";
                 }
+                foreach(var c in SelectedRecepie.Comments.Take(10))
+                {
+                    VisibleComments.Add(c);
+                }
+
+                await CommentStatus();
             }
             finally
             {
@@ -121,9 +141,39 @@ namespace CookRecipesApp.ViewModel
         }
 
         [RelayCommand]
-        public async  Task ShowAddCommandBtn()
+        public async  Task PostComment()
         {
+            if(!await _userService.IsUserLoggedInAsync())
+            {
+                Shell.Current.GoToAsync(nameof(LoginPage));
+                return;
+            }
 
+            if (string.IsNullOrEmpty(CommentText))
+            {
+                CommentText = string.Empty;
+            }
+            var user = await _userService.GetCurrentUserAsync();
+
+            Comment comment = new Comment()
+            {
+                RecepieId = recepieId,
+                UserId = user.Id,
+                UserName = user.Name,
+                Text = CommentText,
+                Rating = ratingValue,
+                CreatedAt = DateTime.Now
+            };
+
+            CommentOfUser = comment;
+            CommentTime = DateOnly.FromDateTime(comment.CreatedAt);
+            await _recepieService.PostCommentAsync(comment);
+
+            VisibleComments.Add(comment);
+
+            PostBtnVisible = false;
+            EditorEditable = false;
+            DelGridVisible = true;
         }
 
         [RelayCommand]
@@ -134,7 +184,6 @@ namespace CookRecipesApp.ViewModel
 
         private void UpdateRatingStars(int rating)
         {
-            Debug.WriteLine($"Hvezda cislo:{rating}");
             RatingStars.Clear();
             for (int i = 1; i <= 5; i++)
             {
@@ -145,6 +194,51 @@ namespace CookRecipesApp.ViewModel
                 };
                 RatingStars.Add(star);
             }
+            ratingValue = rating;
+        }
+
+        private async Task CommentStatus()
+        {
+            var user = await _userService.GetCurrentUserAsync();
+            if(user != null)
+            {
+                if(await _recepieService.UserCommentedAsync(recepieId, user.Id))
+                {
+                    CommentOfUser = await _recepieService.GetCommentByUserAndRecepieAsync(recepieId, user.Id) ?? new();
+                    CommentTime = DateOnly.FromDateTime(CommentOfUser.CreatedAt);
+                    CommentText = CommentOfUser.Text;
+                    SelectRating(CommentOfUser.Rating);
+                    PostBtnVisible = false;
+                    EditorEditable = false;
+                    DelGridVisible = true;
+                    return;
+                }
+            }
+            PostBtnVisible = true;
+            EditorEditable = true;
+            DelGridVisible = false;
+        }
+
+        [RelayCommand]
+        private async Task DeleteComment()
+        {
+            if(CommentOfUser == null)
+            {
+                return;
+            }
+
+            var user = await _userService.GetCurrentUserAsync();
+            await _recepieService.DeleteCommentByUserAndRecepieAsync(recepieId, user.Id);
+            VisibleComments.Remove(CommentOfUser);
+
+
+            PostBtnVisible = true;
+            EditorEditable = true;
+            DelGridVisible = false;
+
+            CommentOfUser = new();
+            SelectRating(1);
+            CommentText = "";
         }
     }
 

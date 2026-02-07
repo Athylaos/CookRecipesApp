@@ -14,5 +14,10 @@ namespace CookRecipesApp.Service.Interface
         public Task ChangeFavoriteAsync(int recepieId, int userId);
         public Task<bool> IsFavoriteAsync(int recepieId, int userId);
 
+        public Task<bool> UserCommentedAsync(int recepieId, int  userId);
+        public Task PostCommentAsync(Comment comment);
+        public Task<Comment?> GetCommentByUserAndRecepieAsync(int  recepieId, int userId);
+        public Task DeleteCommentByUserAndRecepieAsync(int recepieId, int userId);
+
     }
 }

@@ -15,7 +15,7 @@ namespace CookRecipesApp.Model.Recepie
         public int UserId { get; set; }
         public string Text { get; set; } = string.Empty;
         [NotNull]
-        public float Rating { get; set; }
+        public int Rating { get; set; }
         [NotNull]
         public string CreatedAt { get; set; } = string.Empty;
     }

@@ -15,8 +15,6 @@ namespace CookRecipesApp.ViewModel
     {
         private IUserService _userService;
 
-        private User newUser;
-
         private UserRegistrationDto newRegistrationDto;
 
         [ObservableProperty] private string nameEntry;
@@ -33,7 +31,6 @@ namespace CookRecipesApp.ViewModel
         public RegisterViewModel(IUserService userService)
         {
             _userService = userService;
-            newUser = new();
 
         }
 
@@ -52,21 +49,22 @@ namespace CookRecipesApp.ViewModel
         [RelayCommand]
         public async Task RegisterBtn()
         {
-            newUser = new User()
+            if (string.IsNullOrWhiteSpace(NameEntry))
             {
-                Name = NameEntry,
-                Surname = SurnameEntry,
-                Email = EmailEntry,
-            };
+                IndicatorVisibility = true;
+                IndicatorText = "Name is mandatory";
+                return;
+            }
+            IndicatorVisibility = false;
 
-            if (!IsValidEmail(newUser.Email)){
+            if (!IsValidEmail(EmailEntry) || string.IsNullOrWhiteSpace(EmailEntry))
+            {
                 IndicatorVisibility = true;
                 IndicatorText = "Invalid email format";
                 return;
             }
-
-            System.Diagnostics.Debug.WriteLine(newUser.Email);
             IndicatorVisibility = false;
+
             if (Password1 != Password2)
             {
                 IndicatorVisibility = true;
@@ -76,11 +74,13 @@ namespace CookRecipesApp.ViewModel
 
             newRegistrationDto = new UserRegistrationDto
             {
-                Email = newUser.Email,
+                Email = EmailEntry,
                 Password = Password1,
+                RegistredAt = DateOnly.FromDateTime(DateTime.Now),
+                Name = NameEntry,
+                Surname= SurnameEntry,
             };
 
-            System.Diagnostics.Debug.WriteLine(newRegistrationDto.Email);
             if (!await _userService.RegisterAsync(newRegistrationDto))
             {
                 IndicatorVisibility = true;
@@ -88,16 +88,11 @@ namespace CookRecipesApp.ViewModel
                 return;
             }
 
-            newRegistrationDto = new();
-
-            await _userService.UpdateUserAsync(newUser);
-
-            if (await _userService.LoginAsync(newUser.Email, Password1) == null)
+            if (await _userService.LoginAsync(newRegistrationDto.Email, Password1) == null)
             {
                 return;
             }
 
-            System.Diagnostics.Debug.WriteLine("All good going to main page");
             Shell.Current.GoToAsync("//TestPage");
 
         }

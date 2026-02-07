@@ -27,7 +27,7 @@ namespace CookRecipesApp.ViewModel
         private ISQLiteAsyncConnection _database;
 
 
-        public bool IsLoggedIn { get; set; }
+        public bool IsLoggedIn;
         [ObservableProperty] private string userName;
 
 
@@ -44,9 +44,11 @@ namespace CookRecipesApp.ViewModel
         {
             IsLoggedIn = await _userService.IsUserLoggedInAsync();
 
+
             if(IsLoggedIn)
             {
-                UserName = "Logged in";
+                var user = await _userService.GetCurrentUserAsync();
+                UserName = $"Logged in {user.Name} email {user.Email}";
             }
             else
             {
@@ -66,11 +68,10 @@ namespace CookRecipesApp.ViewModel
         [RelayCommand]
         public async Task DebugDbBtn()
         {
-            // Vypíše všechny uživatele do Output okna
             var users = await _database.Table<UserDbModel>().ToListAsync();
             foreach (var u in users)
             {
-                System.Diagnostics.Debug.WriteLine($"ID: {u.Id}, Email: '{u.Email}', Hash: {u.PasswordHash}");
+                System.Diagnostics.Debug.WriteLine($"ID: {u.Id},  Name: '{u.Name}',Email: '{u.Email}', Hash: {u.PasswordHash}");
             }
         }
 
@@ -117,6 +118,5 @@ namespace CookRecipesApp.ViewModel
         {
             await _userService.LogoutAsync();
         }
-
     }
 }

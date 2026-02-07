@@ -281,7 +281,7 @@
                     </Border>
                 </Grid>
 
-                <CollectionView Grid.Row="10" ItemsSource="{Binding SelectedRecepie.Comments}" Margin="0, 15, 0, 0">
+                <CollectionView Grid.Row="10" ItemsSource="{Binding VisibleComments}" Margin="0, 15, 0, 0">
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="recepieModels:Comment">
                             <Border
@@ -309,9 +309,9 @@
 
                 <Border BackgroundColor="#212121" StrokeShape="RoundRectangle, 15" Padding="10" Grid.Row="12" Stroke="Transparent" Margin="5">
                     <Grid RowDefinitions="Auto, 40, Auto, Auto">
-                        <Grid ColumnDefinitions="*, *" IsVisible="False">
-                            <ImageButton Grid.Column="1" HorizontalOptions="End" Aspect="AspectFit" MaximumHeightRequest="35" MaximumWidthRequest="35" Source="delete.png" />
-                            <Label Grid.Column="0" HorizontalOptions="Start" Text="2-12-2025" TextColor="{StaticResource PineTeal}" FontSize="21" FontFamily="Nunito"></Label>
+                        <Grid ColumnDefinitions="*, *" IsVisible="{Binding DelGridVisible}">
+                            <ImageButton Grid.Column="1" HorizontalOptions="End" Aspect="AspectFit" MaximumHeightRequest="35" MaximumWidthRequest="35" Source="delete.png" Command="{Binding DeleteCommentCommand}"/>
+                            <Label Grid.Column="0" HorizontalOptions="Start" Text="{Binding CommentTime}" TextColor="{StaticResource PineTeal}" FontSize="21" FontFamily="Nunito"></Label>
                         </Grid>
                         
                         <CollectionView Grid.Row="1"
@@ -328,7 +328,8 @@
                                         CommandParameter="{Binding RatingValue}"
                                         Aspect="AspectFit"
                                         Margin="6"
-                                        Padding="4"/>
+                                        Padding="4"
+                                        IsEnabled="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}},Path=BindingContext.EditorEditable}"/>
                                 </DataTemplate>
                             </CollectionView.ItemTemplate>
                         </CollectionView>
@@ -345,9 +346,9 @@
                             FontFamily="Nunito"
                             FontSize="21"
                             AutoSize="TextChanges"
-                            IsEnabled="False"/>
+                            IsEnabled="{Binding EditorEditable}"/>
 
-                        <Button Grid.Row="3" IsVisible="True" MaximumHeightRequest="45" Text="Post" Background="{StaticResource PineTeal}" BorderColor="{StaticResource Evergreen}" BorderWidth="1" Command="{Binding AddPhotoBtnCommand}" Margin="30, 0"/>
+                        <Button Grid.Row="3" IsVisible="{Binding PostBtnVisible}" MaximumHeightRequest="45" Text="Post" Background="{StaticResource PineTeal}" BorderColor="{StaticResource Evergreen}" BorderWidth="1" Command="{Binding PostCommentCommand}" Margin="30, 0"/>
                     </Grid>
                 </Border>
 

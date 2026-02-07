@@ -1,7 +1,4 @@
-﻿using SQLite;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿
 
 namespace CookRecipesApp.Model.User
 {
@@ -9,7 +6,6 @@ namespace CookRecipesApp.Model.User
     {
         public int Id { get; set; }
 
-        [NotNull, Unique]
         public string Email { get; set; } = string.Empty;
 
 
@@ -18,5 +14,11 @@ namespace CookRecipesApp.Model.User
         public string PasswordHash { get; set; } = string.Empty;
 
         public string PasswordSalt { get; set; } = string.Empty;
+
+        public DateOnly RegistredAt { get; set; }
+
+        public string Name { get; set; }
+        public string Surname { get; set; }
+
     }
 }

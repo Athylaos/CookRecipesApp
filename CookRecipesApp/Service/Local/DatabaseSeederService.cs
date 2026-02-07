@@ -365,18 +365,18 @@ namespace CookRecipesApp.Service
         {
             var comments = new[]
             {
-                new CommentDbModel { RecepieId = 1, UserId = 2, Text = "Best bolognese I've ever made! Family loved it.", Rating = 5.0f, CreatedAt = "2026-01-16T10:00:00Z" },
-                new CommentDbModel { RecepieId = 1, UserId = 3, Text = "Great recipe but I added more garlic. Still perfect!", Rating = 4.5f, CreatedAt = "2026-01-18T10:00:00Z" },
-                new CommentDbModel { RecepieId = 1, UserId = 4, Text = "Good but needed more cooking time for the sauce", Rating = 3.5f, CreatedAt = "2026-01-23T10:00:00Z" },
-                new CommentDbModel { RecepieId = 2, UserId = 2, Text = "Healthy and delicious! Perfect for lunch prep", Rating = 5.0f, CreatedAt = "2026-01-23T10:00:00Z" },
-                new CommentDbModel { RecepieId = 2, UserId = 5, Text = "Very fresh, chicken was tender and juicy", Rating = 4.8f, CreatedAt = "2026-01-25T10:00:00Z" },
-                new CommentDbModel { RecepieId = 3, UserId = 3, Text = "Quick weeknight dinner winner!", Rating = 5.0f, CreatedAt = "2026-01-28T10:00:00Z" },
-                new CommentDbModel { RecepieId = 3, UserId = 6, Text = "Added mushrooms too, was amazing", Rating = 4.7f, CreatedAt = "2026-01-29T10:00:00Z" },
-                new CommentDbModel { RecepieId = 4, UserId = 2, Text = "Salmon cooked perfectly, very moist!", Rating = 4.9f, CreatedAt = "2026-01-11T10:00:00Z" },
-                new CommentDbModel { RecepieId = 4, UserId = 4, Text = "Great omega-3 meal, will make again", Rating = 4.5f, CreatedAt = "2026-01-14T10:00:00Z" },
-                new CommentDbModel { RecepieId = 4, UserId = 7, Text = "Rice was fluffy, salmon tender. 10/10", Rating = 5.0f, CreatedAt = "2026-01-20T10:00:00Z" },
-                new CommentDbModel { RecepieId = 5, UserId = 5, Text = "Perfect breakfast! Made it 3 times this week", Rating = 5.0f, CreatedAt = "2026-01-26T10:00:00Z" },
-                new CommentDbModel { RecepieId = 5, UserId = 3, Text = "Simple and tasty, added spinach too", Rating = 4.6f, CreatedAt = "2026-01-27T10:00:00Z" },
+                new CommentDbModel { RecepieId = 1, UserId = 2, Text = "Best bolognese I've ever made! Family loved it.", Rating = 5, CreatedAt = "2026-01-16T10:00:00Z" },
+                new CommentDbModel { RecepieId = 1, UserId = 3, Text = "Great recipe but I added more garlic. Still perfect!", Rating = 4, CreatedAt = "2026-01-18T10:00:00Z" },
+                new CommentDbModel { RecepieId = 1, UserId = 4, Text = "Good but needed more cooking time for the sauce", Rating = 3, CreatedAt = "2026-01-23T10:00:00Z" },
+                new CommentDbModel { RecepieId = 2, UserId = 2, Text = "Healthy and delicious! Perfect for lunch prep", Rating = 5, CreatedAt = "2026-01-23T10:00:00Z" },
+                new CommentDbModel { RecepieId = 2, UserId = 5, Text = "Very fresh, chicken was tender and juicy", Rating = 4, CreatedAt = "2026-01-25T10:00:00Z" },
+                new CommentDbModel { RecepieId = 3, UserId = 3, Text = "Quick weeknight dinner winner!", Rating = 5, CreatedAt = "2026-01-28T10:00:00Z" },
+                new CommentDbModel { RecepieId = 3, UserId = 6, Text = "Added mushrooms too, was amazing", Rating = 4, CreatedAt = "2026-01-29T10:00:00Z" },
+                new CommentDbModel { RecepieId = 4, UserId = 2, Text = "Salmon cooked perfectly, very moist!", Rating = 4, CreatedAt = "2026-01-11T10:00:00Z" },
+                new CommentDbModel { RecepieId = 4, UserId = 4, Text = "Great omega-3 meal, will make again", Rating = 4, CreatedAt = "2026-01-14T10:00:00Z" },
+                new CommentDbModel { RecepieId = 4, UserId = 7, Text = "Rice was fluffy, salmon tender. 10/10", Rating = 5, CreatedAt = "2026-01-20T10:00:00Z" },
+                new CommentDbModel { RecepieId = 5, UserId = 5, Text = "Perfect breakfast! Made it 3 times this week", Rating = 5, CreatedAt = "2026-01-26T10:00:00Z" },
+                new CommentDbModel { RecepieId = 5, UserId = 3, Text = "Simple and tasty, added spinach too", Rating = 4, CreatedAt = "2026-01-27T10:00:00Z" },
             };
             await _database.InsertAllAsync(comments);
             Debug.WriteLine($"✅ {comments.Length} comments");

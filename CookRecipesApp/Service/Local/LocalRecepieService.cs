@@ -344,5 +344,68 @@ namespace CookRecipesApp.Service
             }
         }
 
+        public async Task<bool> UserCommentedAsync(int recepieId, int userId)
+        {
+            var comment = await _database.Table<CommentDbModel>().FirstAsync(c => c.RecepieId == recepieId && c.UserId == userId);
+            if(comment == null)
+            {
+                return false;
+            }
+            return true;
+
+        }
+
+        public async Task PostCommentAsync(Comment comment)
+        {
+            if (comment == null)
+            {
+                return;
+            }
+
+            CommentDbModel model = new()
+            {
+                RecepieId = comment.RecepieId,
+                UserId = comment.UserId,
+                Rating = comment.Rating,
+                Text = comment.Text,
+                CreatedAt = comment.ToString() ?? DateTime.Now.ToString(),
+            };
+
+            await _database.InsertAsync(model);
+
+        }
+
+        public async Task<Comment?> GetCommentByUserAndRecepieAsync(int recepieId, int userId)
+        {
+            var comment = await _database.Table<CommentDbModel>().FirstAsync(c => c.RecepieId == recepieId && c.UserId == userId);
+            if(comment == null)
+            {
+                return null;
+            }
+            var user = await _userService.GetUserByIdAsync(comment.UserId);
+            return new Comment()
+            {
+                Id = comment.Id,
+                RecepieId = comment.RecepieId,
+                UserId = comment.UserId,
+                UserName = user.Name,
+                Rating = comment.Rating,
+                Text = comment.Text,
+                CreatedAt = DateTime.TryParse(comment.CreatedAt, out var date) ? date : DateTime.Now,
+            };
+        }
+
+        public async Task DeleteCommentByUserAndRecepieAsync(int recepieId, int userId)
+        {
+            var comment = await _database.Table<CommentDbModel>().FirstAsync(c => c.RecepieId == recepieId && c.UserId == userId);
+
+            if(comment == null)
+            {
+                return;
+            }
+
+            await _database.DeleteAsync(comment);
+            return;
+        }
     }
 }

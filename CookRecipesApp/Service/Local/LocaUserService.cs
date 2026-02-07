@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
-using static Android.Graphics.ColorSpace;
 
 namespace CookRecipesApp.Service
 {
@@ -78,7 +77,7 @@ namespace CookRecipesApp.Service
             return user;
         }
 
-        private UserDbModel UserAndUserRegistrationDtoToUserDbModel(User? user, UserRegistrationDto? userDto)
+        private UserDbModel UserToUserDbModel(User user)
         {
             UserDbModel userDbModel = new UserDbModel();
 
@@ -92,25 +91,32 @@ namespace CookRecipesApp.Service
                 userDbModel.UserCreated = user.UserCreated.ToString("o");
                 userDbModel.Role = user.Role;
                 userDbModel.AvatarUrl = user.AvatarUrl;
+                return userDbModel;
             }
-
-            if(userDto != null)
+            else
             {
-                if (string.IsNullOrEmpty(userDbModel.Email))
-                {
-                    userDbModel.Email = userDto.Email;
-                }
-                userDbModel.PasswordHash = userDto.PasswordHash;
-                userDbModel.PasswordSalt = userDto.PasswordSalt;
-                userDbModel.UserCreated = DateOnly.FromDateTime(DateTime.Now).ToString("o");
+                return new();
             }
-
-            return userDbModel;
         }
 
-
-
-
+        private UserDbModel UserRegistrationDtoToUserDbModel(UserRegistrationDto userDto)
+        {
+            UserDbModel userDbModel = new UserDbModel();
+            if (userDto != null)
+            {
+                userDbModel.Email = userDto.Email;
+                userDbModel.PasswordHash = userDto.PasswordHash;
+                userDbModel.PasswordSalt = userDto.PasswordSalt;
+                userDbModel.UserCreated = userDto.RegistredAt.ToString("o");
+                userDbModel.Name = userDto.Name;
+                userDbModel.Surname= userDto.Surname;
+                return userDbModel;
+            }
+            else
+            {
+                return new();
+            }
+        }
 
         public async Task ChangePasswordAsync(int userId, string oldPassword, string newPassword)
         {
@@ -196,7 +202,7 @@ namespace CookRecipesApp.Service
             registration.PasswordHash = hash;
             registration.PasswordSalt = salt;
 
-            var userDbModel = UserAndUserRegistrationDtoToUserDbModel(null, registration);
+            var userDbModel = UserRegistrationDtoToUserDbModel(registration);
 
             await _database.InsertAsync(userDbModel);
             return true;
@@ -204,16 +210,16 @@ namespace CookRecipesApp.Service
 
         public async Task RememberCurrentUserAsync(User user)
         {
-            if (user == null) throw new ArgumentNullException("user is null");
+            if (user == null) throw new ArgumentNullException("Argument is null");
 
             await SecureStorage.SetAsync("current_user_id", user.Id.ToString());
         }
 
-        public async Task UpdateUserAsync(User user) // only used for non-sensitive information, use ChangePasswordAsync for changing paswd
+        public async Task UpdateUserAsync(User user)
         {
             if (user == null) throw new ArgumentNullException("Argument is null");
 
-            var userDbModelNew = UserAndUserRegistrationDtoToUserDbModel(user, null);
+            var userDbModelNew = UserToUserDbModel(user);
 
             await _database.UpdateAsync(userDbModelNew);
         }
