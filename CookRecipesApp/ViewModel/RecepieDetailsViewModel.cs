@@ -231,7 +231,6 @@ namespace CookRecipesApp.ViewModel
             await _recepieService.DeleteCommentByUserAndRecepieAsync(recepieId, user.Id);
             VisibleComments.Remove(CommentOfUser);
 
-
             PostBtnVisible = true;
             EditorEditable = true;
             DelGridVisible = false;
