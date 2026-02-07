@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using CookRecipesApp.Model.Category;
 using CookRecipesApp.Model.Ingredient;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace CookRecipesApp.Model.Recepie
 {
@@ -14,7 +15,7 @@ namespace CookRecipesApp.Model.Recepie
         Chef = 4,
     }
 
-    public class Recepie
+    public partial class Recepie : ObservableObject
     {
         public int Id { get; set; }
         public int UserId { get; set; }
@@ -34,8 +35,11 @@ namespace CookRecipesApp.Model.Recepie
         public float Fiber { get; set; }
 
         public DateTime RecepieCreated = DateTime.Now;
-        public float Rating { get; set; }
-        public int UsersRated { get; set; }
+
+        [ObservableProperty]
+        private float rating;
+        [ObservableProperty]
+        private int usersRated;
         public List<Comment> Comments { get; set; } = new();
 
         public List<Category.Category> Categories { get; set; } = new();

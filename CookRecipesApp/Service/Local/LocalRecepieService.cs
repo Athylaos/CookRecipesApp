@@ -1,13 +1,14 @@
-﻿using System;
+﻿using Android.Net.Wifi.Rtt;
+using CookRecipesApp.Model.Category;
+using CookRecipesApp.Model.Ingredient;
+using CookRecipesApp.Model.Recepie;
+using CookRecipesApp.Service.Interface;
+using Microsoft.Maui.Graphics.Text;
+using SQLite;
+using System;
 using System.Collections.Generic;
 using System.Text;
-using CookRecipesApp.Model.Recepie;
-using CookRecipesApp.Model.Ingredient;
-using CookRecipesApp.Model.Category;
-using SQLite;
 using System.Threading.Tasks;
-using Microsoft.Maui.Graphics.Text;
-using CookRecipesApp.Service.Interface;
 
 namespace CookRecipesApp.Service
 {
@@ -32,7 +33,7 @@ namespace CookRecipesApp.Service
             var ingredient = await _ingredientService.GetIngredientAsync(dbModel.IngredientId);
             var unit = await _database.Table<UnitDbModel>().FirstOrDefaultAsync(u => u.Id == dbModel.UnitId);
 
-            var sui = new Ingredient.IngredientUnitInfo{ Unit = unit, ConversionFactor = dbModel.ConversionFactor };
+            var sui = new Ingredient.IngredientUnitInfo { Unit = unit, ConversionFactor = dbModel.ConversionFactor };
 
             return new RecepieIngredient
             {
@@ -71,14 +72,14 @@ namespace CookRecipesApp.Service
                 result.Add(await DbToRecepieIngredientAsync(model));
             }
             return result;
-        }     
-        
+        }
+
         public async Task<List<RecepieStep>> GetAllStepsForRecepieAsync(int recepieId)
         {
             var rsDbModels = await _database.Table<RecepieStepDbModel>().Where(rs => recepieId == rs.RecepieId).ToListAsync();
-            List<RecepieStep> result= new();
+            List<RecepieStep> result = new();
 
-            foreach(var model in rsDbModels)
+            foreach (var model in rsDbModels)
             {
                 result.Add(new RecepieStep
                 {
@@ -89,7 +90,7 @@ namespace CookRecipesApp.Service
                 });
             }
 
-            return result;            
+            return result;
         }
 
         public async Task<List<Comment>> GetAllCommentsForRecepieAsync(int recepieId)
@@ -105,7 +106,7 @@ namespace CookRecipesApp.Service
                     Id = model.Id,
                     RecepieId = model.RecepieId,
                     UserId = model.UserId,
-                    UserName =  user.Name ?? "null",
+                    UserName = user.Name ?? "null",
                     Text = model.Text,
                     Rating = model.Rating,
                     CreatedAt = DateTime.TryParse(model.CreatedAt, out var date) ? date : DateTime.Now,
@@ -141,7 +142,7 @@ namespace CookRecipesApp.Service
 
                 RecepieCreated = DateTime.TryParse(recepieDbModel.RecepieCreated, out var date) ? date : DateTime.Now,
                 Rating = recepieDbModel.Rating,
-                UsersRated = recepieDbModel.UsersRated
+                UsersRated = recepieDbModel.UsersRated,
 
             };
             return recepie;
@@ -170,7 +171,7 @@ namespace CookRecipesApp.Service
 
                 RecepieCreated = recepie.RecepieCreated.ToString(),
                 Rating = recepie.Rating,
-                UsersRated = recepie.UsersRated
+                UsersRated = recepie.UsersRated,
                 //comments
 
                 //categories
@@ -208,7 +209,7 @@ namespace CookRecipesApp.Service
                 recepieList.Add(await RecepieDbModelToRecepieAsync(recepie));
             }
             return recepieList;
-            
+
         }
 
         public async Task<Recepie> GetRecepieAsync(int id)
@@ -313,8 +314,8 @@ namespace CookRecipesApp.Service
 
         public async Task ChangeFavoriteAsync(int recepieId, int userId)
         {
-            var ru = await _database.Table<RecepieUserDbModel>().FirstOrDefaultAsync(u => u.RecepieId == recepieId &&  u.UserId == userId);
-            if(ru == null)
+            var ru = await _database.Table<RecepieUserDbModel>().FirstOrDefaultAsync(u => u.RecepieId == recepieId && u.UserId == userId);
+            if (ru == null)
             {
                 ru = new RecepieUserDbModel()
                 {
@@ -334,7 +335,7 @@ namespace CookRecipesApp.Service
         public async Task<bool> IsFavoriteAsync(int recepieId, int userId)
         {
             var ru = await _database.Table<RecepieUserDbModel>().FirstOrDefaultAsync(u => u.RecepieId == recepieId && u.UserId == userId);
-            if( ru == null)
+            if (ru == null)
             {
                 return false;
             }
@@ -346,8 +347,8 @@ namespace CookRecipesApp.Service
 
         public async Task<bool> UserCommentedAsync(int recepieId, int userId)
         {
-            var comment = await _database.Table<CommentDbModel>().FirstAsync(c => c.RecepieId == recepieId && c.UserId == userId);
-            if(comment == null)
+            var comment = await _database.Table<CommentDbModel>().FirstOrDefaultAsync(c => c.RecepieId == recepieId && c.UserId == userId);
+            if (comment == null)
             {
                 return false;
             }
@@ -355,11 +356,39 @@ namespace CookRecipesApp.Service
 
         }
 
-        public async Task PostCommentAsync(Comment comment)
+        private async Task<(float, int)> RecalculateRecipeRatingAsync(int recepieId)
+        {
+            var comments = await _database
+                .Table<CommentDbModel>()
+                .Where(c => c.RecepieId == recepieId)
+                .ToListAsync();
+
+            if (!comments.Any())
+            {
+                await _database.ExecuteAsync(
+                    "UPDATE RecepieDbModel SET Rating = 0, UsersRated = 0 WHERE Id = ?",
+                    recepieId
+                );
+                return(0, 0);
+            }
+
+            var avgRating = comments.Average(c => c.Rating);
+            var usersRated = comments.Count;
+
+            await _database.ExecuteAsync(
+                "UPDATE RecepieDbModel SET Rating = ?, UsersRated = ? WHERE Id = ?",
+                (float)Math.Round(avgRating, 2),
+                usersRated,
+                recepieId
+            );
+            return ((float)Math.Round(avgRating, 2), usersRated);
+        }
+
+        public async Task<(float, int)> PostCommentAsync(Comment comment)
         {
             if (comment == null)
             {
-                return;
+                return(0, 0);
             }
 
             CommentDbModel model = new()
@@ -372,7 +401,8 @@ namespace CookRecipesApp.Service
             };
 
             await _database.InsertAsync(model);
-
+            var rating = await RecalculateRecipeRatingAsync(comment.RecepieId);
+            return (rating);
         }
 
         public async Task<Comment?> GetCommentByUserAndRecepieAsync(int recepieId, int userId)
@@ -395,17 +425,18 @@ namespace CookRecipesApp.Service
             };
         }
 
-        public async Task DeleteCommentByUserAndRecepieAsync(int recepieId, int userId)
+        public async Task<(float, int)> DeleteCommentByUserAndRecepieAsync(int recepieId, int userId)
         {
             var comment = await _database.Table<CommentDbModel>().FirstAsync(c => c.RecepieId == recepieId && c.UserId == userId);
 
             if(comment == null)
             {
-                return;
+                return (0, 0);
             }
 
             await _database.DeleteAsync(comment);
-            return;
+            var rating = await RecalculateRecipeRatingAsync(recepieId);
+            return(rating);
         }
     }
 }

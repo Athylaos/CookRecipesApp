@@ -38,12 +38,11 @@ namespace CookRecipesApp.ViewModel
         [ObservableProperty]
         private ObservableCollection<Comment> visibleComments = new();
 
-
         private int ratingValue;
         [ObservableProperty]
         private DateOnly commentTime;
         [ObservableProperty]
-        private Comment commentOfUser;
+        private Comment commentOfUser = new Comment();
         [ObservableProperty]
         private bool editorEditable = true;
         [ObservableProperty]
@@ -82,6 +81,7 @@ namespace CookRecipesApp.ViewModel
 
                     FavoriteIconPath = fv ? "favorite_full.png" : "favorite.png";
                 }
+                VisibleComments.Clear();
                 foreach(var c in SelectedRecepie.Comments.Take(10))
                 {
                     VisibleComments.Add(c);
@@ -167,9 +167,12 @@ namespace CookRecipesApp.ViewModel
 
             CommentOfUser = comment;
             CommentTime = DateOnly.FromDateTime(comment.CreatedAt);
-            await _recepieService.PostCommentAsync(comment);
+            var res = await _recepieService.PostCommentAsync(comment);
 
-            VisibleComments.Add(comment);
+            SelectedRecepie.Rating = res.Item1;
+            SelectedRecepie.UsersRated = res.Item2;
+
+            VisibleComments.Add(comment);           
 
             PostBtnVisible = false;
             EditorEditable = false;
@@ -217,6 +220,8 @@ namespace CookRecipesApp.ViewModel
             PostBtnVisible = true;
             EditorEditable = true;
             DelGridVisible = false;
+            CommentText = "";
+            SelectRating(1);
         }
 
         [RelayCommand]
@@ -228,7 +233,9 @@ namespace CookRecipesApp.ViewModel
             }
 
             var user = await _userService.GetCurrentUserAsync();
-            await _recepieService.DeleteCommentByUserAndRecepieAsync(recepieId, user.Id);
+            var res = await _recepieService.DeleteCommentByUserAndRecepieAsync(recepieId, user.Id);
+            SelectedRecepie.Rating = res.Item1;
+            SelectedRecepie.UsersRated = res.Item2;
             VisibleComments.Remove(CommentOfUser);
 
             PostBtnVisible = true;

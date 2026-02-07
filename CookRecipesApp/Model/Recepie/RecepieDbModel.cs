@@ -36,7 +36,5 @@ namespace CookRecipesApp.Model.Recepie
         public float Rating { get; set; }
         public int UsersRated { get; set; }
 
-
-
     }
 }
