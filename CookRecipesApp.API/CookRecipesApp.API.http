@@ -1,0 +1,6 @@
+@CookRecipesApp.API_HostAddress = http://localhost:5017
+
+GET {{CookRecipesApp.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

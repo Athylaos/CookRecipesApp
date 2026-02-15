@@ -10,6 +10,16 @@
 *.userosscache
 *.sln.docstates
 
+# Hesla a lokální nastavení
+appsettings.json
+appsettings.Development.json
+usersecrets.json
+
+# Kompilace a binárky
+bin/
+obj/
+*.user
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 

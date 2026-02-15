@@ -129,6 +129,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\CookRecipesApp.Shared\CookRecipesApp.Shared.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <Compile Update="View\RecepiesCategoryPage.xaml.cs">
 	    <DependentUpon>RecepiesCategoryPage.xaml</DependentUpon>
 	  </Compile>
