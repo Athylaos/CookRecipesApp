@@ -164,33 +164,33 @@
                         </HorizontalStackLayout>
                         <HorizontalStackLayout Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" VerticalOptions="Center" HorizontalOptions="End" Padding="0, 10, 10, 0">
                             <Image WidthRequest="30" HeightRequest="30" Source="calories.png" Margin="0, 0, 4, 0"></Image>
-                            <Label Text="{Binding SelectedRecepie.Calories}" TextColor="{StaticResource Porcelain}" FontSize="23" FontAttributes="Bold" FontFamily="Nunito" VerticalOptions="Center"></Label>
+                            <Label Text="{Binding SelectedRecepie.NutritionsPerUnit.Calories}" TextColor="{StaticResource Porcelain}" FontSize="23" FontAttributes="Bold" FontFamily="Nunito" VerticalOptions="Center"></Label>
                             <Label Text=" kcal" TextColor="{StaticResource Porcelain}" FontSize="20" FontFamily="Nunito" VerticalOptions="Center"></Label>
                         </HorizontalStackLayout>
 
                         <HorizontalStackLayout Grid.Row="1" Grid.Column="0"  VerticalOptions="Center" HorizontalOptions="End">
                             <Label Text="Protein " TextColor="{StaticResource Porcelain}" FontSize="20" FontFamily="Nunito"></Label>
-                            <Label Text="{Binding SelectedRecepie.Proteins}" TextColor="{StaticResource Porcelain}" FontSize="20" FontAttributes="Bold" FontFamily="Nunito"></Label>
+                            <Label Text="{Binding SelectedRecepie.NutritionsPerUnit.Proteins}" TextColor="{StaticResource Porcelain}" FontSize="20" FontAttributes="Bold" FontFamily="Nunito"></Label>
                             <Label Text="g  |" TextColor="{StaticResource Porcelain}" FontSize="20" FontFamily="Nunito"></Label>
 
                         </HorizontalStackLayout>
                         <HorizontalStackLayout Grid.Row="1" Grid.Column="1"  VerticalOptions="Center" HorizontalOptions="Start">
                             <Label Text="  " TextColor="{StaticResource Porcelain}" FontSize="20" FontFamily="Nunito"></Label>
                             <Label Text="Carbs " TextColor="{StaticResource Porcelain}" FontSize="20" FontFamily="Nunito"></Label>
-                            <Label Text="{Binding SelectedRecepie.Carbohydrates}" TextColor="{StaticResource Porcelain}" FontSize="20" FontAttributes="Bold" FontFamily="Nunito"></Label>
+                            <Label Text="{Binding SelectedRecepie.NutritionsPerUnit.Carbohydrates}" TextColor="{StaticResource Porcelain}" FontSize="20" FontAttributes="Bold" FontFamily="Nunito"></Label>
                             <Label Text="g" TextColor="{StaticResource Porcelain}" FontSize="20" FontFamily="Nunito"></Label>
                         </HorizontalStackLayout>
 
                         <HorizontalStackLayout Grid.Row="2" Grid.Column="0"  VerticalOptions="Center" HorizontalOptions="End">
                             <Label Text="Fat " TextColor="{StaticResource Porcelain}" FontSize="20" FontFamily="Nunito"></Label>
-                            <Label Text="{Binding SelectedRecepie.Fats}" TextColor="{StaticResource Porcelain}" FontSize="20" FontAttributes="Bold" FontFamily="Nunito"></Label>
+                            <Label Text="{Binding SelectedRecepie.NutritionsPerUnit.Fats}" TextColor="{StaticResource Porcelain}" FontSize="20" FontAttributes="Bold" FontFamily="Nunito"></Label>
                             <Label Text="g  |" TextColor="{StaticResource Porcelain}" FontSize="20" FontFamily="Nunito"></Label>
 
                         </HorizontalStackLayout>
                         <HorizontalStackLayout Grid.Row="2" Grid.Column="1"  VerticalOptions="Center" HorizontalOptions="Start">
                             <Label Text="  " TextColor="{StaticResource Porcelain}" FontSize="20" FontFamily="Nunito"></Label>
                             <Label Text="Fiber " TextColor="{StaticResource Porcelain}" FontSize="20" FontFamily="Nunito"></Label>
-                            <Label Text="{Binding SelectedRecepie.Fiber}" TextColor="{StaticResource Porcelain}" FontSize="20" FontAttributes="Bold" FontFamily="Nunito"></Label>
+                            <Label Text="{Binding SelectedRecepie.NutritionsPerUnit.Fiber}" TextColor="{StaticResource Porcelain}" FontSize="20" FontAttributes="Bold" FontFamily="Nunito"></Label>
                             <Label Text="g" TextColor="{StaticResource Porcelain}" FontSize="20" FontFamily="Nunito"></Label>
                         </HorizontalStackLayout>
 

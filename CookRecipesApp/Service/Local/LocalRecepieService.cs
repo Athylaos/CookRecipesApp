@@ -1,14 +1,13 @@
-﻿using Android.Net.Wifi.Rtt;
-using CookRecipesApp.Model.Category;
+﻿using CookRecipesApp.Model.Category;
 using CookRecipesApp.Model.Ingredient;
 using CookRecipesApp.Model.Recepie;
 using CookRecipesApp.Service.Interface;
-using Microsoft.Maui.Graphics.Text;
 using SQLite;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using static CookRecipesApp.Model.Ingredient.Ingredient;
 
 namespace CookRecipesApp.Service
 {
@@ -68,9 +67,9 @@ namespace CookRecipesApp.Service
 
             var result = new List<RecepieIngredient>();
             foreach (var model in dbModels)
-            {
+                {
                 result.Add(await DbToRecepieIngredientAsync(model));
-            }
+                }
             return result;
         }
 
@@ -134,11 +133,14 @@ namespace CookRecipesApp.Service
                 Comments = await GetAllCommentsForRecepieAsync(recepieDbModel.Id),
                 Categories = await _categoryService.GetRecepieCategoriesAsync(recepieDbModel.Id),
 
-                Calories = recepieDbModel.Calories,
-                Proteins = recepieDbModel.Proteins,
-                Fats = recepieDbModel.Fats,
-                Carbohydrates = recepieDbModel.Carbohydrates,
-                Fiber = recepieDbModel.Fiber,
+                NutritionsPerUnit = new Nutritions()
+                {
+                    Calories = recepieDbModel.Calories,
+                    Proteins = recepieDbModel.Proteins,
+                    Fats = recepieDbModel.Fats,
+                    Carbohydrates = recepieDbModel.Carbohydrates,
+                    Fiber = recepieDbModel.Fiber,
+                },
 
                 RecepieCreated = DateTime.TryParse(recepieDbModel.RecepieCreated, out var date) ? date : DateTime.Now,
                 Rating = recepieDbModel.Rating,
@@ -162,12 +164,11 @@ namespace CookRecipesApp.Service
                 ServingUnitId = recepie.ServingUnit.Id,
                 Difficulty = (int)recepie.DifficultyLevel,
                 //ingredients
-
-                Calories = recepie.Calories,
-                Proteins = recepie.Proteins,
-                Fats = recepie.Fats,
-                Carbohydrates = recepie.Carbohydrates,
-                Fiber = recepie.Fiber,
+                Calories = recepie.NutritionsPerUnit.Calories,
+                Proteins = recepie.NutritionsPerUnit.Proteins,
+                Fats = recepie.NutritionsPerUnit.Fats,
+                Carbohydrates = recepie.NutritionsPerUnit.Carbohydrates,
+                Fiber = recepie.NutritionsPerUnit.Fiber,
 
                 RecepieCreated = recepie.RecepieCreated.ToString(),
                 Rating = recepie.Rating,
@@ -232,6 +233,8 @@ namespace CookRecipesApp.Service
             await SaveRecepieIngredientsAsync(recepie.Id, recepie.Ingredients);
             await SaveAllRecepieCommentsAsync(recepie.Id, recepie.Comments);
             await SaveRecepieCategoriesAsync(recepie.Id, recepie.Categories);
+
+            await RecalculateRecepieNutritonsAsync(recepie.Id);
 
             return;
         }
@@ -382,6 +385,44 @@ namespace CookRecipesApp.Service
                 recepieId
             );
             return ((float)Math.Round(avgRating, 2), usersRated);
+        }
+
+
+        private async Task<Nutritions> RecalculateRecepieNutritonsAsync(int recepieId)
+        {
+            var recepie = await GetRecepieAsync(recepieId);
+
+            Nutritions calNutri = new();
+
+            foreach(var ri in recepie.Ingredients)
+            {
+                float multiplier = (ri.Quantity * ri.SelectedUnitInfo.ConversionFactor) / 100f;
+
+                calNutri.Calories += ri.Ingredient.Nutritions.Calories * multiplier;
+                calNutri.Proteins += ri.Ingredient.Nutritions.Proteins * multiplier;
+                calNutri.Fats += ri.Ingredient.Nutritions.Fats * multiplier;
+                calNutri.Carbohydrates += ri.Ingredient.Nutritions.Fats * multiplier;
+                calNutri.Fiber += ri.Ingredient.Nutritions.Fiber * multiplier;
+            }
+
+            int servings = recepie.Servings > 0 ? recepie.Servings : 1;
+
+            var result = new Nutritions()
+            {
+                Calories = float.Round((calNutri.Calories / servings), 1),
+                Proteins = float.Round((calNutri.Proteins / servings), 1),
+                Fats = float.Round((calNutri.Fats / servings), 1),
+                Carbohydrates = float.Round((calNutri.Carbohydrates / servings), 1),
+                Fiber = float.Round((calNutri.Fiber / servings), 1),
+            };
+
+            await _database.ExecuteAsync(
+                "UPDATE RecepieDbModel SET Calories = ?, Proteins = ?, Fats = ?, Carbohydrates = ?, Fiber = ? WHERE Id = ?",
+                result.Calories, result.Proteins, result.Fats, result.Carbohydrates, result.Fiber, recepieId);
+
+            return result;
+
+
         }
 
         public async Task<(float, int)> PostCommentAsync(Comment comment)

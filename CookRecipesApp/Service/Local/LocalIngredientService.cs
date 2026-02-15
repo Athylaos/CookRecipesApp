@@ -1,6 +1,7 @@
 ﻿
 using CookRecipesApp.Model.Ingredient;
 using CookRecipesApp.Service.Interface;
+using CookRecipesApp.Model.Recepie;
 using SQLite;
 
 namespace CookRecipesApp.Service
@@ -39,12 +40,15 @@ namespace CookRecipesApp.Service
                 Name = ingredientDbModel.Name,
                 PossibleUnits = possibleIngredientUnits,
                 DefaultUnit = allUnits.FirstOrDefault(u => u.Id == ingredientDbModel.DefaultUnitId),
-
-                Calories = ingredientDbModel.Calories,
-                Proteins = ingredientDbModel.Proteins,
-                Fats = ingredientDbModel.Fats,
-                Carbohydrates = ingredientDbModel.Carbohydrates,
-                Fiber = ingredientDbModel.Fiber,
+                
+                Nutritions = new Nutritions()
+                {
+                    Calories = ingredientDbModel.Calories,
+                    Proteins = ingredientDbModel.Proteins,
+                    Fats = ingredientDbModel.Fats,
+                    Carbohydrates = ingredientDbModel.Carbohydrates,
+                    Fiber = ingredientDbModel.Fiber,
+                }
             };
         }
 
@@ -60,11 +64,11 @@ namespace CookRecipesApp.Service
                 Name = ingredient.Name,
                 DefaultUnitId = defaultUnitId,
 
-                Calories = ingredient.Calories,
-                Proteins = ingredient.Proteins,
-                Fats = ingredient.Fats,
-                Carbohydrates = ingredient.Carbohydrates,
-                Fiber = ingredient.Fiber
+                Calories = ingredient.Nutritions.Calories,
+                Proteins = ingredient.Nutritions.Proteins,
+                Fats = ingredient.Nutritions.Fats,
+                Carbohydrates = ingredient.Nutritions.Carbohydrates,
+                Fiber = ingredient.Nutritions.Fiber
             };
         }
 
@@ -138,11 +142,14 @@ namespace CookRecipesApp.Service
                     DefaultUnit = defaultUnit,
                     PossibleUnits = possibleUnitsInfo,
 
-                    Calories = dbModel.Calories,
-                    Proteins = dbModel.Proteins,
-                    Fats = dbModel.Fats,
-                    Carbohydrates = dbModel.Carbohydrates,
-                    Fiber = dbModel.Fiber
+                    Nutritions = new Nutritions()
+                    {
+                        Calories = dbModel.Calories,
+                        Proteins = dbModel.Proteins,
+                        Fats = dbModel.Fats,
+                        Carbohydrates = dbModel.Carbohydrates,
+                        Fiber = dbModel.Fiber,
+                    }
                 };
             }).ToList();
 
