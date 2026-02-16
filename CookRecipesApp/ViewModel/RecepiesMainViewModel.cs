@@ -1,11 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using CookRecipesApp.Model.Category;
-using CookRecipesApp.Model.Recepie;
+using CookRecipesApp.Shared.Models;
 using CookRecipesApp.Service;
 using CookRecipesApp.Service.Interface;
 using CookRecipesApp.View;
-using SQLite;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,35 +12,35 @@ using System.Text;
 
 namespace CookRecipesApp.ViewModel
 {
-    public partial class RecepiesMainViewModel : ObservableObject
+    public partial class RecipesMainViewModel : ObservableObject
     {
         private ICategoryService _categoryService;
         private IIngredientService _ingredientsService;
-        private IRecepieService _recepiesService;
+        private IRecipeService _recipesService;
         private IUserService _userService;
         [ObservableProperty] private string test;
 
         public ObservableCollection<Category> Categories { get; set; } = new();
-        public ObservableCollection<Recepie> FavouriteRecipes { get; set; } = new();
+        public ObservableCollection<Recipe> FavouriteRecipes { get; set; } = new();
 
-        public RecepiesMainViewModel(ICategoryService category, IIngredientService ingredient, IRecepieService recepie, IUserService user)
+        public RecipesMainViewModel(ICategoryService category, IIngredientService ingredient, IRecipeService recipe, IUserService user)
         {
             _categoryService = category;
             _ingredientsService = ingredient;
-            _recepiesService = recepie;
+            _recipesService = recipe;
             _userService = user;
         }
 
         public async void StartAsync()
         {
-            var cts = await _categoryService.GetAllCategoriesAsync(true);
+            var cts = await _categoryService.GetAllCategoriesAsync();
             Categories.Clear();
             foreach (var ct in cts)
             {
                 Categories.Add(ct);
             }
 
-            var rcps = await _recepiesService.GetRecepiesAsync(-1);
+            var rcps = await _recipesService.GetRecipesAsync(-1);
             rcps = rcps.Take(10).ToList();
             FavouriteRecipes.Clear();
             foreach (var r in rcps)
@@ -53,12 +51,12 @@ namespace CookRecipesApp.ViewModel
         }
 
         [RelayCommand]
-        public async Task AddRecepieBtn()
+        public async Task AddRecipeBtn()
         {
             Debug.WriteLine(_userService.IsUserLoggedInAsync());
             if (await _userService.IsUserLoggedInAsync())
             {
-                await Shell.Current.GoToAsync(nameof(AddRecepiePage));
+                await Shell.Current.GoToAsync(nameof(AddRecipePage));
             }
             else
             {               
@@ -71,15 +69,15 @@ namespace CookRecipesApp.ViewModel
         {
             if (category == null) return;
 
-            await Shell.Current.GoToAsync($"{nameof(RecepiesCategoryPage)}?CategoryId={category.Id}",true);
+            await Shell.Current.GoToAsync($"{nameof(RecipesCategoryPage)}?CategoryId={category.Id}",true);
         }
 
         [RelayCommand]
-        public async Task RecepieBtn(Recepie recepie)
+        public async Task RecipeBtn(Recipe recipe)
         {
-            if(recepie == null) return;
+            if(recipe == null) return;
 
-            await Shell.Current.GoToAsync($"{nameof(RecepieDetailsPage)}?RecepieId={recepie.Id}", true);
+            await Shell.Current.GoToAsync($"{nameof(RecipeDetailsPage)}?RecipeId={recipe.Id}", true);
         }
     }
 }

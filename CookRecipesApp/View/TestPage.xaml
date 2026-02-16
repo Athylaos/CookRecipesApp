@@ -20,10 +20,10 @@
 
         <Button Text="Login" Command="{Binding LoginBtnCommand}"></Button>
         <Button Text="Debug print all users" Command="{Binding DebugDbBtnCommand}"></Button>
-        <Button Text="RecepiesMainPage" Command="{Binding RecepiesMainPageBtnCommand}"/>
+        <Button Text="RecepiesMainPage" Command="{Binding RecipesMainPageBtnCommand}"/>
         <Button Text="Debug print all categories" Command="{Binding CategoryDbBtnCommand}"/>
-        <Button Text="Debug print all recepies" Command="{Binding RecepieDbBtnCommand}"/>
-        <Button Text="Test recepiedetail page" Command="{Binding RecepieDetailPageBtnCommand}"></Button>
+        <Button Text="Debug print all recepies" Command="{Binding RecipeDbBtnCommand}"/>
+        <Button Text="Test recepiedetail page" Command="{Binding RecipeDetailPageBtnCommand}"></Button>
         <Button Text="Logout" Command="{Binding LogoutBtnCommand}"></Button>
 
     </VerticalStackLayout>

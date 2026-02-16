@@ -1,17 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using CookRecipesApp.Model.User;
-using CookRecipesApp.Model.Category;
 using CookRecipesApp.Service.Interface;
 using CookRecipesApp.View;
-using SQLite;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
-using System.Runtime.CompilerServices;
-using CookRecipesApp.Model.Recepie;
-using System.Threading.Tasks.Dataflow;
 using CookRecipesApp.Service;
 
 
@@ -22,26 +15,24 @@ namespace CookRecipesApp.ViewModel
     {
         private IUserService _userService;
         private ICategoryService _categoryService;
-        private IRecepieService _recepieService;
-
-        private ISQLiteAsyncConnection _database;
+        private IRecipeService _recipeService;
 
 
         public bool IsLoggedIn;
         [ObservableProperty] private string userName;
 
 
-        public TestViewModel(IUserService userService, ICategoryService categoryService, IRecepieService recepieService)
+        public TestViewModel(IUserService userService, ICategoryService categoryService, IRecipeService recipeService)
         {
             _userService = userService;
             _categoryService = categoryService;
-            _recepieService = recepieService;
-            _database = new SQLiteConnectionFactory().CreateConnection();
+            _recipeService = recipeService;
 
         }
 
         public async void OnAppStartAsync()
         {
+            /*
             IsLoggedIn = await _userService.IsUserLoggedInAsync();
 
 
@@ -54,7 +45,7 @@ namespace CookRecipesApp.ViewModel
             {
                 UserName = "Not logged in";
             }
-
+            */
         }
 
         [RelayCommand]
@@ -68,49 +59,55 @@ namespace CookRecipesApp.ViewModel
         [RelayCommand]
         public async Task DebugDbBtn()
         {
+            /*
             var users = await _database.Table<UserDbModel>().ToListAsync();
             foreach (var u in users)
             {
                 System.Diagnostics.Debug.WriteLine($"ID: {u.Id},  Name: '{u.Name}',Email: '{u.Email}', Hash: {u.PasswordHash}");
             }
+            */
         }
 
         [RelayCommand]
         public async Task CategoryDbBtn()
         {
+            /*
             var categories = await _database.Table<CategoryDbModel>().ToListAsync();
             foreach(var c in categories)
             {
                 System.Diagnostics.Debug.WriteLine($"ID: {c.Id}, Name: '{c.Name}', Image: {c.PictureUrl}");
             }
+            */
         }
 
         [RelayCommand]
-        public async Task RecepieDbBtn()
+        public async Task RecipeDbBtn()
         {
-            var recepies = await _database.Table<RecepieDbModel>().ToListAsync();
-            var recepiesDb = await _recepieService.GetRecepiesAsync(-1);
-            foreach (var r in recepies)
+            /*
+            var recipes = await _database.Table<RecipeDbModel>().ToListAsync();
+            var recipesDb = await _recipeService.GetRecipesAsync(-1);
+            foreach (var r in recipes)
             {
                 System.Diagnostics.Debug.WriteLine($"ID: {r.Id}, Name: '{r.Title}', Image: {r.PhotoPath}");
             }
-            foreach (var r in recepiesDb)
+            foreach (var r in recipesDb)
             {
                 System.Diagnostics.Debug.WriteLine($"From service ID: {r.Id}, Name: '{r.Title}', Image: {r.PhotoPath}");
             }
+            */
         }
 
 
         [RelayCommand]
-        public void RecepiesMainPageBtn()
+        public void RecipesMainPageBtn()
         {
-            Shell.Current.GoToAsync("//RecepiesMainPage");
+            Shell.Current.GoToAsync("//RecipesMainPage");
         }
 
         [RelayCommand]
-        public async Task RecepieDetailPageBtn()
+        public async Task RecipeDetailPageBtn()
         {
-            await Shell.Current.GoToAsync(nameof(RecepieDetailsPage));
+            await Shell.Current.GoToAsync(nameof(RecipeDetailsPage));
         }
 
         [RelayCommand]

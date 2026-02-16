@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Core;
-using CommunityToolkit.Mvvm;
-using CookRecipesApp.Service;
+using CookRecipesApp.Service.Services;
 using CookRecipesApp.View;
 using CookRecipesApp.View.Popups;
 using CookRecipesApp.ViewModel;
@@ -50,11 +49,10 @@ namespace CookRecipesApp
 #if DEBUG
             builder.Logging.AddDebug();
 #endif
-            builder.Services.AddSingleton<SQLiteConnectionFactory>();
-            builder.Services.AddSingleton<IIngredientService, LocalIngredientService>();
-            builder.Services.AddSingleton<IRecepieService, LocalRecepieService>();
-            builder.Services.AddSingleton<ICategoryService, LocalCategoryService>();
-            builder.Services.AddSingleton<IUserService, LocalUserService>();
+            builder.Services.AddSingleton<IIngredientService, IngredientService>();
+            builder.Services.AddSingleton<IRecipeService, RecipeService>();
+            builder.Services.AddSingleton<ICategoryService, CategoryService>();
+            builder.Services.AddSingleton<IUserService, UserService>();
 
             builder.Services.AddSingleton<LoginPage>();
             builder.Services.AddTransient<LoginViewModel>();
@@ -62,23 +60,23 @@ namespace CookRecipesApp
             builder.Services.AddSingleton<RegisterPage>();
             builder.Services.AddTransient<RegisterViewModel>();
 
-            builder.Services.AddSingleton<RecepiesMainPage>();
-            builder.Services.AddTransient<RecepiesMainViewModel>();
+            builder.Services.AddSingleton<RecipesMainPage>();
+            builder.Services.AddTransient<RecipesMainViewModel>();
 
             builder.Services.AddSingleton<TestPage>();
             builder.Services.AddTransient<TestViewModel>();
 
-            builder.Services.AddSingleton<AddRecepiePage>();
-            builder.Services.AddTransient<AddRecepieViewModel>();
+            builder.Services.AddSingleton<AddRecipePage>();
+            builder.Services.AddTransient<AddRecipeViewModel>();
 
             builder.Services.AddSingleton<AddIngredientPopup>();
             builder.Services.AddTransient<AddIngredientPopupViewModel>();
 
-            builder.Services.AddSingleton<RecepiesCategoryPage>();
-            builder.Services.AddTransient<RecepiesCategoryViewModel>();
+            builder.Services.AddSingleton<RecipesCategoryPage>();
+            builder.Services.AddTransient<RecipesCategoryViewModel>();
 
-            builder.Services.AddSingleton<RecepieDetailsPage>();
-            builder.Services.AddTransient<RecepieDetailsViewModel>();
+            builder.Services.AddSingleton<RecipeDetailsPage>();
+            builder.Services.AddTransient<RecipeDetailsViewModel>();
 
 
             return builder.Build();

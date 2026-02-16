@@ -1,36 +1,36 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using CookRecipesApp.Model.Category;
-using CookRecipesApp.Model.Recepie;
+using CookRecipesApp.Shared.Models;
 using CookRecipesApp.Service.Interface;
 using CookRecipesApp.View;
-using CookRecipesApp.Model.Help;
+using CookRecipesApp.ModelsUI;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 
+
 namespace CookRecipesApp.ViewModel
 {
-    [QueryProperty(nameof(RecepieId), "RecepieId")]
-    public partial class RecepieDetailsViewModel : ObservableObject
+    [QueryProperty(nameof(RecipeId), "RecipeId")]
+    public partial class RecipeDetailsViewModel : ObservableObject
     {
 
-        private IRecepieService _recepieService;
+        private IRecipeService _recipeService;
         private IUserService _userService;
 
-        int recepieId;
-        public int RecepieId
+        Guid recipeId;
+        public Guid RecipeId
         {
-            get => recepieId;
+            get => recipeId;
             set
             {
-                SetProperty(ref recepieId, value);
-                _ = LoadRecepieAsync(value);
+                SetProperty(ref recipeId, value);
+                _ = LoadRecipeAsync(value);
             }
         }
 
         [ObservableProperty]
-        private Recepie selectedRecepie;
+        private Recipe selectedRecipe;
         [ObservableProperty]
         private string favoriteIconPath;
         [ObservableProperty]
@@ -62,13 +62,13 @@ namespace CookRecipesApp.ViewModel
         };
 
 
-        private async Task LoadRecepieAsync(int id)
+        private async Task LoadRecipeAsync(Guid id)
         {
             IsLoading = true;
 
             try
             {
-                SelectedRecepie = await _recepieService.GetRecepieAsync(id);
+                SelectedRecipe = await _recipeService.GetRecipeAsync(id);
 
                 if (!await _userService.IsUserLoggedInAsync())
                 {
@@ -77,12 +77,12 @@ namespace CookRecipesApp.ViewModel
                 else
                 {
                     var user = await _userService.GetCurrentUserAsync();
-                    var fv = await _recepieService.IsFavoriteAsync(SelectedRecepie.Id, user.Id);
+                    var fv = await _recipeService.IsFavoriteAsync(SelectedRecipe.Id, user.Id);
 
                     FavoriteIconPath = fv ? "favorite_full.png" : "favorite.png";
                 }
                 VisibleComments.Clear();
-                foreach(var c in SelectedRecepie.Comments.Take(10))
+                foreach(var c in SelectedRecipe.Comments.Take(10))
                 {
                     VisibleComments.Add(c);
                 }
@@ -95,18 +95,18 @@ namespace CookRecipesApp.ViewModel
             }
         }
 
-        public RecepieDetailsViewModel(IRecepieService recepieService, IUserService userService)
+        public RecipeDetailsViewModel(IRecipeService recipeService, IUserService userService)
         {
-            _recepieService = recepieService;
+            _recipeService = recipeService;
             _userService = userService;
         }
 
         [RelayCommand]
-        public void IngredientTappedCommand(RecepieIngredient ig)
+        public void IngredientTappedCommand(RecipeIngredient ig)
         {
             if(ig is null) return;
 
-            ig.IsReady = !ig.IsReady;
+            //ig.IsReady = !ig.IsReady;
 
         }
 
@@ -121,7 +121,7 @@ namespace CookRecipesApp.ViewModel
             else
             {
                 var user = await _userService.GetCurrentUserAsync();
-                await _recepieService.ChangeFavoriteAsync(selectedRecepie.Id, user.Id);
+                await _recipeService.ChangeFavoriteAsync(selectedRecipe.Id, user.Id);
 
                 if(FavoriteIconPath == "favorite.png")
                 {
@@ -157,20 +157,20 @@ namespace CookRecipesApp.ViewModel
 
             Comment comment = new Comment()
             {
-                RecepieId = recepieId,
+                RecipeId = recipeId,
                 UserId = user.Id,
-                UserName = user.Name,
+                User = user,
                 Text = CommentText,
-                Rating = ratingValue,
+                Rating = (short)ratingValue,
                 CreatedAt = DateTime.Now
             };
 
             CommentOfUser = comment;
-            CommentTime = DateOnly.FromDateTime(comment.CreatedAt);
-            var res = await _recepieService.PostCommentAsync(comment);
+            CommentTime = DateOnly.FromDateTime(comment.CreatedAt??DateTime.Now);
+            var res = await _recipeService.PostCommentAsync(comment);
 
-            SelectedRecepie.Rating = res.Item1;
-            SelectedRecepie.UsersRated = res.Item2;
+            SelectedRecipe.Rating = (decimal)res.Item1;
+            SelectedRecipe.UsersRated = res.Item2;
 
             VisibleComments.Add(comment);           
 
@@ -205,10 +205,10 @@ namespace CookRecipesApp.ViewModel
             var user = await _userService.GetCurrentUserAsync();
             if(user != null)
             {
-                if(await _recepieService.UserCommentedAsync(recepieId, user.Id))
+                if(await _recipeService.UserCommentedAsync(recipeId, user.Id))
                 {
-                    CommentOfUser = await _recepieService.GetCommentByUserAndRecepieAsync(recepieId, user.Id) ?? new();
-                    CommentTime = DateOnly.FromDateTime(CommentOfUser.CreatedAt);
+                    CommentOfUser = await _recipeService.GetCommentByUserAndRecipeAsync(recipeId, user.Id) ?? new();
+                    CommentTime = DateOnly.FromDateTime(CommentOfUser.CreatedAt??DateTime.Now);
                     CommentText = CommentOfUser.Text;
                     SelectRating(CommentOfUser.Rating);
                     PostBtnVisible = false;
@@ -233,9 +233,9 @@ namespace CookRecipesApp.ViewModel
             }
 
             var user = await _userService.GetCurrentUserAsync();
-            var res = await _recepieService.DeleteCommentByUserAndRecepieAsync(recepieId, user.Id);
-            SelectedRecepie.Rating = res.Item1;
-            SelectedRecepie.UsersRated = res.Item2;
+            var res = await _recipeService.DeleteCommentByUserAndRecipeAsync(recipeId, user.Id);
+            SelectedRecipe.Rating = (decimal)res.Item1;
+            SelectedRecipe.UsersRated = res.Item2;
             VisibleComments.Remove(CommentOfUser);
 
             PostBtnVisible = true;

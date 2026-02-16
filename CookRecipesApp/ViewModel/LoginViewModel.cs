@@ -12,7 +12,6 @@ namespace CookRecipesApp.ViewModel
     public partial class LoginViewModel : ObservableObject
     {
         private readonly IUserService _userService;
-        private SQLiteConnectionFactory _connectionFactory;
 
         [ObservableProperty] string? email;
         [ObservableProperty] string? password;

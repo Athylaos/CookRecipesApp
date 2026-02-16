@@ -133,13 +133,22 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Update="View\RecepiesCategoryPage.xaml.cs">
-	    <DependentUpon>RecepiesCategoryPage.xaml</DependentUpon>
+	  <Compile Update="View\AddRecipePage.xaml.cs">
+	    <DependentUpon>AddRecipePage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="View\RecipesMainPage.xaml.cs">
+	    <DependentUpon>RecipesMainPage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="View\RecipeDetailsPage.xaml.cs">
+	    <DependentUpon>RecipeDetailsPage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="View\RecipesCategoryPage.xaml.cs">
+	    <DependentUpon>RecipesCategoryPage.xaml</DependentUpon>
 	  </Compile>
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiXaml Update="View\AddRecepiePage.xaml">
+	  <MauiXaml Update="View\AddRecipePage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="View\LoginPage.xaml">
@@ -148,13 +157,13 @@
 	  <MauiXaml Update="View\Popups\AddIngredientPopup.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="View\RecepieDetailsPage.xaml">
+	  <MauiXaml Update="View\RecipeDetailsPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="View\RecepiesCategoryPage.xaml">
+	  <MauiXaml Update="View\RecipesCategoryPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="View\RecepiesMainPage.xaml">
+	  <MauiXaml Update="View\RecipesMainPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="View\RegisterPage.xaml">

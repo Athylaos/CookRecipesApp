@@ -14,11 +14,11 @@ namespace CookRecipesApp
 
             Routing.RegisterRoute(nameof(TestPage), typeof(TestPage));
             
-            Routing.RegisterRoute(nameof(AddRecepiePage), typeof(AddRecepiePage));
+            Routing.RegisterRoute(nameof(AddRecipePage), typeof(AddRecipePage));
 
-            Routing.RegisterRoute(nameof(RecepiesCategoryPage), typeof(RecepiesCategoryPage));
+            Routing.RegisterRoute(nameof(RecipesCategoryPage), typeof(RecipesCategoryPage));
 
-            Routing.RegisterRoute(nameof(RecepieDetailsPage), typeof(RecepieDetailsPage));
+            Routing.RegisterRoute(nameof(RecipeDetailsPage), typeof(RecipeDetailsPage));
 
 
         }

@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using CookRecipesApp.Model.Category;
-using CookRecipesApp.Model.Recepie;
+using CookRecipesApp.Shared.Models;
 using CookRecipesApp.Service;
 using CookRecipesApp.Service.Interface;
 using CookRecipesApp.View;
@@ -13,19 +12,19 @@ using System.Text;
 namespace CookRecipesApp.ViewModel
 {
     [QueryProperty(nameof(CategoryId), "CategoryId")]
-    public partial class RecepiesCategoryViewModel : ObservableObject
+    public partial class RecipesCategoryViewModel : ObservableObject
     {
         private readonly ICategoryService _categoryService;
-        private readonly IRecepieService _recepieService;
+        private readonly IRecipeService _recipeService;
 
-        public RecepiesCategoryViewModel(ICategoryService categoryService, IRecepieService recepieService)
+        public RecipesCategoryViewModel(ICategoryService categoryService, IRecipeService recipeService)
         {
             _categoryService = categoryService;
-            _recepieService = recepieService;
+            _recipeService = recipeService;
         }
 
-        int categoryId;
-        public int CategoryId
+        Guid categoryId;
+        public Guid CategoryId
         {
             get => categoryId;
             set
@@ -39,32 +38,32 @@ namespace CookRecipesApp.ViewModel
         Category selectedCategory;
 
         [ObservableProperty]
-        private ObservableCollection<Recepie> favoriteRecepies = new ObservableCollection<Recepie>();
+        private ObservableCollection<Recipe> favoriteRecipes = new ObservableCollection<Recipe>();
 
-        public async Task LoadCategoryAsync(int id)
+        public async Task LoadCategoryAsync(Guid id)
         {
             SelectedCategory = await _categoryService.GetCategoryByIdAsync(id);
 
-            var favoriteRecepies = await _recepieService.GetRecepiesAsync(3);
+            var favoriteRecipes = await _recipeService.GetRecipesAsync(3);
 
-            foreach(var fvr in  favoriteRecepies)
+            foreach(var fvr in  favoriteRecipes)
             {
-                FavoriteRecepies.Add(fvr);
+                FavoriteRecipes.Add(fvr);
             }
         }
 
         [RelayCommand]
-        public async Task RecepieBtn(Recepie recepie)
+        public async Task RecipeBtn(Recipe recipe)
         {
-            if (recepie == null) return;
+            if (recipe == null) return;
 
-            await Shell.Current.GoToAsync($"{nameof(RecepieDetailsPage)}?RecepieId={recepie.Id}", true);
+            await Shell.Current.GoToAsync($"{nameof(RecipeDetailsPage)}?RecipeId={recipe.Id}", true);
         }
 
         [RelayCommand]
-        public void RecepiesMainPageBtn()
+        public void RecipesMainPageBtn()
         {
-            Shell.Current.GoToAsync("//RecepiesMainPage");
+            Shell.Current.GoToAsync("//RecipesMainPage");
         }
     }
 }

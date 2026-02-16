@@ -18,8 +18,8 @@
         Route="LoginPage"/>
 
     <ShellContent
-        Title="RecepiesMain"
-        ContentTemplate="{DataTemplate view:RecepiesMainPage}"
-        Route="RecepiesMainPage"/>
+        Title="RecipesMain"
+        ContentTemplate="{DataTemplate view:RecipesMainPage}"
+        Route="RecipesMainPage"/>
 
 </Shell>

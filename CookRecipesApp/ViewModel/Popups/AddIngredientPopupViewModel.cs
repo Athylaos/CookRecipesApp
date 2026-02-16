@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using CookRecipesApp.Model.Ingredient;
-using CookRecipesApp.Model.Recepie;
+using CookRecipesApp.Shared.Models;
 using CookRecipesApp.Service;
 using System;
 using System.Collections.Generic;
@@ -20,7 +19,7 @@ namespace CookRecipesApp.ViewModel.Popups
         [ObservableProperty] Ingredient selectedIngredient;
         [ObservableProperty] float quantity;
 
-        [ObservableProperty] Ingredient.IngredientUnitInfo selectedUnitInfo;
+        [ObservableProperty] IngredientUnit selectedIngredientUnit;
 
         public event Action<object> OnCloseRequest;
 
@@ -55,11 +54,11 @@ namespace CookRecipesApp.ViewModel.Popups
         {
             if (SelectedIngredient == null) return Task.CompletedTask;
 
-            var result = new RecepieIngredient
+            var result = new RecipeIngredient
             {
                 Ingredient = SelectedIngredient,
-                Quantity = Quantity,
-                SelectedUnitInfo = SelectedUnitInfo??null,              
+                Quantity = (decimal)Quantity,
+                Unit = SelectedIngredientUnit.Unit??null,              
             };
 
             OnCloseRequest?.Invoke(result);

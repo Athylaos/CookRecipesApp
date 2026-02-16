@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Maui.Extensions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using CookRecipesApp.Model.User;
+using CookRecipesApp.Shared.Models;
 using CookRecipesApp.Service.Interface;
 using CookRecipesApp.View;
 using System;
@@ -15,7 +15,7 @@ namespace CookRecipesApp.ViewModel
     {
         private IUserService _userService;
 
-        private UserRegistrationDto newRegistrationDto;
+        private User newUser;
 
         [ObservableProperty] private string nameEntry;
         [ObservableProperty] private string surnameEntry;
@@ -72,23 +72,23 @@ namespace CookRecipesApp.ViewModel
                 return;
             }
 
-            newRegistrationDto = new UserRegistrationDto
+            newUser = new User
             {
                 Email = EmailEntry,
-                Password = Password1,
-                RegistredAt = DateOnly.FromDateTime(DateTime.Now),
+                //Password = Password1,
+                //RegistredAt = DateOnly.FromDateTime(DateTime.Now),
                 Name = NameEntry,
                 Surname= SurnameEntry,
             };
 
-            if (!await _userService.RegisterAsync(newRegistrationDto))
+            //if (!await _userService.RegisterAsync(newRegistrationDto))
             {
                 IndicatorVisibility = true;
                 IndicatorText = "This email is already registred, please login";
                 return;
             }
 
-            if (await _userService.LoginAsync(newRegistrationDto.Email, Password1) == null)
+            //if (await _userService.LoginAsync(newRegistrationDto.Email, Password1) == null)
             {
                 return;
             }
