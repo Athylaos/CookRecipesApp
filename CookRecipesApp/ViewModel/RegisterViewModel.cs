@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CookRecipesApp.Shared.Models;
+using CookRecipesApp.Shared.DTOs;
 using CookRecipesApp.Service.Interface;
 using CookRecipesApp.View;
 using System;
@@ -14,8 +15,6 @@ namespace CookRecipesApp.ViewModel
     public partial class RegisterViewModel : ObservableObject
     {
         private IUserService _userService;
-
-        private User newUser;
 
         [ObservableProperty] private string nameEntry;
         [ObservableProperty] private string surnameEntry;
@@ -56,6 +55,13 @@ namespace CookRecipesApp.ViewModel
                 return;
             }
             IndicatorVisibility = false;
+            if (string.IsNullOrWhiteSpace(SurnameEntry))
+            {
+                IndicatorVisibility = true;
+                IndicatorText = "Surname is mandatory";
+                return;
+            }
+            IndicatorVisibility = false;
 
             if (!IsValidEmail(EmailEntry) || string.IsNullOrWhiteSpace(EmailEntry))
             {
@@ -72,23 +78,22 @@ namespace CookRecipesApp.ViewModel
                 return;
             }
 
-            newUser = new User
+            var registrationDto = new UserRegistrationDto()
             {
-                Email = EmailEntry,
-                //Password = Password1,
-                //RegistredAt = DateOnly.FromDateTime(DateTime.Now),
                 Name = NameEntry,
-                Surname= SurnameEntry,
+                Email = EmailEntry,
+                Surname = SurnameEntry,
+                Password = Password1,
             };
 
-            //if (!await _userService.RegisterAsync(newRegistrationDto))
+            if (!await _userService.RegisterAsync(registrationDto))
             {
                 IndicatorVisibility = true;
                 IndicatorText = "This email is already registred, please login";
                 return;
             }
 
-            //if (await _userService.LoginAsync(newRegistrationDto.Email, Password1) == null)
+            if (await _userService.LoginAsync(new UserLoginDto() { Email = EmailEntry, Password = Password1}) == null)
             {
                 return;
             }

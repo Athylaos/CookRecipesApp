@@ -17,17 +17,11 @@ namespace CookRecipesApp
         protected override Window CreateWindow(IActivationState? activationState)
         {
             return new Window(new AppShell());
+            //return new Window(new ContentPage { Content = new Label { Text = "DI ok" } });
         }
 
         protected override async void OnStart()
         {   
-            
-            //DatabaseSeederService ds = new(new SQLiteConnectionFactory().CreateConnection());
-            //await ds.ResetDatabaseAsync();
-            //await ds.SeedCompleteRecipesAsync();
-
-            Debug.WriteLine("Seeding done");
-
 
             base.OnStart();
         }

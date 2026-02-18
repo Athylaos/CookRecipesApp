@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using CookRecipesApp.API.Models;
+using CookRecipesApp.Shared.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace CookRecipesApp.API.Context;
@@ -292,6 +292,8 @@ public partial class CookRecipesDbContext : DbContext
             entity.Property(e => e.Id)
                 .ValueGeneratedNever()
                 .HasColumnName("id");
+            entity.Property(e => e.PasswordHash)
+                .HasColumnName("password_hash");
             entity.Property(e => e.AvatarUrl)
                 .HasDefaultValueSql("'default_avatar.png'::text")
                 .HasColumnName("avatar_url");

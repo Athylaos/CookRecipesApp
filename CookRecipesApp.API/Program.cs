@@ -1,26 +1,38 @@
+using Scalar.AspNetCore;
 using CookRecipesApp.API.Context;
 using Microsoft.EntityFrameworkCore;
+using CookRecipesApp.API.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Načtení connection stringu z appsettings.json (nebo User Secrets)
+builder.Services.AddEndpointsApiExplorer();
+
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-// Registrace DbContextu
 builder.Services.AddDbContext<CookRecipesDbContext>(options =>
     options.UseNpgsql(connectionString));
 
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options =>
+{
+    options.AddSchemaTransformer((schema, context, cancellationToken) =>
+    {
+        return Task.CompletedTask;
+    });
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference();
 }
 
 app.UseHttpsRedirection();
+
+
+app.MapUserEndpoints();
+
 
 
 

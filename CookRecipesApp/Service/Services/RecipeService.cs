@@ -28,7 +28,7 @@ namespace CookRecipesApp.Service.Services
             throw new NotImplementedException();
         }
 
-        public Task<List<Recipe>> GetFavoriteRecipes(Guid userId, int amount)
+        public Task<List<Recipe>> GetFavoriteRecipesAsync(Guid userId, int amount)
         {
             throw new NotImplementedException();
         }
@@ -43,7 +43,7 @@ namespace CookRecipesApp.Service.Services
             throw new NotImplementedException();
         }
 
-        public Task<List<Recipe>> GetRecipesByCategory(Guid categoryId, int amount)
+        public Task<List<Recipe>> GetRecipesByCategoryAsync(Guid categoryId, int amount)
         {
             throw new NotImplementedException();
         }

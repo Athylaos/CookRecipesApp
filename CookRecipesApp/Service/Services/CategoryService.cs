@@ -18,12 +18,12 @@ namespace CookRecipesApp.Service.Services
             throw new NotImplementedException();
         }
 
-        public Task<List<Category>> GetChildCategories(Guid parentId)
+        public Task<List<Category>> GetChildCategoriesAsync(Guid parentId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<List<Category>> GetMainCategories()
+        public Task<List<Category>> GetMainCategoriesAsync()
         {
             throw new NotImplementedException();
         }

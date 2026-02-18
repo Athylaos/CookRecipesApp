@@ -10,8 +10,8 @@ namespace CookRecipesApp.Service.Interface
 
         public Task<Category?> GetCategoryByIdAsync(Guid id);
 
-        public Task<List<Category>> GetMainCategories();
+        public Task<List<Category>> GetMainCategoriesAsync();
 
-        public Task<List<Category>> GetChildCategories(Guid parentId);
+        public Task<List<Category>> GetChildCategoriesAsync(Guid parentId);
     }
 }

@@ -3,6 +3,8 @@ using CommunityToolkit.Mvvm.Input;
 using CookRecipesApp.Service;
 using CookRecipesApp.Service.Interface;
 using CookRecipesApp.View;
+using CookRecipesApp.Shared.DTOs;
+using CookRecipesApp.Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -35,18 +37,19 @@ namespace CookRecipesApp.ViewModel
         [RelayCommand]
         public async Task LoginBtn()
         {
+            /*
             if (!await _userService.IsEmailRegistredAsync(Email))
             {
                 IndicatorVisibility = true;
                 IndicatorText = "Email not registered, please register";
                 return;
             }
+            */
 
-
-            if(await _userService.LoginAsync(Email, Password) == null)
+            if(await _userService.LoginAsync(new UserLoginDto() { Email = Email, Password = Password}) == null)
             {
                 IndicatorVisibility = true;
-                IndicatorText = "Wrong password";
+                IndicatorText = "Wrong email or password";
                 return;
             }
 

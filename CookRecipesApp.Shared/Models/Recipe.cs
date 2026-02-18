@@ -10,7 +10,6 @@ public enum DifficultyLevel
     Hard = 3,
     Chef = 4,
 }
-
 public partial class Recipe
 {
     public Guid Id { get; set; }

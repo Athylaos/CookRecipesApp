@@ -1,11 +1,12 @@
-﻿using CookRecipesApp.Shared.Models;
+﻿using CookRecipesApp.Shared.DTOs;
+using CookRecipesApp.Shared.Models;
 
 namespace CookRecipesApp.Service.Interface
 {
     public interface IUserService
     {
-        Task<bool> RegisterAsync(User user);
-        Task<User?> LoginAsync(string email, string password);
+        Task<bool> RegisterAsync(UserRegistrationDto user);
+        Task<User?> LoginAsync(UserLoginDto loginDto);
         Task LogoutAsync();
 
         Task<User?> GetCurrentUserAsync();

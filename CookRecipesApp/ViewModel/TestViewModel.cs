@@ -27,7 +27,6 @@ namespace CookRecipesApp.ViewModel
             _userService = userService;
             _categoryService = categoryService;
             _recipeService = recipeService;
-
         }
 
         public async void OnAppStartAsync()

@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Sharpnado.MaterialFrame;
 using Sharpnado.Shades;
 using UraniumUI;
+using System.Diagnostics;
 
 namespace CookRecipesApp
 {
@@ -49,6 +50,18 @@ namespace CookRecipesApp
 #if DEBUG
             builder.Logging.AddDebug();
 #endif
+
+#if DEBUG
+            // Tento handler říká Androidu: "Ignoruj chyby certifikátu a prostě se připoj."
+            var handler = new HttpClientHandler();
+            handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+            var httpClient = new HttpClient(handler);
+#else
+    var httpClient = new HttpClient();
+#endif
+
+
+            builder.Services.AddSingleton(httpClient);
             builder.Services.AddSingleton<IIngredientService, IngredientService>();
             builder.Services.AddSingleton<IRecipeService, RecipeService>();
             builder.Services.AddSingleton<ICategoryService, CategoryService>();
@@ -78,8 +91,18 @@ namespace CookRecipesApp
             builder.Services.AddSingleton<RecipeDetailsPage>();
             builder.Services.AddTransient<RecipeDetailsViewModel>();
 
-
-            return builder.Build();
+                        
+            try
+            {
+                var app = builder.Build();
+                return app;
+            }
+            catch (Exception ex)
+            {
+                // Tady uvidíš v proměnné 'ex' přesný důvod pádu (InnerException je klíčová)
+                Debug.WriteLine(ex);
+                throw;
+            }
         }
     }
 }

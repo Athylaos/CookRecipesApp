@@ -10,8 +10,8 @@ namespace CookRecipesApp.Service.Interface
         public Task DeleteRecipeAsync(Guid id);
 
         public Task<List<Recipe>> GetRecipesAsync(int amount);
-        public Task<List<Recipe>> GetRecipesByCategory(Guid categoryId, int amount);
-        public Task<List<Recipe>> GetFavoriteRecipes(Guid userId, int amount);
+        public Task<List<Recipe>> GetRecipesByCategoryAsync(Guid categoryId, int amount);
+        public Task<List<Recipe>> GetFavoriteRecipesAsync(Guid userId, int amount);
 
         public Task ChangeFavoriteAsync(Guid recipeId, Guid userId);
         public Task<bool> IsFavoriteAsync(Guid recipeId, Guid userId);
