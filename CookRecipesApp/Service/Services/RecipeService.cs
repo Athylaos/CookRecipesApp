@@ -1,13 +1,25 @@
 ﻿using CookRecipesApp.Service.Interface;
+using CookRecipesApp.Shared.DTOs;
 using CookRecipesApp.Shared.Models;
 using System;
+using System.Buffers.Text;
 using System.Collections.Generic;
+using System.Net.Http.Json;
 using System.Text;
 
 namespace CookRecipesApp.Service.Services
 {
-    internal class RecipeService : IRecipeService
+    public class RecipeService : IRecipeService
     {
+
+        private readonly HttpClient _httpClient;
+        private const string BaseUrl = "https://10.0.1.160:7141/api/recipes";
+
+        public RecipeService(HttpClient httpClient)
+        {
+            _httpClient = httpClient;
+        }
+
         public Task ChangeFavoriteAsync(Guid recipeId, Guid userId)
         {
             throw new NotImplementedException();
@@ -28,7 +40,7 @@ namespace CookRecipesApp.Service.Services
             throw new NotImplementedException();
         }
 
-        public Task<List<Recipe>> GetFavoriteRecipesAsync(Guid userId, int amount)
+        public Task<List<Recipe>> GetFavoriteRecipePreviewsAsync(Guid userId, int amount)
         {
             throw new NotImplementedException();
         }
@@ -38,12 +50,13 @@ namespace CookRecipesApp.Service.Services
             throw new NotImplementedException();
         }
 
-        public Task<List<Recipe>> GetRecipesAsync(int amount)
+        public async Task<List<Recipe>> GetRecipesAsync(int amount)
         {
-            throw new NotImplementedException();
+            var response = await _httpClient.GetFromJsonAsync<List<Recipe>>($"{BaseUrl}/get?amount={amount}");
+            return response ?? new List<Recipe>();
         }
 
-        public Task<List<Recipe>> GetRecipesByCategoryAsync(Guid categoryId, int amount)
+        public Task<List<Recipe>> GetRecipePreviewsByCategoryAsync(Guid categoryId, int amount)
         {
             throw new NotImplementedException();
         }
@@ -71,6 +84,12 @@ namespace CookRecipesApp.Service.Services
         public Task<bool> UserCommentedAsync(Guid recipeId, Guid userId)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<List<RecipePreviewDto>> GetRecipePreviewsAsync(int amount)
+        {
+            var response = await _httpClient.GetFromJsonAsync<List<RecipePreviewDto>>($"{BaseUrl}/getPreviews?amount={amount}");
+            return response ?? new List<RecipePreviewDto>();
         }
     }
 }

@@ -33,6 +33,10 @@ app.UseHttpsRedirection();
 
 app.MapUserEndpoints();
 
+app.MapCategoryEndpoints();
+
+app.MapRecipeEndpoints();
+
 
 
 

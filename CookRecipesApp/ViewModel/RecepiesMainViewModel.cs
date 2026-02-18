@@ -40,7 +40,7 @@ namespace CookRecipesApp.ViewModel
                 Categories.Add(ct);
             }
 
-            var rcps = await _recipesService.GetRecipesAsync(-1);
+            var rcps = await _recipesService.GetRecipesAsync(0);
             rcps = rcps.Take(10).ToList();
             FavouriteRecipes.Clear();
             foreach (var r in rcps)

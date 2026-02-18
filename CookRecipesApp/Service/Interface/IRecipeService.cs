@@ -1,4 +1,5 @@
 ﻿using CookRecipesApp.Shared.Models;
+using CookRecipesApp.Shared.DTOs;
 
 namespace CookRecipesApp.Service.Interface
 {
@@ -10,8 +11,10 @@ namespace CookRecipesApp.Service.Interface
         public Task DeleteRecipeAsync(Guid id);
 
         public Task<List<Recipe>> GetRecipesAsync(int amount);
-        public Task<List<Recipe>> GetRecipesByCategoryAsync(Guid categoryId, int amount);
-        public Task<List<Recipe>> GetFavoriteRecipesAsync(Guid userId, int amount);
+
+        public Task<List<RecipePreviewDto>> GetRecipePreviewsAsync(int amount);
+        public Task<List<Recipe>> GetRecipePreviewsByCategoryAsync(Guid categoryId, int amount);
+        public Task<List<Recipe>> GetFavoriteRecipePreviewsAsync(Guid userId, int amount);
 
         public Task ChangeFavoriteAsync(Guid recipeId, Guid userId);
         public Task<bool> IsFavoriteAsync(Guid recipeId, Guid userId);

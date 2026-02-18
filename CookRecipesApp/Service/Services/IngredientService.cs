@@ -6,7 +6,7 @@ using System.Text;
 
 namespace CookRecipesApp.Service.Services
 {
-    internal class IngredientService : IIngredientService
+    public class IngredientService : IIngredientService
     {
         public Task AddIngredientAsync(Ingredient ingredient)
         {

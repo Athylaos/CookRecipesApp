@@ -9,7 +9,7 @@ using System.Diagnostics;
 
 namespace CookRecipesApp.Service.Services
 {
-    internal class UserService : IUserService
+    public class UserService : IUserService
     {
         private readonly HttpClient _httpClient;
         private const string BaseUrl = "https://10.0.1.160:7141/api/users";
