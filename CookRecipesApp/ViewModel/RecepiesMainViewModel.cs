@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Text;
+using CookRecipesApp.Shared.DTOs;
 
 namespace CookRecipesApp.ViewModel
 {
@@ -21,7 +22,7 @@ namespace CookRecipesApp.ViewModel
         [ObservableProperty] private string test;
 
         public ObservableCollection<Category> Categories { get; set; } = new();
-        public ObservableCollection<Recipe> FavouriteRecipes { get; set; } = new();
+        public ObservableCollection<RecipePreviewDto> FavouriteRecipes { get; set; } = new();
 
         public RecipesMainViewModel(ICategoryService category, IIngredientService ingredient, IRecipeService recipe, IUserService user)
         {
@@ -40,8 +41,7 @@ namespace CookRecipesApp.ViewModel
                 Categories.Add(ct);
             }
 
-            var rcps = await _recipesService.GetRecipesAsync(0);
-            rcps = rcps.Take(10).ToList();
+            var rcps = await _recipesService.GetFilteredRecipePreviewsAsync(new RecipeFilterParametrs() { SearchTerm = "Greek", OnlyFavorites = false, Amount = 10 });
             FavouriteRecipes.Clear();
             foreach (var r in rcps)
             {

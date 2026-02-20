@@ -39,26 +39,34 @@ namespace CookRecipesApp.Service.Services
             throw new NotImplementedException();
         }
 
-        public Task<bool> IsUserLoggedInAsync()
+        public async Task<bool> IsUserLoggedInAsync()
         {
-            throw new NotImplementedException();
+            if(string.IsNullOrEmpty(await SecureStorage.Default.GetAsync("auth_token")) || string.IsNullOrEmpty(await SecureStorage.Default.GetAsync("user_id")))
+            {
+                return false;
+            }
+            return true;
         }
 
         public async Task<User?> LoginAsync(UserLoginDto loginDto)
         {
             try
             {
-
                 var response = await _httpClient.PostAsJsonAsync($"{BaseUrl}/login", loginDto);
 
                 if (response.IsSuccessStatusCode)
                 {
-                    var user = await response.Content.ReadFromJsonAsync<User>();
+                    var authResult = await response.Content.ReadFromJsonAsync<LoginResponse>();
 
-                    // local storage..
-                    return user;
+                    if (authResult != null)
+                    {
+                        await SecureStorage.Default.SetAsync("auth_token", authResult.Token);
+
+                        await SecureStorage.Default.SetAsync("user_id", authResult.User.Id.ToString());
+
+                        return authResult.User;
+                    }
                 }
-
                 return null;
             }
             catch (Exception ex)
@@ -68,9 +76,10 @@ namespace CookRecipesApp.Service.Services
             }
         }
 
-        public Task LogoutAsync()
+        public void Logout()
         {
-            throw new NotImplementedException();
+            SecureStorage.Default.Remove("auth_token");
+            SecureStorage.Default.Remove("user_id");
         }
 
         public async Task<bool> RegisterAsync(UserRegistrationDto userDto)

@@ -7,7 +7,7 @@ namespace CookRecipesApp.Service.Interface
     {
         Task<bool> RegisterAsync(UserRegistrationDto user);
         Task<User?> LoginAsync(UserLoginDto loginDto);
-        Task LogoutAsync();
+        void Logout();
 
         Task<User?> GetCurrentUserAsync();
         Task RememberCurrentUserAsync(User user);

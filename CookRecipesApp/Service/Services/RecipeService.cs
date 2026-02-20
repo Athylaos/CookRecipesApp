@@ -4,6 +4,7 @@ using CookRecipesApp.Shared.Models;
 using System;
 using System.Buffers.Text;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.Http.Json;
 using System.Text;
 
@@ -40,10 +41,6 @@ namespace CookRecipesApp.Service.Services
             throw new NotImplementedException();
         }
 
-        public Task<List<Recipe>> GetFavoriteRecipePreviewsAsync(Guid userId, int amount)
-        {
-            throw new NotImplementedException();
-        }
 
         public Task<Recipe> GetRecipeAsync(Guid id)
         {
@@ -56,10 +53,6 @@ namespace CookRecipesApp.Service.Services
             return response ?? new List<Recipe>();
         }
 
-        public Task<List<Recipe>> GetRecipePreviewsByCategoryAsync(Guid categoryId, int amount)
-        {
-            throw new NotImplementedException();
-        }
 
         public Task<bool> IsFavoriteAsync(Guid recipeId, Guid userId)
         {
@@ -90,6 +83,27 @@ namespace CookRecipesApp.Service.Services
         {
             var response = await _httpClient.GetFromJsonAsync<List<RecipePreviewDto>>($"{BaseUrl}/getPreviews?amount={amount}");
             return response ?? new List<RecipePreviewDto>();
+        }
+
+        public async Task<List<RecipePreviewDto>> GetFilteredRecipePreviewsAsync(RecipeFilterParametrs filter)
+        {
+            try
+            {
+                var url = $"{BaseUrl}/getPreviews/filtered?amount={filter.Amount}&onlyFavorites={filter.OnlyFavorites}";
+
+                if (!string.IsNullOrEmpty(filter.SearchTerm)) url += $"&searchTerm={Uri.EscapeDataString(filter.SearchTerm)}";
+                if (filter.CategoryId.HasValue) url += $"&categoryId={filter.CategoryId}";
+                if (filter.MaxCookingTime.HasValue) url += $"&maxCookingTime={filter.MaxCookingTime}";
+                if (filter.MaxDifficulty.HasValue) url += $"&maxDifficulty={filter.MaxDifficulty}";
+
+                var response = await _httpClient.GetFromJsonAsync<List<RecipePreviewDto>>(url);
+                return response ?? new();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Filter Error: {ex.Message}");
+                return new();
+            }
         }
     }
 }

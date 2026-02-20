@@ -60,7 +60,7 @@ namespace CookRecipesApp
     var httpClient = new HttpClient();
 #endif
 
-
+            builder.Services.AddTransient<AuthHttpMessageHandler>();
             builder.Services.AddSingleton(httpClient);
             builder.Services.AddSingleton<IIngredientService, IngredientService>();
             builder.Services.AddSingleton<IRecipeService, RecipeService>();

@@ -30,10 +30,11 @@ public partial class CookRecipesDbContext : DbContext
 
     public virtual DbSet<RecipeStep> RecipeSteps { get; set; }
 
+    public virtual DbSet<RecipesUser> RecipesUsers { get; set; }
+
     public virtual DbSet<Unit> Units { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
-
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -266,6 +267,27 @@ public partial class CookRecipesDbContext : DbContext
                 .HasConstraintName("recipeSteps_recipe_id_fkey");
         });
 
+        modelBuilder.Entity<RecipesUser>(entity =>
+        {
+            entity.HasKey(e => new { e.RecipesId, e.UsersId }).HasName("recipes_users_pkey");
+
+            entity.ToTable("recipes_users");
+
+            entity.Property(e => e.RecipesId).HasColumnName("recipes_id");
+            entity.Property(e => e.UsersId).HasColumnName("users_id");
+            entity.Property(e => e.IsFavorite).HasColumnName("isFavorite");
+
+            entity.HasOne(d => d.Recipes).WithMany(p => p.RecipesUsers)
+                .HasForeignKey(d => d.RecipesId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("recipes_users_recipes_id_fkey");
+
+            entity.HasOne(d => d.Users).WithMany(p => p.RecipesUsers)
+                .HasForeignKey(d => d.UsersId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("recipes_users_users_id_fkey");
+        });
+
         modelBuilder.Entity<Unit>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("units_pkey");
@@ -292,13 +314,12 @@ public partial class CookRecipesDbContext : DbContext
             entity.Property(e => e.Id)
                 .ValueGeneratedNever()
                 .HasColumnName("id");
-            entity.Property(e => e.PasswordHash)
-                .HasColumnName("password_hash");
             entity.Property(e => e.AvatarUrl)
                 .HasDefaultValueSql("'default_avatar.png'::text")
                 .HasColumnName("avatar_url");
             entity.Property(e => e.Email).HasColumnName("email");
             entity.Property(e => e.Name).HasColumnName("name");
+            entity.Property(e => e.PasswordHash).HasColumnName("password_hash");
             entity.Property(e => e.Role)
                 .HasDefaultValueSql("'user'::text")
                 .HasColumnName("role");

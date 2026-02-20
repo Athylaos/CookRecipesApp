@@ -6,6 +6,7 @@
              xmlns:sharpnado="clr-namespace:Sharpnado.MaterialFrame;assembly=Maui.MaterialFrame"
              xmlns:viewmodels="clr-namespace:CookRecipesApp.ViewModel"
              xmlns:models="clr-namespace:CookRecipesApp.Shared.Models;assembly=CookRecipesApp.Shared"
+             xmlns:dtos="clr-namespace:CookRecipesApp.Shared.DTOs;assembly=CookRecipesApp.Shared"
              x:DataType="viewmodel:RecipesMainViewModel"
              x:Class="CookRecipesApp.View.RecipesMainPage"
              Title="RecepiesMainPage"
@@ -157,7 +158,7 @@
                     ItemsLayout="HorizontalList"
                     Margin="0,0,0,8">
                     <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="models:Recipe">
+                        <DataTemplate x:DataType="dtos:RecipePreviewDto">
                                 <Border
                                     StrokeShape="RoundRectangle, 20"
                                     WidthRequest="200"

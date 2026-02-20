@@ -10,8 +10,6 @@ public partial class User
 
     public string Email { get; set; } = null!;
 
-    public string PasswordHash { get; set; } = null!;
-
     public string Name { get; set; } = null!;
 
     public string Surname { get; set; } = null!;
@@ -22,8 +20,11 @@ public partial class User
 
     public string? AvatarUrl { get; set; }
 
+    public string PasswordHash { get; set; } = null!;
     [JsonIgnore]
     public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
     [JsonIgnore]
     public virtual ICollection<Recipe> Recipes { get; set; } = new List<Recipe>();
+    [JsonIgnore]
+    public virtual ICollection<RecipesUser> RecipesUsers { get; set; } = new List<RecipesUser>();
 }

@@ -15,5 +15,7 @@ namespace CookRecipesApp.Shared.DTOs
         public decimal? Rating { get; set; }
         public string UserName { get; set; } = string.Empty;
         public decimal? Calories { get; set; }
+
+        public bool IsFavorite { get; set; } = false;
     }
 }
