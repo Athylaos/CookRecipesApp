@@ -31,20 +31,27 @@ namespace CookRecipesApp.ViewModel
 
         public async void OnAppStartAsync()
         {
-            /*
             IsLoggedIn = await _userService.IsUserLoggedInAsync();
 
 
             if(IsLoggedIn)
             {
                 var user = await _userService.GetCurrentUserAsync();
-                UserName = $"Logged in {user.Name} email {user.Email}";
+                if(user == null)
+                {
+                    UserName = "Not logged in user null";
+                }
+                else
+                {
+                    UserName = $"Logged in {user.Name} email {user.Email}";
+
+                }
+
             }
             else
             {
                 UserName = "Not logged in";
             }
-            */
         }
 
         [RelayCommand]

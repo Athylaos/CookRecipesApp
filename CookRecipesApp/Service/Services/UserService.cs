@@ -6,13 +6,14 @@ using System.Collections.Generic;
 using System.Net.Http.Json;
 using System.Text;
 using System.Diagnostics;
+using System.Net;
 
 namespace CookRecipesApp.Service.Services
 {
     public class UserService : IUserService
     {
         private readonly HttpClient _httpClient;
-        private const string BaseUrl = "https://10.0.1.160:7141/api/users";
+        private const string BaseUrl = "users";
 
         public UserService(HttpClient httpClient)
         {
@@ -24,14 +25,50 @@ namespace CookRecipesApp.Service.Services
             throw new NotImplementedException();
         }
 
-        public Task<User?> GetCurrentUserAsync()
+        public async Task<User?> GetCurrentUserAsync()
         {
-            throw new NotImplementedException();
+            try
+            {
+                var response = await _httpClient.GetAsync($"{BaseUrl}/getMe");
+
+                if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    Debug.WriteLine("User not logged in");
+                    return null;
+                }
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadFromJsonAsync<User>();
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Getting current user error: {ex.Message}");
+                return null;
+            }
         }
 
-        public Task<User?> GetUserByIdAsync(Guid userId)
+        public async Task<UserDisplayDto?> GetUserByIdAsync(Guid userId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var response = await _httpClient.GetAsync($"api/users/getUserDisplay/{userId}");
+
+                if (response.StatusCode == HttpStatusCode.NotFound)
+                    return null;
+
+                response.EnsureSuccessStatusCode();
+
+                return await response.Content.ReadFromJsonAsync<UserDisplayDto>();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Getting user error: {ex.Message}");
+                return null;
+            }
         }
 
         public Task<bool> IsEmailRegistredAsync(string email)
@@ -86,8 +123,6 @@ namespace CookRecipesApp.Service.Services
         {
             try
             {
-                Debug.WriteLine($"Zkouším volat: {BaseUrl}/register");
-
                 using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
                 var response = await _httpClient.PostAsJsonAsync($"{BaseUrl}/register", userDto);
                 return response.IsSuccessStatusCode;

@@ -15,7 +15,7 @@ namespace CookRecipesApp.Service.Interface
         public Task<List<RecipePreviewDto>> GetRecipePreviewsAsync(int amount);
         public Task<List<RecipePreviewDto>> GetFilteredRecipePreviewsAsync(RecipeFilterParametrs filterParametrs);
 
-        public Task ChangeFavoriteAsync(Guid recipeId, Guid userId);
+        public Task<bool?> ChangeFavoriteAsync(Guid recipeId, Guid userId);
         public Task<bool> IsFavoriteAsync(Guid recipeId, Guid userId);
 
         public Task<bool> UserCommentedAsync(Guid recipeId, Guid  userId);

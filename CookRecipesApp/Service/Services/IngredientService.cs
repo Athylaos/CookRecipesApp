@@ -8,6 +8,14 @@ namespace CookRecipesApp.Service.Services
 {
     public class IngredientService : IIngredientService
     {
+        private readonly HttpClient _httpClient;
+        private const string BaseUrl = "ingredients";
+
+        public IngredientService(HttpClient httpClient)
+        {
+            _httpClient = httpClient;
+        }
+
         public Task AddIngredientAsync(Ingredient ingredient)
         {
             throw new NotImplementedException();

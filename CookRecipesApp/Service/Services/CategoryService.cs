@@ -12,7 +12,7 @@ namespace CookRecipesApp.Service.Services
     {
 
         private readonly HttpClient _httpClient;
-        private const string BaseUrl = "https://10.0.1.160:7141/api/categories";
+        private const string BaseUrl = "categories";
 
         public CategoryService(HttpClient httpClient)
         {

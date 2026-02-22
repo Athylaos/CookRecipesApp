@@ -14,14 +14,36 @@ namespace CookRecipesApp.Service.Services
     {
 
         private readonly HttpClient _httpClient;
-        private const string BaseUrl = "https://10.0.1.160:7141/api/recipes";
+        private const string BaseUrl = "recipes";
 
         public RecipeService(HttpClient httpClient)
         {
             _httpClient = httpClient;
         }
 
-        public Task ChangeFavoriteAsync(Guid recipeId, Guid userId)
+
+        public async Task<bool?> ChangeFavoriteAsync(Guid recipeId, Guid userId)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsync($"{BaseUrl}/toggleFavorite/{recipeId}", null);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = await response.Content.ReadFromJsonAsync<FavoriteResponse>();
+                    return result?.IsFavorite;
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Toggle favorite error: {ex.Message}");
+                return null;
+            }
+        }
+
+        public Task<bool> IsFavoriteAsync(Guid recipeId, Guid userId)
         {
             throw new NotImplementedException();
         }
@@ -51,12 +73,6 @@ namespace CookRecipesApp.Service.Services
         {
             var response = await _httpClient.GetFromJsonAsync<List<Recipe>>($"{BaseUrl}/get?amount={amount}");
             return response ?? new List<Recipe>();
-        }
-
-
-        public Task<bool> IsFavoriteAsync(Guid recipeId, Guid userId)
-        {
-            throw new NotImplementedException();
         }
 
         public Task<(float, int)> PostCommentAsync(Comment comment)
@@ -104,6 +120,16 @@ namespace CookRecipesApp.Service.Services
                 Debug.WriteLine($"Filter Error: {ex.Message}");
                 return new();
             }
+        }
+
+
+
+
+
+
+        public class FavoriteResponse
+        {
+            public bool IsFavorite { get; set; }
         }
     }
 }

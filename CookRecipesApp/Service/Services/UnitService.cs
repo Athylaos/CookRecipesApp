@@ -8,6 +8,13 @@ namespace CookRecipesApp.Service.Services
 {
     public class UnitService : IUnitService
     {
+        private readonly HttpClient _httpClient;
+        private const string BaseUrl = "units";
+
+        public UnitService(HttpClient httpClient)
+        {
+            _httpClient = httpClient;
+        }
         public Task<List<Unit>> GetAllServingUnitsAsync()
         {
             throw new NotImplementedException();

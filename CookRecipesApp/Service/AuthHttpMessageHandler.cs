@@ -23,7 +23,11 @@ public class AuthHttpMessageHandler : DelegatingHandler
         {
             SecureStorage.Default.Remove("auth_token");
             Debug.WriteLine("User is unauthorized for this");
-            Shell.Current.GoToAsync(nameof(LoginPage));
+
+            MainThread.BeginInvokeOnMainThread(async () =>
+            {
+                Shell.Current.GoToAsync(nameof(LoginPage));
+            });
         }
 
         return response;

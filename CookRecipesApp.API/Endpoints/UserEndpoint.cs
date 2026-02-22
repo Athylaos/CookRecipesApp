@@ -70,6 +70,51 @@ namespace CookRecipesApp.API.Endpoints
                     }
                 });
             });
+
+
+            //GetMe
+            group.MapGet("/getMe", async (ClaimsPrincipal user, CookRecipesDbContext db) =>
+            {
+                var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                var userId = Guid.Parse(userIdClaim);
+
+                var userData = await db.Users.AsNoTracking().Where(u => u.Id == userId).Select(u => new User
+                {
+                    Id = u.Id,
+                    Email = u.Email,
+                    Name = u.Name,
+                    Surname = u.Surname,
+                    Role = u.Role,
+                    AvatarUrl = u.AvatarUrl ?? "default_avatar.png",
+                    UserCreated = u.UserCreated
+                }).FirstOrDefaultAsync();
+
+                return Results.Ok(userData);
+            }).RequireAuthorization();
+
+
+            //GetUserDisplay
+            group.MapGet("/getUserDisplay/{userId:guid}", async (Guid userId,CookRecipesDbContext db) =>
+            {
+
+                var userData = await db.Users.AsNoTracking().Where(u => u.Id == userId).Select(u => new UserDisplayDto
+                {
+                    Id = u.Id,
+                    Name = u.Name,
+                    Surname = u.Surname,
+                    AvatarUrl = u.AvatarUrl ?? "default_avatar.png",
+                    UserCreated = u.UserCreated
+                }).FirstOrDefaultAsync();
+
+                return Results.Ok(userData);
+            });
+
+
+
+
+
+
         }
 
         

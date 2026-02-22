@@ -11,6 +11,9 @@ using Sharpnado.MaterialFrame;
 using Sharpnado.Shades;
 using UraniumUI;
 using System.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
+using System.Net.Http;
+
 
 namespace CookRecipesApp
 {
@@ -51,21 +54,29 @@ namespace CookRecipesApp
             builder.Logging.AddDebug();
 #endif
 
-#if DEBUG
-            // Tento handler říká Androidu: "Ignoruj chyby certifikátu a prostě se připoj."
-            var handler = new HttpClientHandler();
-            handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
-            var httpClient = new HttpClient(handler);
-#else
-    var httpClient = new HttpClient();
-#endif
-
             builder.Services.AddTransient<AuthHttpMessageHandler>();
-            builder.Services.AddSingleton(httpClient);
-            builder.Services.AddSingleton<IIngredientService, IngredientService>();
-            builder.Services.AddSingleton<IRecipeService, RecipeService>();
-            builder.Services.AddSingleton<ICategoryService, CategoryService>();
-            builder.Services.AddSingleton<IUserService, UserService>();
+
+            builder.Services.AddHttpClient("CookApi", client =>
+            {
+                client.BaseAddress = new Uri("https://10.0.1.160:7141/api/");
+            })
+            .AddHttpMessageHandler<AuthHttpMessageHandler>()
+            .ConfigurePrimaryHttpMessageHandler(() =>
+            {
+                var handler = new HttpClientHandler();
+#if DEBUG
+                handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+#endif
+                return handler;
+            });
+
+
+
+
+            builder.Services.AddSingleton<IIngredientService>(sp => new IngredientService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("CookApi")));
+            builder.Services.AddSingleton<IRecipeService>(sp => new RecipeService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("CookApi")));
+            builder.Services.AddSingleton<ICategoryService>(sp => new CategoryService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("CookApi")));
+            builder.Services.AddSingleton<IUserService>(sp => new UserService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("CookApi")));
 
             builder.Services.AddSingleton<LoginPage>();
             builder.Services.AddTransient<LoginViewModel>();
@@ -99,7 +110,6 @@ namespace CookRecipesApp
             }
             catch (Exception ex)
             {
-                // Tady uvidíš v proměnné 'ex' přesný důvod pádu (InnerException je klíčová)
                 Debug.WriteLine(ex);
                 throw;
             }

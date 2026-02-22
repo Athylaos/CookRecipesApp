@@ -13,7 +13,7 @@ namespace CookRecipesApp.API.Endpoints
         {
             var group = app.MapGroup("/api/recipes");
 
-            //Get recipes
+            //---------------------------------------------------------------Get recipes
             group.MapGet("/get", async (int? amount, CookRecipesDbContext db) =>
             {
                 var query = db.Recipes.Include(r => r.User).OrderByDescending(r => r.RecipeCreated);
@@ -26,7 +26,7 @@ namespace CookRecipesApp.API.Endpoints
                 return await query.ToListAsync();
             });
 
-            //Get previews
+            //---------------------------------------------------------------Get previews
             group.MapGet("/getPreviews", async (int? amount, CookRecipesDbContext db) =>
             {
                 var query = db.Recipes
@@ -54,6 +54,7 @@ namespace CookRecipesApp.API.Endpoints
                 }
             });
 
+            //---------------------------------------------------------------Get previews filtered
             group.MapGet("/getPreviews/filtered", async ([AsParameters] RecipeFilterParametrs filter, ClaimsPrincipal user, CookRecipesDbContext db) =>
             {
                 var userIdClaim = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
@@ -98,6 +99,32 @@ namespace CookRecipesApp.API.Endpoints
                 return Results.Ok(results);
             });
 
+            //---------------------------------------------------------------Toggle favorite recipe
+            group.MapPost("/toggleFavorite/{recipeId:guid}", async (Guid recipeId, ClaimsPrincipal user, CookRecipesDbContext db) =>
+            {
+                var userId = Guid.Parse(user.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+
+                var favorite = await db.RecipesUsers.FirstOrDefaultAsync(ru => ru.RecipesId == recipeId && ru.UsersId == userId);
+
+                if (favorite == null)
+                {
+                    db.RecipesUsers.Add(new RecipesUser()
+                    {
+                        RecipesId = recipeId,
+                        UsersId = userId,
+                        IsFavorite = true
+                    });
+                    await db.SaveChangesAsync();
+                    return Results.Ok(new { isFavorite = true });
+                }
+                else
+                {
+                    favorite.IsFavorite = false;
+                    db.RecipesUsers.Update(favorite);
+                    await db.SaveChangesAsync();
+                    return Results.Ok(new { isFavorite = false });
+                }
+            }).RequireAuthorization();
 
 
 
