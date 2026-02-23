@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CookRecipesApp.Shared.Models;
+using CookRecipesApp.Shared.DTOs;
 using CookRecipesApp.Service.Interface;
 using CookRecipesApp.View;
 using CookRecipesApp.ModelsUI;
@@ -25,16 +26,15 @@ namespace CookRecipesApp.ViewModel
             set
             {
                 SetProperty(ref recipeId, value);
-                _ = LoadRecipeAsync(value);
             }
         }
 
         [ObservableProperty]
-        private Recipe selectedRecipe;
+        private RecipeDetailsDto selectedRecipe = new();
         [ObservableProperty]
-        private string favoriteIconPath;
+        private string favoriteIconPath = "favorite.png";
         [ObservableProperty]
-        private bool isLoading;
+        private bool isLoading = true;
         [ObservableProperty]
         private ObservableCollection<Comment> visibleComments = new();
 
@@ -50,7 +50,7 @@ namespace CookRecipesApp.ViewModel
         [ObservableProperty]
         private bool delGridVisible = false;
         [ObservableProperty]
-        private string commentText;
+        private string commentText = string.Empty;
         [ObservableProperty]
         private ObservableCollection<RatingStar> ratingStars = new ObservableCollection<RatingStar>
         {
@@ -62,32 +62,47 @@ namespace CookRecipesApp.ViewModel
         };
 
 
-        private async Task LoadRecipeAsync(Guid id)
+        public async Task LoadRecipeAsync(Guid id)
         {
             IsLoading = true;
 
             try
             {
-                SelectedRecipe = await _recipeService.GetRecipeAsync(id);
+                var result = await _recipeService.GetRecipeDetailsAsync(id);
 
-                if (!await _userService.IsUserLoggedInAsync())
+                if (result == null)
                 {
-                    FavoriteIconPath = "favorite.png";
+                    // Ošetření, když recept neexistuje
+                    await Shell.Current.DisplayAlertAsync("Chyba", "Recept se nepodařilo načíst.", "OK");
+                    return;
                 }
-                else
-                {
-                    var user = await _userService.GetCurrentUserAsync();
-                    var fv = await _recipeService.IsFavoriteAsync(SelectedRecipe.Id, user.Id);
 
-                    FavoriteIconPath = fv ? "favorite_full.png" : "favorite.png";
-                }
+                SelectedRecipe = result;
+                /*
+                                if (!await _userService.IsUserLoggedInAsync())
+                                {
+                                    FavoriteIconPath = "favorite.png";
+                                }
+                                else
+                                {
+                                    var user = await _userService.GetCurrentUserAsync();
+                                    var fv = await _recipeService.IsFavoriteAsync(SelectedRecipe.Id, user.Id);
+
+                                    FavoriteIconPath = fv ? "favorite_full.png" : "favorite.png";
+                                }
+                */
+                FavoriteIconPath = SelectedRecipe.IsFavorite ? "favorite_full.png" : "favorite.png";
                 VisibleComments.Clear();
                 foreach(var c in SelectedRecipe.Comments.Take(10))
                 {
                     VisibleComments.Add(c);
                 }
 
-                await CommentStatus();
+                //await CommentStatus();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error loading recipe: {ex}");
             }
             finally
             {

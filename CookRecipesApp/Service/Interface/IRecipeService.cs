@@ -5,8 +5,8 @@ namespace CookRecipesApp.Service.Interface
 {
     public interface IRecipeService
     {
-        public Task SaveRecipeAsync(Recipe recipe);
-        public Task<Recipe> GetRecipeAsync(Guid id);
+        public Task<Guid?> SaveRecipeAsync(RecipeCreateDto createDto);
+        public Task<RecipeDetailsDto?> GetRecipeDetailsAsync(Guid id);
         public Task UpdateRecipeAsync(Recipe recipe);
         public Task DeleteRecipeAsync(Guid id);
 

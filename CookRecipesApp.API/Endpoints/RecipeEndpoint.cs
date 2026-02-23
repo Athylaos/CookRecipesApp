@@ -57,7 +57,7 @@ namespace CookRecipesApp.API.Endpoints
             //---------------------------------------------------------------Get previews filtered
             group.MapGet("/getPreviews/filtered", async ([AsParameters] RecipeFilterParametrs filter, ClaimsPrincipal user, CookRecipesDbContext db) =>
             {
-                var userIdClaim = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 Guid? currentUserId = userIdClaim != null ? Guid.Parse(userIdClaim) : null;
 
                 var query = db.Recipes.AsNoTracking().AsQueryable();
@@ -126,6 +126,121 @@ namespace CookRecipesApp.API.Endpoints
                 }
             }).RequireAuthorization();
 
+
+            //---------------------------------------------------------------Get recipe details
+            group.MapGet("/getRecipeDetails/{recipeId:guid}", async (Guid recipeId, ClaimsPrincipal user, CookRecipesDbContext db) =>
+            {
+                var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                Guid? currentUserId = userIdClaim != null ? Guid.Parse(userIdClaim) : null;
+
+                var recipe = await db.Recipes.AsNoTracking().Where(r => r.Id == recipeId).Select(r => new RecipeDetailsDto()
+                {
+                    Id = r.Id,
+                    UserId = r.UserId,
+                    Title = r.Title,
+                    PhotoUrl = r.PhotoUrl,
+                    CookingTime = r.CookingTime,
+                    ServingsAmount = r.ServingsAmount,
+                    Difficulty = (DifficultyLevel)r.Difficulty,
+                    Calories = r.Calories,
+                    Proteins = r.Proteins,
+                    Fats = r.Fats,
+                    Carbohydrates = r.Carbohydrates,
+                    Fiber = r.Fiber,
+                    RecipeCreated = r.RecipeCreated,
+                    Rating = r.Rating,
+                    UsersRated = r.UsersRated,
+                    Comments = r.Comments,
+                    RecipeIngredients = r.RecipeIngredients,
+                    RecipeSteps = r.RecipeSteps,
+                    ServingUnit = r.ServingUnitNavigation,
+                    UserName = r.User.Name,
+                    UserSurname = r.User.Surname,
+                    Categories = r.Categories,
+
+                    IsFavorite = currentUserId != null && r.RecipesUsers.Any(ru => ru.UsersId == currentUserId && ru.IsFavorite)
+                }).FirstOrDefaultAsync();
+
+                return recipe;
+            });
+
+
+            //---------------------------------------------------------------Create recipe
+            group.MapPost("/create", async (RecipeCreateDto dto, ClaimsPrincipal user, CookRecipesDbContext db) =>
+            {
+                var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (userIdClaim == null) return Results.Unauthorized();
+
+                var userId = Guid.Parse(userIdClaim);
+
+                var ingredientIds = dto.RecipeIngredients.Select(x => x.IngredientId).ToList();
+                var dbIngredients = await db.Ingredients.Where(x => ingredientIds.Contains(x.Id)).ToListAsync();
+
+                var dbCategories = await db.Categories.Where(x => dto.CategoriesIds.Contains(x.Id)).ToListAsync();
+
+                var newRecipe = new Recipe()
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = userId,
+                    Title = dto.Title,
+                    PhotoUrl = dto.PhotoUrl,
+                    CookingTime = dto.CookingTime,
+                    ServingsAmount = dto.ServingsAmount,
+                    ServingUnit = dto.ServingUnit,
+                    Difficulty = dto.Difficulty,
+                    RecipeCreated = DateTime.UtcNow,
+                    Calories = 0,
+                    Proteins = 0,
+                    Fats = 0,
+                    Carbohydrates = 0,
+                    Fiber = 0
+                };
+
+                foreach (var i in dto.RecipeIngredients)
+                {
+                    var dbIng = dbIngredients.FirstOrDefault(x => x.Id == i.IngredientId);
+                    if(dbIng != null)
+                    {
+                        newRecipe.Calories += (i.ConversionFactor * i.Quantity / dto.ServingsAmount) * dbIng.Calories;
+                        newRecipe.Proteins += (i.ConversionFactor * i.Quantity / dto.ServingsAmount) * dbIng.Proteins;
+                        newRecipe.Fats += (i.ConversionFactor * i.Quantity / dto.ServingsAmount) * dbIng.Fats;
+                        newRecipe.Carbohydrates += (i.ConversionFactor * i.Quantity / dto.ServingsAmount) * dbIng.Carbohydrates;
+                        newRecipe.Fiber += (i.ConversionFactor * i.Quantity / dto.ServingsAmount) * dbIng.Fiber;
+                    }
+
+
+                    newRecipe.RecipeIngredients.Add(new RecipeIngredient
+                    {
+
+                        RecipeId = newRecipe.Id,
+                        IngredientId = i.IngredientId,
+                        Quantity = i.Quantity,
+                        UnitId = i.UnitId,
+                        ConversionFactor = i.ConversionFactor
+                    });
+                }
+
+                foreach (var step in dto.RecipeSteps)
+                {
+                    newRecipe.RecipeSteps.Add(new RecipeStep
+                    {
+                        Id = Guid.NewGuid(),
+                        RecipeId = newRecipe.Id,
+                        Description = step.Description,
+                        StepNumber = step.StepNumber
+                    });
+                }
+
+                foreach (var category in dbCategories)
+                {
+                    newRecipe.Categories.Add(category);
+                }
+
+                db.Recipes.Add(newRecipe);
+                await db.SaveChangesAsync();
+
+                return Results.Ok(newRecipe.Id);
+            }).RequireAuthorization();
 
 
 

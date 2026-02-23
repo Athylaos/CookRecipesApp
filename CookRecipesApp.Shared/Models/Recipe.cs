@@ -3,13 +3,6 @@ using System.Collections.Generic;
 
 namespace CookRecipesApp.Shared.Models;
 
-public enum DifficultyLevel
-{
-    Easy = 1,
-    Medium = 2,
-    Hard = 3,
-    Chef = 4,
-}
 public partial class Recipe
 {
     public Guid Id { get; set; }
@@ -57,4 +50,5 @@ public partial class Recipe
     public virtual User User { get; set; } = null!;
 
     public virtual ICollection<Category> Categories { get; set; } = new List<Category>();
+
 }

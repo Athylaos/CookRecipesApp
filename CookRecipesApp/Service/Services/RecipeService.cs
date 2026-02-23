@@ -5,6 +5,7 @@ using System;
 using System.Buffers.Text;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Net;
 using System.Net.Http.Json;
 using System.Text;
 
@@ -64,9 +65,17 @@ namespace CookRecipesApp.Service.Services
         }
 
 
-        public Task<Recipe> GetRecipeAsync(Guid id)
+        public async Task<RecipeDetailsDto?> GetRecipeDetailsAsync(Guid recipeId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _httpClient.GetFromJsonAsync<RecipeDetailsDto>($"{BaseUrl}/getRecipeDetails/{recipeId}");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error while loading recipe details: {ex.Message}");
+                return null;
+            }
         }
 
         public async Task<List<Recipe>> GetRecipesAsync(int amount)
@@ -80,9 +89,24 @@ namespace CookRecipesApp.Service.Services
             throw new NotImplementedException();
         }
 
-        public Task SaveRecipeAsync(Recipe recipe)
+        public async Task<Guid?> SaveRecipeAsync(RecipeCreateDto createDto)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync<RecipeCreateDto>($"{BaseUrl}/create", createDto);
+                if (response.IsSuccessStatusCode)
+                {
+                    var guid = await response.Content.ReadFromJsonAsync<Guid>();
+                    return guid;
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error while creating recipe: {ex.Message}");
+                return null;
+            }
         }
 
         public Task UpdateRecipeAsync(Recipe recipe)

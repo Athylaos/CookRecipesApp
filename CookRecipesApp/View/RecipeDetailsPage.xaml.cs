@@ -9,4 +9,14 @@ public partial class RecipeDetailsPage : ContentPage
 		InitializeComponent();
 
 	}
+
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        var vm = BindingContext as RecipeDetailsViewModel;
+        if (vm != null && vm.RecipeId != Guid.Empty)
+        {
+            vm.LoadRecipeAsync(vm.RecipeId);
+        }
+    }
 }

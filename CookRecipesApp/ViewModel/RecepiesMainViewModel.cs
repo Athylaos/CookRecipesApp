@@ -73,7 +73,7 @@ namespace CookRecipesApp.ViewModel
         }
 
         [RelayCommand]
-        public async Task RecipeBtn(Recipe recipe)
+        public async Task RecipeBtn(RecipePreviewDto recipe)
         {
             if(recipe == null) return;
 

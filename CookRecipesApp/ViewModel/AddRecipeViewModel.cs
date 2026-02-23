@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
+using CookRecipesApp.Shared.DTOs;
 
 
 namespace CookRecipesApp.ViewModel
@@ -236,22 +237,23 @@ namespace CookRecipesApp.ViewModel
                 }
             }
 
-            Recipe rc = new Recipe
+            RecipeCreateDto rc = new RecipeCreateDto
             {
-                /*
-                    Title = Title,
-                    CookingTime = timeInt,
-                    Servings = servingsInt,
-                    ServingUnit = SelectedServingUnit,
-                    DifficultyLevel = Difficulty,
-                    Categories = Categories.Where(c => c.IsSelected).ToList(),
-                    Ingredients = Ingredients.ToList(),
-                    Steps = RecipeSteps.ToList(),
-                    PhotoPath = PhotoPath,
-                            */
+                Title = Title,
+                CookingTime = (short)timeInt,
+                ServingsAmount = (short)servingsInt,
+                ServingUnit = SelectedServingUnit.Id,
+                Difficulty = (short)Difficulty,
+                CategoriesIds = Categories.Where(c => c.IsSelected).Select(c => c.Category.Id).ToList(),
+                RecipeIngredients = Ingredients.ToList(),
+                RecipeSteps = RecipeSteps.ToList(),
+                //PhotoUrl = PhotoPath,
+
             };
 
             await _recipesService.SaveRecipeAsync(rc);
+
+
             Title = string.Empty;
             Time = string.Empty;
             Servings = string.Empty;

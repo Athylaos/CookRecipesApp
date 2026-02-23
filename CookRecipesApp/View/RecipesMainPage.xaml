@@ -167,7 +167,7 @@
                                     StrokeThickness="0">
                                     <Border.GestureRecognizers>
                                         <TapGestureRecognizer
-                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}},Path=BindingContext.RecepieBtnCommand}"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}},Path=BindingContext.RecipeBtnCommand}"
                                                     CommandParameter="{Binding .}" />
                                     </Border.GestureRecognizers>
 
