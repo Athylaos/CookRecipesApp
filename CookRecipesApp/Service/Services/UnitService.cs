@@ -2,6 +2,7 @@
 using CookRecipesApp.Shared.Models;
 using System;
 using System.Collections.Generic;
+using System.Net.Http.Json;
 using System.Text;
 
 namespace CookRecipesApp.Service.Services
@@ -15,14 +16,16 @@ namespace CookRecipesApp.Service.Services
         {
             _httpClient = httpClient;
         }
-        public Task<List<Unit>> GetAllServingUnitsAsync()
+        public async Task<List<Unit>> GetAllServingUnitsAsync()
         {
-            throw new NotImplementedException();
+            var response = await _httpClient.GetFromJsonAsync<List<Unit>>($"{BaseUrl}/getServing");
+            return response ?? new List<Unit>();
         }
 
-        public Task<List<Unit>> GetAllUnitsAsync()
+        public async Task<List<Unit>> GetAllUnitsAsync()
         {
-            throw new NotImplementedException();
+            var response = await _httpClient.GetFromJsonAsync<List<Unit>>($"{BaseUrl}/get");
+            return response ?? new List<Unit>();
         }
 
         public Task<List<Unit>> GetIngredientUnitsAsync()

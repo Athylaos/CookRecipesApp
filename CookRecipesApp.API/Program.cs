@@ -70,6 +70,10 @@ app.MapCategoryEndpoints();
 
 app.MapRecipeEndpoints();
 
+app.MapUnitEndpoints();
+
+app.MapIngredientEndpoints();
+
 
 
 

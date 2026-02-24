@@ -37,6 +37,7 @@ namespace CookRecipesApp.ViewModel
         private readonly IIngredientService _ingredientsService;
         private readonly IRecipeService _recipesService;
         private readonly ICategoryService _categoryService;
+        private readonly IUnitService _unitsService;
 
         [ObservableProperty] string title;
         [ObservableProperty] string time;
@@ -44,14 +45,11 @@ namespace CookRecipesApp.ViewModel
         [ObservableProperty] string photoPath;
         public ObservableCollection<Unit> ServingUnits { get; } = new ObservableCollection<Unit>();
         [ObservableProperty] private Unit selectedServingUnit;
-
         public List<DifficultyLevel> DifficultyOptions { get; } = Enum.GetValues(typeof(DifficultyLevel)).Cast<DifficultyLevel>().ToList();
         [ObservableProperty] DifficultyLevel difficulty = DifficultyLevel.Medium;
 
         public ObservableCollection<RecipeIngredient> Ingredients { get; } = new();
-
         public ObservableCollection<CategorySelectable> Categories { get; set; } = new ObservableCollection<CategorySelectable>();
-
         public ObservableCollection<RecipeStep> RecipeSteps { get; } = new ObservableCollection<RecipeStep>();
 
         [ObservableProperty] string warningText;
@@ -61,13 +59,15 @@ namespace CookRecipesApp.ViewModel
 
 
 
-        public AddRecipeViewModel(IIngredientService ingredientsService, IRecipeService recipeService, ICategoryService categoryService)
+        public AddRecipeViewModel(IIngredientService ingredientsService, IRecipeService recipeService, ICategoryService categoryService, IUnitService unitService)
         {
             _ingredientsService = ingredientsService;
             _recipesService = recipeService;
             _categoryService = categoryService;
+            _unitsService = unitService;
             AddCookingStepBtn();
-            photoPath = "default_picture.png";
+            AddCookingStepBtn();
+            PhotoPath = "default_recipe_picture.png";
         }
 
         public async Task StartAsync()
@@ -75,7 +75,7 @@ namespace CookRecipesApp.ViewModel
 
             if (_isInitialized) return;
 
-            var su = await _ingredientsService.GetAllServingUnitsAsync();
+            var su = await _unitsService.GetAllServingUnitsAsync();
             ServingUnits.Clear();
             foreach (var s in su)
             {
@@ -135,7 +135,7 @@ namespace CookRecipesApp.ViewModel
         [RelayCommand]
         public async Task OpenAddIngredientPopup()
         {
-            List<Ingredient> ingredients = await _ingredientsService.GetAllIngredientsAsync();
+            List<IngredientPreview> ingredients = await _ingredientsService.GetIngredientPreviewsAsync(4);
 
             var popupVm = new AddIngredientPopupViewModel(ingredients);
 

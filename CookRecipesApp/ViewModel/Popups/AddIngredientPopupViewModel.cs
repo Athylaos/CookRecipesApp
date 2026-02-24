@@ -6,24 +6,25 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
+using CookRecipesApp.Shared.DTOs;
 
 namespace CookRecipesApp.ViewModel.Popups
 {
     public partial class AddIngredientPopupViewModel : ObservableObject
     {
-        private List<Ingredient> _allIngredientsSource;
+        private List<IngredientPreview> _allIngredientsSource;
 
-        public ObservableCollection<Ingredient> FilteredIngredients {  get; set; } = new ObservableCollection<Ingredient>();
+        public ObservableCollection<IngredientPreview> FilteredIngredients {  get; set; } = new ObservableCollection<IngredientPreview>();
         [ObservableProperty] string searchText;
 
-        [ObservableProperty] Ingredient selectedIngredient;
+        [ObservableProperty] IngredientPreview selectedIngredient;
         [ObservableProperty] float quantity;
 
         [ObservableProperty] IngredientUnit selectedIngredientUnit;
 
         public event Action<object> OnCloseRequest;
 
-        public AddIngredientPopupViewModel(List<Ingredient> il)
+        public AddIngredientPopupViewModel(List<IngredientPreview> il)
         {
             _allIngredientsSource = il;
             OnSearchTextChanged(string.Empty);
@@ -56,7 +57,7 @@ namespace CookRecipesApp.ViewModel.Popups
 
             var result = new RecipeIngredient
             {
-                Ingredient = SelectedIngredient,
+                Ingredient = new Ingredient { Id = SelectedIngredient.Id},
                 Quantity = (decimal)Quantity,
                 Unit = SelectedIngredientUnit.Unit??null,              
             };

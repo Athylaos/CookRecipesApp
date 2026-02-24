@@ -1,7 +1,9 @@
 ﻿using CookRecipesApp.Service.Interface;
+using CookRecipesApp.Shared.DTOs;
 using CookRecipesApp.Shared.Models;
 using System;
 using System.Collections.Generic;
+using System.Net.Http.Json;
 using System.Text;
 
 namespace CookRecipesApp.Service.Services
@@ -21,20 +23,12 @@ namespace CookRecipesApp.Service.Services
             throw new NotImplementedException();
         }
 
-        public Task<List<Ingredient>> GetAllIngredientsAsync()
+        public async Task<List<IngredientPreview>> GetIngredientPreviewsAsync(int amount)
         {
-            throw new NotImplementedException();
+            var response = await _httpClient.GetFromJsonAsync<List<IngredientPreview>>($"{BaseUrl}/getPreviews?amount={amount}");
+            return response ?? new List<IngredientPreview>();
         }
 
-        public Task<List<Unit>> GetAllServingUnitsAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<List<Unit>> GetAllUnitsAsync()
-        {
-            throw new NotImplementedException();
-        }
 
         public Task<Ingredient?> GetIngredientAsync(Guid id)
         {

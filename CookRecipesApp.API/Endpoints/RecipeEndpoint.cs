@@ -31,6 +31,7 @@ namespace CookRecipesApp.API.Endpoints
             {
                 var query = db.Recipes
                     .OrderByDescending(r => r.RecipeCreated)
+                    .AsNoTracking()
                     .Select(r => new RecipePreviewDto
                     {
                         Id = r.Id,
@@ -44,7 +45,7 @@ namespace CookRecipesApp.API.Endpoints
                         Calories = r.Calories,
                     });
 
-                if (amount != 0 && amount != null)
+                if (amount > 0 && amount != null)
                 {
                     return await query.Take(amount.Value).ToListAsync();
                 }
@@ -201,11 +202,11 @@ namespace CookRecipesApp.API.Endpoints
                     var dbIng = dbIngredients.FirstOrDefault(x => x.Id == i.IngredientId);
                     if(dbIng != null)
                     {
-                        newRecipe.Calories += (i.ConversionFactor * i.Quantity / dto.ServingsAmount) * dbIng.Calories;
-                        newRecipe.Proteins += (i.ConversionFactor * i.Quantity / dto.ServingsAmount) * dbIng.Proteins;
-                        newRecipe.Fats += (i.ConversionFactor * i.Quantity / dto.ServingsAmount) * dbIng.Fats;
-                        newRecipe.Carbohydrates += (i.ConversionFactor * i.Quantity / dto.ServingsAmount) * dbIng.Carbohydrates;
-                        newRecipe.Fiber += (i.ConversionFactor * i.Quantity / dto.ServingsAmount) * dbIng.Fiber;
+                        newRecipe.Calories += (i.ConversionFactor * i.Quantity / dto.ServingsAmount) * dbIng.Calories / 100;
+                        newRecipe.Proteins += (i.ConversionFactor * i.Quantity / dto.ServingsAmount) * dbIng.Proteins / 100;
+                        newRecipe.Fats += (i.ConversionFactor * i.Quantity / dto.ServingsAmount) * dbIng.Fats / 100;
+                        newRecipe.Carbohydrates += (i.ConversionFactor * i.Quantity / dto.ServingsAmount) * dbIng.Carbohydrates / 100;
+                        newRecipe.Fiber += (i.ConversionFactor * i.Quantity / dto.ServingsAmount) * dbIng.Fiber / 100;
                     }
 
 

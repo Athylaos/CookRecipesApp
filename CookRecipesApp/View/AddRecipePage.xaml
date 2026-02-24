@@ -123,7 +123,7 @@
                                     BorderColor="{StaticResource Evergreen}" 
                                     BorderWidth="1"
                                     BackgroundColor="#212121" 
-                                   Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:AddRecepieViewModel}}, Path=CategoryBtnCommand}"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:AddRecipeViewModel}}, Path=CategoryBtnCommand}"
                                     CommandParameter="{Binding .}">
                                     <Button.Triggers>
                                         <DataTrigger TargetType="Button" Binding="{Binding IsSelected}" Value="True">
@@ -295,7 +295,7 @@
                     BackgroundColor="{StaticResource PineTeal}"
                     BorderColor="{StaticResource Evergreen}"
                     BorderWidth="1"
-                    Text="Finish recepie"
+                    Text="Finish recipe"
                     Command="{Binding FinishRecepieBtnCommand}"/>
 
 

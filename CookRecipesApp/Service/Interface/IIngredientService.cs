@@ -1,4 +1,5 @@
-﻿using CookRecipesApp.Shared.Models;
+﻿using CookRecipesApp.Shared.DTOs;
+using CookRecipesApp.Shared.Models;
 
 namespace CookRecipesApp.Service.Interface
 {
@@ -9,9 +10,6 @@ namespace CookRecipesApp.Service.Interface
         public Task RemoveIngredientAsync(Guid id);
         public Task UpdateIngredientAsync(Ingredient ingredient);
 
-        public Task<List<Ingredient>> GetAllIngredientsAsync();
-        public Task<List<Unit>> GetAllServingUnitsAsync();
-        public Task<List<Unit>> GetAllUnitsAsync();
-
+        public Task<List<IngredientPreview>> GetIngredientPreviewsAsync(int amount);
     }
 }
