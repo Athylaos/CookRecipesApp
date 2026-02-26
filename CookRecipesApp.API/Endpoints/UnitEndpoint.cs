@@ -1,4 +1,5 @@
 ﻿using CookRecipesApp.API.Context;
+using CookRecipesApp.Shared.DTOs;
 using CookRecipesApp.Shared.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,7 +14,7 @@ namespace CookRecipesApp.API.Endpoints
             //---------------------------------------------------------------Get servingUnits
             group.MapGet("/getServing", async (CookRecipesDbContext db) =>
             {
-                var units = await db.Units.AsNoTracking().Where(u => u.IsServingUnit).ToListAsync();
+                var units = await db.Units.AsNoTracking().Where(u => u.IsServingUnit).Select(u => new UnitPreviewDto { Id = u.Id, Name = u.Name }).ToListAsync();
 
                 return Results.Ok(units) ;
             });
@@ -21,7 +22,7 @@ namespace CookRecipesApp.API.Endpoints
             //---------------------------------------------------------------Get units
             group.MapGet("/get", async (CookRecipesDbContext db) =>
             {
-                var units = await db.Units.AsNoTracking().ToListAsync();
+                var units = await db.Units.AsNoTracking().Select(u => new UnitPreviewDto { Id = u.Id, Name = u.Name }).ToListAsync();
 
                 return Results.Ok(units);
             });

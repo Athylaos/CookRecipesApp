@@ -1,4 +1,5 @@
 ﻿using CookRecipesApp.Service.Interface;
+using CookRecipesApp.Shared.DTOs;
 using CookRecipesApp.Shared.Models;
 using System;
 using System.Collections.Generic;
@@ -16,19 +17,19 @@ namespace CookRecipesApp.Service.Services
         {
             _httpClient = httpClient;
         }
-        public async Task<List<Unit>> GetAllServingUnitsAsync()
+        public async Task<List<UnitPreviewDto>> GetAllServingUnitsAsync()
         {
-            var response = await _httpClient.GetFromJsonAsync<List<Unit>>($"{BaseUrl}/getServing");
-            return response ?? new List<Unit>();
+            var response = await _httpClient.GetFromJsonAsync<List<UnitPreviewDto>>($"{BaseUrl}/getServing");
+            return response ?? new List<UnitPreviewDto>();
         }
 
-        public async Task<List<Unit>> GetAllUnitsAsync()
+        public async Task<List<UnitPreviewDto>> GetAllUnitsAsync()
         {
-            var response = await _httpClient.GetFromJsonAsync<List<Unit>>($"{BaseUrl}/get");
-            return response ?? new List<Unit>();
+            var response = await _httpClient.GetFromJsonAsync<List<UnitPreviewDto>>($"{BaseUrl}/get");
+            return response ?? new List<UnitPreviewDto>();
         }
 
-        public Task<List<Unit>> GetIngredientUnitsAsync()
+        public Task<List<UnitPreviewDto>> GetIngredientUnitsAsync()
         {
             throw new NotImplementedException();
         }

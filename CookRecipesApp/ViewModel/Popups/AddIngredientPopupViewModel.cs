@@ -1,18 +1,34 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CookRecipesApp.Shared.Models;
+using CookRecipesApp.Shared.DTOs;
 using CookRecipesApp.Service;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
-using CookRecipesApp.Shared.DTOs;
+using CookRecipesApp.Service.Interface;
 
 namespace CookRecipesApp.ViewModel.Popups
 {
+    public partial class IngredientUnitOption : ObservableObject
+    {
+        [ObservableProperty]
+        private UnitPreviewDto selectedUnit;
+
+        [ObservableProperty]
+        private decimal? conversionFactor;
+    }
     public partial class AddIngredientPopupViewModel : ObservableObject
     {
+
         private List<IngredientPreview> _allIngredientsSource;
+        private CancellationTokenSource _warningTokenSource;
+
+        [ObservableProperty]
+        bool createIngredientMode;
+        [ObservableProperty]
+        bool addIngredientMode;
 
         public ObservableCollection<IngredientPreview> FilteredIngredients {  get; set; } = new ObservableCollection<IngredientPreview>();
         [ObservableProperty] string searchText;
@@ -20,14 +36,83 @@ namespace CookRecipesApp.ViewModel.Popups
         [ObservableProperty] IngredientPreview selectedIngredient;
         [ObservableProperty] float quantity;
 
-        [ObservableProperty] IngredientUnit selectedIngredientUnit;
+        [ObservableProperty] UnitPreviewDto allUnits;
 
         public event Action<object> OnCloseRequest;
 
-        public AddIngredientPopupViewModel(List<IngredientPreview> il)
+
+        public ObservableCollection<UnitPreviewDto> UnitPreviews { get; set; } = new ObservableCollection<UnitPreviewDto>();
+
+        [ObservableProperty]
+        string ingredientName;
+        [ObservableProperty]
+        UnitPreviewDto selectedDefaultUnit = new();
+        [ObservableProperty]
+        IngredientUnitOption selectedDefaultOption = new();
+        [ObservableProperty]
+        bool preferdUnitVisibility = false;
+        public ObservableCollection<IngredientUnitOption> AditionalUnits { get; set; } = new ObservableCollection<IngredientUnitOption>();
+
+        [ObservableProperty]
+        string warningText;
+        [ObservableProperty]
+        bool warningVisibility;
+
+        [ObservableProperty]
+        decimal? calories;
+        [ObservableProperty]
+        decimal? proteins;
+        [ObservableProperty]
+        decimal? fats;
+        [ObservableProperty]
+        decimal? carbohydrates;
+        [ObservableProperty]
+        decimal? fiber;
+
+        private readonly IUnitService _unitService;
+        private readonly IIngredientService _ingredientService;
+
+        public AddIngredientPopupViewModel(List<IngredientPreview> il, IUnitService unitservice, IIngredientService ingredientService)
         {
             _allIngredientsSource = il;
             OnSearchTextChanged(string.Empty);
+
+            _unitService = unitservice;
+            _ingredientService = ingredientService;
+
+            _ = StartAsync();
+
+            AddIngredientMode = false;
+            CreateIngredientMode = true;
+        }
+
+        public async Task StartAsync()
+        {
+            var u = await _unitService.GetAllUnitsAsync();
+
+            foreach (var unit in u)
+            {
+                UnitPreviews.Add(unit);
+            }
+
+        }
+
+        partial void OnSelectedDefaultUnitChanged(UnitPreviewDto value)
+        {
+            if (value == null) return;
+
+            if(value.Name != "g")
+            {
+                SelectedDefaultOption.SelectedUnit = value;
+                SelectedDefaultOption.ConversionFactor = null;
+                PreferdUnitVisibility = true;
+            }
+            else
+            {
+                SelectedDefaultOption.SelectedUnit = value;
+                SelectedDefaultOption.ConversionFactor = 1;
+                PreferdUnitVisibility = false;
+            }
         }
 
         partial void OnSearchTextChanged(string value)
@@ -53,13 +138,13 @@ namespace CookRecipesApp.ViewModel.Popups
         [RelayCommand]
         public Task Confirm()
         {
-            if (SelectedIngredient == null) return Task.CompletedTask;
+            if (SelectedIngredient is null) return Task.CompletedTask;
 
             var result = new RecipeIngredient
             {
                 Ingredient = new Ingredient { Id = SelectedIngredient.Id},
                 Quantity = (decimal)Quantity,
-                Unit = SelectedIngredientUnit.Unit??null,              
+                Unit = SelectedIngredient.SelectedUnit??null,              
             };
 
             OnCloseRequest?.Invoke(result);
@@ -71,6 +156,139 @@ namespace CookRecipesApp.ViewModel.Popups
         {
             OnCloseRequest?.Invoke(null);
             return Task.CompletedTask;
+        }
+
+        [RelayCommand]
+        public void AddAditionalUnit()
+        {
+            AditionalUnits.Add(new IngredientUnitOption());
+        }
+
+        [RelayCommand]
+        public void RemoveAditionalUnit(IngredientUnitOption option)
+        {
+            if (option is null) return;
+
+            AditionalUnits.Remove(option);
+            return;
+        }
+
+        [RelayCommand]
+        public void ToggleModes()
+        {
+            CreateIngredientMode = !CreateIngredientMode;
+            AddIngredientMode = !AddIngredientMode;
+        }
+
+        [RelayCommand]
+        public async Task CreateIngredient()
+        {
+
+            if (string.IsNullOrWhiteSpace(IngredientName))
+            {
+                await ShowWarningAsync("Name of ingredient is mandatory");
+                return;
+
+            }
+
+            if (SelectedDefaultOption.SelectedUnit is null)
+            {
+                await ShowWarningAsync("Default unit is mandatory");
+                return;
+            }
+
+            if(SelectedDefaultOption.ConversionFactor is null || SelectedDefaultOption.ConversionFactor == 0)
+            {
+                await ShowWarningAsync("Conversion for default unit must be filled and can't be 0");
+                return;
+            }
+
+            if(Calories is null || Calories < 0)
+            {
+                await ShowWarningAsync("Calories must be filled and can't be negative");
+                return;
+            }
+            if (Proteins is null || Proteins < 0)
+            {
+                await ShowWarningAsync("Proteins must be filled and can't be negative");
+                return;
+            }
+            if (Fats is null || Fats < 0)
+            {
+                await ShowWarningAsync("Fats must be filled and can't be negative");
+                return;
+            }
+            if (Carbohydrates is null || Carbohydrates < 0)
+            {
+                await ShowWarningAsync("Carbohydrates must be filled and can't be negative");
+                return;
+            }
+            if (Fiber is null || Fiber < 0)
+            {
+                await ShowWarningAsync("Fiber must be filled and can't be negative");
+                return;
+            }
+            foreach (var (au, index) in AditionalUnits.Select((value, i) => (value, i)))
+            {
+                if (au.SelectedUnit is null)
+                {
+                    await ShowWarningAsync($"Unit at row {index + 1} must be selected");
+                    return;
+                }
+
+                if (au.ConversionFactor is null or <= 0)
+                {
+                    await ShowWarningAsync($"Unit {au.SelectedUnit.Name} must have a valid conversion factor");
+                    return;
+                }
+            }
+
+            IngredientCreateDto dto = new IngredientCreateDto
+            {
+                Name = IngredientName,
+                DefaultUnitId = SelectedDefaultOption.SelectedUnit.Id,
+                Calories = Calories ?? 0,
+                Proteins = Proteins ?? 0,
+                Fats = Fats ?? 0,
+                Carbohydrates = Carbohydrates ?? 0,
+                Fiber = Fiber ?? 0,
+                AdditionalUnits = AditionalUnits.Select(au => new CreateIngredientUnitDto
+                {
+                    UnitId = au.SelectedUnit.Id,
+                    ToDefaultUnit = au.ConversionFactor ?? 1
+                }).ToList()
+            };
+
+            var result = await _ingredientService.CreateIngredientAsync(dto);
+
+            if (result.IsSuccess)
+            {
+                ToggleModes();
+            }
+            else
+            {
+                await ShowWarningAsync(result.Message);
+            }
+        }
+
+
+        private async Task ShowWarningAsync(string message)
+        {
+            _warningTokenSource?.Cancel();
+            _warningTokenSource = new CancellationTokenSource();
+            var token = _warningTokenSource.Token;
+
+            WarningText = message;
+            WarningVisibility = true;
+
+            try
+            {
+                await Task.Delay(3000, token);
+                WarningVisibility = false;
+            }
+            catch (TaskCanceledException)
+            {
+            }
         }
 
     }

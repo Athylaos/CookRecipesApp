@@ -43,8 +43,8 @@ namespace CookRecipesApp.ViewModel
         [ObservableProperty] string time;
         [ObservableProperty] string servings;
         [ObservableProperty] string photoPath;
-        public ObservableCollection<Unit> ServingUnits { get; } = new ObservableCollection<Unit>();
-        [ObservableProperty] private Unit selectedServingUnit;
+        public ObservableCollection<UnitPreviewDto> ServingUnits { get; } = new ObservableCollection<UnitPreviewDto>();
+        [ObservableProperty] private UnitPreviewDto selectedServingUnit;
         public List<DifficultyLevel> DifficultyOptions { get; } = Enum.GetValues(typeof(DifficultyLevel)).Cast<DifficultyLevel>().ToList();
         [ObservableProperty] DifficultyLevel difficulty = DifficultyLevel.Medium;
 
@@ -137,7 +137,7 @@ namespace CookRecipesApp.ViewModel
         {
             List<IngredientPreview> ingredients = await _ingredientsService.GetIngredientPreviewsAsync(4);
 
-            var popupVm = new AddIngredientPopupViewModel(ingredients);
+            var popupVm = new AddIngredientPopupViewModel(ingredients, _unitsService, _ingredientsService);
 
             popupVm.OnCloseRequest += (resultData) =>
             {

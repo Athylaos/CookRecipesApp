@@ -1,12 +1,13 @@
-﻿using CookRecipesApp.Shared.Models;
+﻿using CookRecipesApp.Shared.DTOs;
+using CookRecipesApp.Shared.Models;
 
 namespace CookRecipesApp.Service.Interface
 {
     public interface IUnitService
     {
-        public Task<List<Unit>> GetAllUnitsAsync();
-        public Task<List<Unit>> GetAllServingUnitsAsync();
-        public Task<List<Unit>> GetIngredientUnitsAsync();
+        public Task<List<UnitPreviewDto>> GetAllUnitsAsync();
+        public Task<List<UnitPreviewDto>> GetAllServingUnitsAsync();
+        public Task<List<UnitPreviewDto>> GetIngredientUnitsAsync();
 
 
     }
