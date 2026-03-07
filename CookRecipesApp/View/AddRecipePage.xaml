@@ -156,7 +156,7 @@
                             <DataTemplate x:DataType="models:RecipeIngredient">
                                 <Grid 
                                     MaximumHeightRequest="44"
-                                    ColumnDefinitions="Auto, 50, *, 60"
+                                    ColumnDefinitions="Auto, 65, *, 60"
                                     Margin="0,2">
                                     <Border
                                         Grid.Column="0"
@@ -166,14 +166,15 @@
                                         Margin="0, 0, 4, 0">
                                         <Entry Keyboard="Numeric" TextColor="{StaticResource Porcelain}" Margin="5, 0, 0, 0" Text="{Binding Quantity}"/>
                                     </Border>
-                                    <!--<Label Grid.Column="1" Text="{Binding SelectedUnit.Name}" VerticalOptions="Center" TextColor="{StaticResource Porcelain}" FontFamily="Nunito"></Label>-->
-                                    <Picker Grid.Column="1" 
+                                    <Label Grid.Column="1" Text="{Binding Unit.Name}" VerticalOptions="Center" TextColor="{StaticResource Porcelain}" FontFamily="Nunito"></Label>
+                                    <!--<Picker Grid.Column="1" 
                                         ItemsSource="{Binding Ingredient.IngredientUnits}" 
-                                        ItemDisplayBinding="{Binding Ingredient.Name}" 
+                                        ItemDisplayBinding="{Binding Unit.Name}" 
                                         SelectedItem="{Binding Unit}"
                                         TextColor="{StaticResource Porcelain}" 
                                         Margin="0, 0, 10, 0"  
-                                        VerticalOptions="Center"/>
+                                        VerticalOptions="Center"
+                                        HorizontalTextAlignment="Start"/>-->
                                     <Label Grid.Column="2" Text="{Binding Ingredient.Name}" TextColor="{StaticResource Porcelain}" VerticalOptions="Center"/>
                                     <Button 
                                         Grid.Column="3" 
@@ -296,7 +297,7 @@
                     BorderColor="{StaticResource Evergreen}"
                     BorderWidth="1"
                     Text="Finish recipe"
-                    Command="{Binding FinishRecepieBtnCommand}"/>
+                    Command="{Binding FinishRecipeBtnCommand}"/>
 
 
 

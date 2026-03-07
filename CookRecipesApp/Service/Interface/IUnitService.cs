@@ -7,7 +7,7 @@ namespace CookRecipesApp.Service.Interface
     {
         public Task<List<UnitPreviewDto>> GetAllUnitsAsync();
         public Task<List<UnitPreviewDto>> GetAllServingUnitsAsync();
-        public Task<List<UnitPreviewDto>> GetIngredientUnitsAsync();
+        public Task<List<UnitPreviewDto>> GetIngredientUnitsAsync(Guid ingredientId);
 
 
     }

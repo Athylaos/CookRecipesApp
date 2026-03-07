@@ -2,6 +2,8 @@
 using CookRecipesApp.Shared.DTOs;
 using CookRecipesApp.Shared.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 
 namespace CookRecipesApp.API.Endpoints
 {
@@ -26,6 +28,14 @@ namespace CookRecipesApp.API.Endpoints
 
                 return Results.Ok(units);
             });
+
+            group.MapGet("/getRecipeUnits/{ingredientId:guid}", async (Guid ingredientId, ClaimsPrincipal user, CookRecipesDbContext db) =>
+            {
+
+
+
+            });
+                
 
         }
     

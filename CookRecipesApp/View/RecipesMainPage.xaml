@@ -232,7 +232,7 @@
                 />
             <ScrollView
                 Grid.Row="3"
-                BackgroundColor="Pink">
+                BackgroundColor="Transparent">
             </ScrollView>
 
             <Label
@@ -246,7 +246,7 @@
                 />
             <ScrollView
                 Grid.Row="5"
-                BackgroundColor="Pink">
+                BackgroundColor="Transparent">
              </ScrollView>
 
             <Label

@@ -41,7 +41,7 @@ namespace CookRecipesApp.ViewModel
                 Categories.Add(ct);
             }
 
-            var rcps = await _recipesService.GetFilteredRecipePreviewsAsync(new RecipeFilterParametrs() { SearchTerm = "Greek", OnlyFavorites = false, Amount = 10 });
+            var rcps = await _recipesService.GetFilteredRecipePreviewsAsync(new RecipeFilterParametrs() { OnlyFavorites = false, Amount = 10 });
             FavouriteRecipes.Clear();
             foreach (var r in rcps)
             {
@@ -75,9 +75,14 @@ namespace CookRecipesApp.ViewModel
         [RelayCommand]
         public async Task RecipeBtn(RecipePreviewDto recipe)
         {
-            if(recipe == null) return;
+            if (recipe == null) return;
 
-            await Shell.Current.GoToAsync($"{nameof(RecipeDetailsPage)}?RecipeId={recipe.Id}", true);
+            var navigationParameter = new Dictionary<string, object>
+                {
+                    { "RecipeId", recipe.Id }
+                };
+
+            await Shell.Current.GoToAsync(nameof(RecipeDetailsPage), true, navigationParameter);
         }
     }
 }

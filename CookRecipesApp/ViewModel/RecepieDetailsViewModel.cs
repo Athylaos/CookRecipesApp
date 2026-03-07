@@ -19,15 +19,8 @@ namespace CookRecipesApp.ViewModel
         private IRecipeService _recipeService;
         private IUserService _userService;
 
+        [ObservableProperty]
         Guid recipeId;
-        public Guid RecipeId
-        {
-            get => recipeId;
-            set
-            {
-                SetProperty(ref recipeId, value);
-            }
-        }
 
         [ObservableProperty]
         private RecipeDetailsDto selectedRecipe = new();

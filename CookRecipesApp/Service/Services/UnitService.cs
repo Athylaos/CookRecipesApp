@@ -29,7 +29,7 @@ namespace CookRecipesApp.Service.Services
             return response ?? new List<UnitPreviewDto>();
         }
 
-        public Task<List<UnitPreviewDto>> GetIngredientUnitsAsync()
+        public Task<List<UnitPreviewDto>> GetIngredientUnitsAsync(Guid ingredientId)
         {
             throw new NotImplementedException();
         }

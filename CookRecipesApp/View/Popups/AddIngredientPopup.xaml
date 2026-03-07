@@ -14,7 +14,7 @@
 
     <Grid>
         <ScrollView HeightRequest="400">
-            <VerticalStackLayout Spacing="5" IsVisible="{Binding AddIngredientMode}">
+            <VerticalStackLayout Spacing="5" IsVisible="{Binding CreateIngredientMode}">
                 <Label Text="Add Ingredient"
                    FontSize="20"
                    FontAttributes="Bold"
@@ -199,7 +199,7 @@
 
         
         
-        <VerticalStackLayout Spacing="10" IsVisible="{Binding CreateIngredientMode}">
+        <VerticalStackLayout Spacing="10" IsVisible="{Binding AddIngredientMode}">
             <Label Text="Select Ingredient"
                FontSize="20"
                FontAttributes="Bold"
@@ -269,6 +269,8 @@
                         Margin="7, 0, 7, 0"/>
                 </Border>
             </Grid>
+            <Label Text="{Binding SelectedIngredient.SelectedUnit.Name}" TextColor="White"></Label>
+            <Label Text="{Binding SelectedIngredient.Name}" TextColor="White"></Label>
 
             <Button Text="Add" Command="{Binding ConfirmCommand}" 
                 BackgroundColor="{StaticResource PineTeal}" CornerRadius="10"/>

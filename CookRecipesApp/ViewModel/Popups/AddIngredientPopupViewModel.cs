@@ -82,8 +82,8 @@ namespace CookRecipesApp.ViewModel.Popups
 
             _ = StartAsync();
 
-            AddIngredientMode = false;
-            CreateIngredientMode = true;
+            AddIngredientMode = true;
+            CreateIngredientMode = false;
         }
 
         public async Task StartAsync()
@@ -134,17 +134,29 @@ namespace CookRecipesApp.ViewModel.Popups
                 }
             }
         }
-
         [RelayCommand]
         public Task Confirm()
         {
             if (SelectedIngredient is null) return Task.CompletedTask;
+            if (SelectedIngredient?.SelectedUnit is null) return Task.CompletedTask;
 
             var result = new RecipeIngredient
             {
-                Ingredient = new Ingredient { Id = SelectedIngredient.Id},
+                Ingredient = new Ingredient
+                {
+                    Id = SelectedIngredient.Id,
+                    Name = SelectedIngredient.Name
+                },
+
+                Unit = new Unit
+                {
+                    Id = SelectedIngredient.SelectedUnit.Id,
+                    Name = SelectedIngredient.SelectedUnit.Name
+                },
+
                 Quantity = (decimal)Quantity,
-                Unit = SelectedIngredient.SelectedUnit??null,              
+                UnitId = SelectedIngredient.SelectedUnit.Id,
+                IngredientId = SelectedIngredient.Id
             };
 
             OnCloseRequest?.Invoke(result);
@@ -240,7 +252,17 @@ namespace CookRecipesApp.ViewModel.Popups
                 {
                     await ShowWarningAsync($"Unit {au.SelectedUnit.Name} must have a valid conversion factor");
                     return;
+          
                 }
+            }
+            if(SelectedDefaultOption.SelectedUnit.Name == "g")
+            {
+                AditionalUnits.Add(new IngredientUnitOption { SelectedUnit = UnitPreviews.FirstOrDefault(up => up.Name == "g"), ConversionFactor = 1 });
+            }
+            else
+            {
+                AditionalUnits.Add(new IngredientUnitOption { SelectedUnit = UnitPreviews.FirstOrDefault(up => up.Name == "g"), ConversionFactor = 1 });
+                AditionalUnits.Add(new IngredientUnitOption { SelectedUnit = SelectedDefaultOption.SelectedUnit, ConversionFactor = SelectedDefaultOption.ConversionFactor });
             }
 
             IngredientCreateDto dto = new IngredientCreateDto
@@ -264,6 +286,7 @@ namespace CookRecipesApp.ViewModel.Popups
             if (result.IsSuccess)
             {
                 ToggleModes();
+
             }
             else
             {

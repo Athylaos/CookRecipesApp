@@ -13,7 +13,7 @@ namespace CookRecipesApp.Shared.DTOs
 
         public Unit DefaultUnit { get; set; }
 
-        public Unit SelectedUnit { get; set; }
+        public UnitPreviewDto SelectedUnit { get; set; }
 
         public List<UnitPreviewDto> IngredientUnits { get; set; } = new List<UnitPreviewDto>();
 
