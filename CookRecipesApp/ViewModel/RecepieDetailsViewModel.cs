@@ -29,13 +29,16 @@ namespace CookRecipesApp.ViewModel
         [ObservableProperty]
         private bool isLoading = true;
         [ObservableProperty]
-        private ObservableCollection<Comment> visibleComments = new();
+        private ObservableCollection<CommentPreview> visibleComments = new();
+
+        [ObservableProperty]
+        decimal recipeRating;
+        [ObservableProperty]
+        int recipeUsersRated;
 
         private int ratingValue;
         [ObservableProperty]
         private DateOnly commentTime;
-        [ObservableProperty]
-        private Comment commentOfUser = new Comment();
         [ObservableProperty]
         private bool editorEditable = true;
         [ObservableProperty]
@@ -65,25 +68,15 @@ namespace CookRecipesApp.ViewModel
 
                 if (result == null)
                 {
-                    // Ošetření, když recept neexistuje
-                    await Shell.Current.DisplayAlertAsync("Chyba", "Recept se nepodařilo načíst.", "OK");
+                    await Shell.Current.DisplayAlertAsync("Error", "Recipe failed to load", "OK");
                     return;
                 }
 
                 SelectedRecipe = result;
-                /*
-                                if (!await _userService.IsUserLoggedInAsync())
-                                {
-                                    FavoriteIconPath = "favorite.png";
-                                }
-                                else
-                                {
-                                    var user = await _userService.GetCurrentUserAsync();
-                                    var fv = await _recipeService.IsFavoriteAsync(SelectedRecipe.Id, user.Id);
 
-                                    FavoriteIconPath = fv ? "favorite_full.png" : "favorite.png";
-                                }
-                */
+                RecipeRating = SelectedRecipe.Rating ?? (decimal)3.5;
+                RecipeUsersRated = SelectedRecipe.UsersRated ?? 0;
+
                 FavoriteIconPath = SelectedRecipe.IsFavorite ? "favorite_full.png" : "favorite.png";
                 VisibleComments.Clear();
                 foreach(var c in SelectedRecipe.Comments.Take(10))
@@ -91,7 +84,7 @@ namespace CookRecipesApp.ViewModel
                     VisibleComments.Add(c);
                 }
 
-                //await CommentStatus();
+                await CommentStatus();
             }
             catch (Exception ex)
             {
@@ -161,26 +154,25 @@ namespace CookRecipesApp.ViewModel
             {
                 CommentText = string.Empty;
             }
-            var user = await _userService.GetCurrentUserAsync();
 
             Comment comment = new Comment()
             {
                 RecipeId = recipeId,
-                UserId = user.Id,
-                User = user,
                 Text = CommentText,
                 Rating = (short)ratingValue,
-                CreatedAt = DateTime.Now
+                CreatedAt = DateTime.Now,
+                User = new()
+
             };
 
-            CommentOfUser = comment;
-            CommentTime = DateOnly.FromDateTime(comment.CreatedAt??DateTime.Now);
             var res = await _recipeService.PostCommentAsync(comment);
 
-            SelectedRecipe.Rating = (decimal)res.Item1;
-            SelectedRecipe.UsersRated = res.Item2;
+            RecipeRating = res.NewAverageRating;
+            RecipeUsersRated = res.NewUsersRatedCount;
+            CommentTime = DateOnly.FromDateTime(res.CreatedAt);
 
-            VisibleComments.Add(comment);           
+            comment.User.Name = res.UserName;
+            comment.User.Surname = res.UserSurname;       
 
             PostBtnVisible = false;
             EditorEditable = false;
@@ -210,20 +202,17 @@ namespace CookRecipesApp.ViewModel
 
         private async Task CommentStatus()
         {
-            var user = await _userService.GetCurrentUserAsync();
-            if(user != null)
+            var comment  = await _recipeService.GetRecipeCommentAsync(RecipeId, null);
+
+            if(comment is not null)
             {
-                if(await _recipeService.UserCommentedAsync(recipeId, user.Id))
-                {
-                    CommentOfUser = await _recipeService.GetCommentByUserAndRecipeAsync(recipeId, user.Id) ?? new();
-                    CommentTime = DateOnly.FromDateTime(CommentOfUser.CreatedAt??DateTime.Now);
-                    CommentText = CommentOfUser.Text;
-                    SelectRating(CommentOfUser.Rating);
-                    PostBtnVisible = false;
-                    EditorEditable = false;
-                    DelGridVisible = true;
-                    return;
-                }
+                CommentTime = DateOnly.FromDateTime(comment.CreatedAt);
+                CommentText = comment.Text;
+                SelectRating(comment.Rating);
+                PostBtnVisible = false;
+                EditorEditable = false;
+                DelGridVisible = true;
+                return;
             }
             PostBtnVisible = true;
             EditorEditable = true;
@@ -235,22 +224,15 @@ namespace CookRecipesApp.ViewModel
         [RelayCommand]
         private async Task DeleteComment()
         {
-            if(CommentOfUser == null)
-            {
-                return;
-            }
-
-            var user = await _userService.GetCurrentUserAsync();
-            var res = await _recipeService.DeleteCommentByUserAndRecipeAsync(recipeId, user.Id);
-            SelectedRecipe.Rating = (decimal)res.Item1;
-            SelectedRecipe.UsersRated = res.Item2;
-            VisibleComments.Remove(CommentOfUser);
+            var res = await _recipeService.DeleteRecipeCommentAsync(SelectedRecipe.Id, null);
+            if (res is null) return;
+            SelectedRecipe.Rating = res.NewAverageRating;
+            SelectedRecipe.UsersRated = res.NewUsersRatedCount;
 
             PostBtnVisible = true;
             EditorEditable = true;
             DelGridVisible = false;
 
-            CommentOfUser = new();
             SelectRating(1);
             CommentText = "";
         }

@@ -49,21 +49,10 @@ namespace CookRecipesApp.Service.Services
             throw new NotImplementedException();
         }
 
-        public Task<(float, int)> DeleteCommentByUserAndRecipeAsync(Guid recipeId, Guid userId)
-        {
-            throw new NotImplementedException();
-        }
-
         public Task DeleteRecipeAsync(Guid id)
         {
             throw new NotImplementedException();
         }
-
-        public Task<Comment?> GetCommentByUserAndRecipeAsync(Guid recipeId, Guid userId)
-        {
-            throw new NotImplementedException();
-        }
-
 
         public async Task<RecipeDetailsDto?> GetRecipeDetailsAsync(Guid recipeId)
         {
@@ -84,9 +73,24 @@ namespace CookRecipesApp.Service.Services
             return response ?? new List<Recipe>();
         }
 
-        public Task<(float, int)> PostCommentAsync(Comment comment)
+        public async Task<PostCommentResponse?> PostCommentAsync(Comment comment)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync<Comment>($"{BaseUrl}/postComment", comment);
+                if (response.IsSuccessStatusCode)
+                {
+                    var c = await response.Content.ReadFromJsonAsync<PostCommentResponse>();
+                    return c;
+                }
+                Debug.WriteLine($"Error while posting comment: {response.StatusCode}");
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error while posting comment: {ex.Message}");
+                return null;
+            }
         }
 
         public async Task<Guid?> SaveRecipeAsync(RecipeCreateDto createDto)
@@ -110,11 +114,6 @@ namespace CookRecipesApp.Service.Services
         }
 
         public Task UpdateRecipeAsync(Recipe recipe)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> UserCommentedAsync(Guid recipeId, Guid userId)
         {
             throw new NotImplementedException();
         }
@@ -146,10 +145,43 @@ namespace CookRecipesApp.Service.Services
             }
         }
 
+        public async Task<PostCommentResponse?> GetRecipeCommentAsync(Guid recipeId, Guid? userId)
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync($"{BaseUrl}/getUserComment/{recipeId}");
 
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadFromJsonAsync<PostCommentResponse?>();
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error while getting comment: {ex.Message}");
+                return null;
+            }
+        }
 
+        public async Task<DeleteCommentResponse?> DeleteRecipeCommentAsync(Guid recipeId, Guid? userId)
+        {
+            try
+            {
+                var response = await _httpClient.DeleteAsync($"{BaseUrl}/deleteComment/{recipeId}");
 
-
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadFromJsonAsync<DeleteCommentResponse>();
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error while removing comment: {ex.Message}");
+                return null;
+            }
+        }
 
         public class FavoriteResponse
         {

@@ -45,9 +45,9 @@ namespace CookRecipesApp.Shared.DTOs
 
         public int? UsersRated { get; set; }
 
-        public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
+        public virtual ICollection<CommentPreview> Comments { get; set; } = new List<CommentPreview>();
 
-        public virtual ICollection<RecipeIngredient> RecipeIngredients { get; set; } = new List<RecipeIngredient>();
+        public virtual ICollection<RecipeIngredientDetailDto> RecipeIngredients { get; set; } = new List<RecipeIngredientDetailDto>();
 
         public virtual ICollection<RecipeStep> RecipeSteps { get; set; } = new List<RecipeStep>();
 

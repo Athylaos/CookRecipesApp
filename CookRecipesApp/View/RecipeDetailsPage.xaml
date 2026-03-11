@@ -6,6 +6,7 @@
             xmlns:sharpnado="clr-namespace:Sharpnado.MaterialFrame;assembly=Maui.MaterialFrame"
             xmlns:viewmodels="clr-namespace:CookRecipesApp.ViewModel"
             xmlns:models="clr-namespace:CookRecipesApp.Shared.Models;assembly=CookRecipesApp.Shared"
+            xmlns:dtos="clr-namespace:CookRecipesApp.Shared.DTOs;assembly=CookRecipesApp.Shared"
             xmlns:modelsUI="clr-namespace:CookRecipesApp.ModelsUI"
             x:DataType="viewmodel:RecipeDetailsViewModel"
             x:Class="CookRecipesApp.View.RecipeDetailsPage"
@@ -45,7 +46,7 @@
 
         <ScrollView Grid.Row="0" Grid.RowSpan="3">
             <Grid
-                RowDefinitions="300, 140, 125, 50, Auto, 50, Auto, 25, 50, 50, 400, 50, Auto, 75"
+                RowDefinitions="300, 140, 125, 50, Auto, 50, Auto, 25, 50, 50, Auto, 50, Auto, 75"
                 Padding="5">
 
                 <Border
@@ -119,7 +120,7 @@
                         ColumnDefinitions="*, *">
                         <HorizontalStackLayout VerticalOptions="Center" HorizontalOptions="Start" Grid.Column="0" Grid.Row="0" Margin="9, 0, 0, 0">
                             <Image Source="rating.png" WidthRequest="40" HeightRequest="40" Aspect="AspectFit" VerticalOptions="Start" HorizontalOptions="Center" Margin="0, 0, 7, 0"></Image>
-                            <Label Text="{Binding SelectedRecipe.Rating}" TextColor="{StaticResource Porcelain}" FontSize="23" FontAttributes="Bold" FontFamily="Nunito" VerticalOptions="Center" HorizontalOptions="Center"></Label>
+                            <Label Text="{Binding RecipeRating, StringFormat='{0:F1}'}" TextColor="{StaticResource Porcelain}" FontSize="23" FontAttributes="Bold" FontFamily="Nunito" VerticalOptions="Center" HorizontalOptions="Center"></Label>
                             <Label Text=" / 5" TextColor="{StaticResource Porcelain}" FontSize="23" FontAttributes="Bold" FontFamily="Nunito" VerticalOptions="Center" HorizontalOptions="Center"></Label>
                         </HorizontalStackLayout>
 
@@ -164,33 +165,33 @@
                         </HorizontalStackLayout>
                         <HorizontalStackLayout Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" VerticalOptions="Center" HorizontalOptions="End" Padding="0, 10, 10, 0">
                             <Image WidthRequest="30" HeightRequest="30" Source="calories.png" Margin="0, 0, 4, 0"></Image>
-                            <Label Text="{Binding SelectedRecipe.Calories}" TextColor="{StaticResource Porcelain}" FontSize="23" FontAttributes="Bold" FontFamily="Nunito" VerticalOptions="Center"></Label>
+                            <Label Text="{Binding SelectedRecipe.Calories, StringFormat='{0:F1}'}" TextColor="{StaticResource Porcelain}" FontSize="23" FontAttributes="Bold" FontFamily="Nunito" VerticalOptions="Center"></Label>
                             <Label Text=" kcal" TextColor="{StaticResource Porcelain}" FontSize="20" FontFamily="Nunito" VerticalOptions="Center"></Label>
                         </HorizontalStackLayout>
 
                         <HorizontalStackLayout Grid.Row="1" Grid.Column="0"  VerticalOptions="Center" HorizontalOptions="End">
                             <Label Text="Protein " TextColor="{StaticResource Porcelain}" FontSize="20" FontFamily="Nunito"></Label>
-                            <Label Text="{Binding SelectedRecipe.Proteins}" TextColor="{StaticResource Porcelain}" FontSize="20" FontAttributes="Bold" FontFamily="Nunito"></Label>
+                            <Label Text="{Binding SelectedRecipe.Proteins, StringFormat='{0:F1}'}" TextColor="{StaticResource Porcelain}" FontSize="20" FontAttributes="Bold" FontFamily="Nunito"></Label>
                             <Label Text="g  |" TextColor="{StaticResource Porcelain}" FontSize="20" FontFamily="Nunito"></Label>
 
                         </HorizontalStackLayout>
                         <HorizontalStackLayout Grid.Row="1" Grid.Column="1"  VerticalOptions="Center" HorizontalOptions="Start">
                             <Label Text="  " TextColor="{StaticResource Porcelain}" FontSize="20" FontFamily="Nunito"></Label>
                             <Label Text="Carbs " TextColor="{StaticResource Porcelain}" FontSize="20" FontFamily="Nunito"></Label>
-                            <Label Text="{Binding SelectedRecipe.Carbohydrates}" TextColor="{StaticResource Porcelain}" FontSize="20" FontAttributes="Bold" FontFamily="Nunito"></Label>
+                            <Label Text="{Binding SelectedRecipe.Carbohydrates, StringFormat='{0:F1}'}" TextColor="{StaticResource Porcelain}" FontSize="20" FontAttributes="Bold" FontFamily="Nunito"></Label>
                             <Label Text="g" TextColor="{StaticResource Porcelain}" FontSize="20" FontFamily="Nunito"></Label>
                         </HorizontalStackLayout>
 
                         <HorizontalStackLayout Grid.Row="2" Grid.Column="0"  VerticalOptions="Center" HorizontalOptions="End">
                             <Label Text="Fat " TextColor="{StaticResource Porcelain}" FontSize="20" FontFamily="Nunito"></Label>
-                            <Label Text="{Binding SelectedRecipe.Fats}" TextColor="{StaticResource Porcelain}" FontSize="20" FontAttributes="Bold" FontFamily="Nunito"></Label>
+                            <Label Text="{Binding SelectedRecipe.Fats, StringFormat='{0:F1}'}" TextColor="{StaticResource Porcelain}" FontSize="20" FontAttributes="Bold" FontFamily="Nunito"></Label>
                             <Label Text="g  |" TextColor="{StaticResource Porcelain}" FontSize="20" FontFamily="Nunito"></Label>
 
                         </HorizontalStackLayout>
                         <HorizontalStackLayout Grid.Row="2" Grid.Column="1"  VerticalOptions="Center" HorizontalOptions="Start">
                             <Label Text="  " TextColor="{StaticResource Porcelain}" FontSize="20" FontFamily="Nunito"></Label>
                             <Label Text="Fiber " TextColor="{StaticResource Porcelain}" FontSize="20" FontFamily="Nunito"></Label>
-                            <Label Text="{Binding SelectedRecipe.Fiber}" TextColor="{StaticResource Porcelain}" FontSize="20" FontAttributes="Bold" FontFamily="Nunito"></Label>
+                            <Label Text="{Binding SelectedRecipe.Fiber, StringFormat='{0:F2}'}" TextColor="{StaticResource Porcelain}" FontSize="20" FontAttributes="Bold" FontFamily="Nunito"></Label>
                             <Label Text="g" TextColor="{StaticResource Porcelain}" FontSize="20" FontFamily="Nunito"></Label>
                         </HorizontalStackLayout>
 
@@ -201,16 +202,16 @@
 
                 <CollectionView Grid.Row="4" ItemsSource="{Binding SelectedRecipe.RecipeIngredients}" SelectionMode="None">
                     <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="models:RecipeIngredient">
+                        <DataTemplate x:DataType="dtos:RecipeIngredientDetailDto">
                             <Grid
                                 ColumnDefinitions="*,*" RowDefinitions="50">
                                 <HorizontalStackLayout Grid.Column="0">
                                     <CheckBox Color="{StaticResource PineTeal}" IsChecked="True" WidthRequest="70" HorizontalOptions="Start"/>
-                                    <Label Text="{Binding Ingredient.Name}" TextColor="{StaticResource Porcelain}" FontSize="21" FontFamily="Nunito" Margin="2, 0, 0, 0" VerticalOptions="Center"/>
+                                    <Label Text="{Binding IngredientName}" TextColor="{StaticResource Porcelain}" FontSize="21" FontFamily="Nunito" Margin="2, 0, 0, 0" VerticalOptions="Center"/>
                                 </HorizontalStackLayout>
                                 <HorizontalStackLayout Grid.Column="1" HorizontalOptions="End" Margin="0, 0, 15, 0">
-                                    <Label Text="{Binding Quantity}" TextColor="{StaticResource Porcelain}" FontSize="21" FontFamily="Nunito" Margin="2, 0, 0, 0" VerticalOptions="Center" HorizontalOptions="End"/>
-                                    <Label Text="{Binding Unit.Name}" TextColor="{StaticResource Porcelain}" FontSize="19" FontFamily="Nunito" Margin="2, 0, 0, 0" VerticalOptions="Center" HorizontalOptions="End"/>
+                                    <Label Text="{Binding Quantity, StringFormat='{0:F1} '}" TextColor="{StaticResource Porcelain}" FontSize="21" FontFamily="Nunito" Margin="2, 0, 0, 0" VerticalOptions="Center" HorizontalOptions="End"/>
+                                    <Label Text="{Binding UnitName}" TextColor="{StaticResource Porcelain}" FontSize="19" FontFamily="Nunito" Margin="2, 0, 0, 0" VerticalOptions="Center" HorizontalOptions="End"/>
                                 </HorizontalStackLayout>
                             </Grid>
                         </DataTemplate>
@@ -272,18 +273,18 @@
                         HorizontalOptions="Center">
                         <HorizontalStackLayout VerticalOptions="Center" Margin="10, 5, 10, 5">
                             <Image Source="rating.png" WidthRequest="30" HeightRequest="30" Aspect="AspectFit" VerticalOptions="Start" HorizontalOptions="Center" Margin="0, 0, 7, 0"></Image>
-                            <Label Text="{Binding SelectedRecipe.Rating}" TextColor="{StaticResource Porcelain}" FontSize="23" FontAttributes="Bold" FontFamily="Nunito" VerticalOptions="Center" HorizontalOptions="Center"></Label>
+                            <Label Text="{Binding RecipeRating, StringFormat='{0:F1}'}" TextColor="{StaticResource Porcelain}" FontSize="23" FontAttributes="Bold" FontFamily="Nunito" VerticalOptions="Center" HorizontalOptions="Center"></Label>
                             <Label Text=" / 5" TextColor="{StaticResource Porcelain}" FontSize="23" FontAttributes="Bold" FontFamily="Nunito" VerticalOptions="Center" HorizontalOptions="Center"></Label>
                             <Label Text=" (" TextColor="{StaticResource Porcelain}" FontSize="23" FontAttributes="Bold" FontFamily="Nunito" VerticalOptions="Center" HorizontalOptions="Center"></Label>
-                            <Label Text="{Binding SelectedRecipe.UsersRated}" TextColor="{StaticResource Porcelain}" FontSize="23" FontAttributes="Bold" FontFamily="Nunito" VerticalOptions="Center" HorizontalOptions="Center"></Label>
+                            <Label Text="{Binding RecipeUsersRated}" TextColor="{StaticResource Porcelain}" FontSize="23" FontAttributes="Bold" FontFamily="Nunito" VerticalOptions="Center" HorizontalOptions="Center"></Label>
                             <Label Text=" reviews)" TextColor="{StaticResource Porcelain}" FontSize="23" FontAttributes="Bold" FontFamily="Nunito" VerticalOptions="Center" HorizontalOptions="Center"></Label>
                         </HorizontalStackLayout>
                     </Border>
                 </Grid>
 
-                <CollectionView Grid.Row="10" ItemsSource="{Binding VisibleComments}" Margin="0, 15, 0, 0">
+                <CollectionView Grid.Row="10" ItemsSource="{Binding VisibleComments}" Margin="0, 15, 0, 0"  MaximumHeightRequest="400" MinimumHeightRequest="50">
                     <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="models:Comment">
+                        <DataTemplate x:DataType="dtos:CommentPreview">
                             <Border
                                 StrokeShape="RoundRectangle, 15"
                                 StrokeThickness="0"
@@ -292,7 +293,7 @@
                                 BackgroundColor="#212121">
                                 <VerticalStackLayout>
                                     <HorizontalStackLayout>
-                                        <Label Text="{Binding User.Name}" TextColor="{StaticResource PineTeal}" FontSize="21" FontFamily="Nunito" FontAttributes="Bold" Shadow="3, 3, 3, #021f04 0.4"></Label>
+                                        <Label Text="{Binding UserName}" TextColor="{StaticResource PineTeal}" FontSize="21" FontFamily="Nunito" FontAttributes="Bold" Shadow="3, 3, 3, #021f04 0.4"></Label>
                                         <Label Text=" - " TextColor="{StaticResource PineTeal}" FontSize="21" FontFamily="Nunito" Shadow="3, 3, 3, #021f04 0.4"></Label>
                                         <Label Text="{Binding Rating}" TextColor="{StaticResource PineTeal}" FontSize="21" FontFamily="Nunito" Shadow="3, 3, 3, #021f04 0.4"></Label>
                                         <Image Source="favorite_full.png" WidthRequest="20" HeightRequest="20" Margin="7, 0, 0, 0"></Image>
