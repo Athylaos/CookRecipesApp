@@ -176,6 +176,12 @@ namespace CookRecipesApp.ViewModel
         }
 
         [RelayCommand]
+        public async Task GoBackBtn()
+        {
+            await Shell.Current.GoToAsync("..");
+        }
+
+        [RelayCommand]
         public async Task FinishRecipeBtn()
         {
             int timeInt = int.TryParse(Time, out var q) ? q : 0;

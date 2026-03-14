@@ -12,7 +12,7 @@ using System.Diagnostics;
 
 namespace CookRecipesApp.ViewModel
 {
-    [QueryProperty(nameof(RecipeId), "RecipeId")]
+    [QueryProperty(nameof(RecipeIdString), "RecipeIdString")]
     public partial class RecipeDetailsViewModel : ObservableObject
     {
 
@@ -20,7 +20,18 @@ namespace CookRecipesApp.ViewModel
         private IUserService _userService;
 
         [ObservableProperty]
+        string recipeIdString;
+        [ObservableProperty]
         Guid recipeId;
+
+        partial void OnRecipeIdStringChanged(string value)
+        {
+            if (Guid.TryParse(value, out var guid))
+            {
+                RecipeId = guid;
+                _ = LoadRecipeAsync(guid);
+            }
+        }
 
         [ObservableProperty]
         private RecipeDetailsDto selectedRecipe = new();

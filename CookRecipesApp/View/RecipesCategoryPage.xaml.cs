@@ -9,4 +9,9 @@ public partial class RecipesCategoryPage : ContentPage
 		BindingContext = vm;
 		InitializeComponent();
 	}
+
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+    }
 }

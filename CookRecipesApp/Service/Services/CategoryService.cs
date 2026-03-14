@@ -36,9 +36,21 @@ namespace CookRecipesApp.Service.Services
             return new List<Category>();
         }
 
-        public Task<Category?> GetCategoryByIdAsync(Guid id)
+        public async Task<Category?> GetCategoryByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var response = await _httpClient.GetAsync($"{BaseUrl}/get/{id}");
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadFromJsonAsync<Category>() ?? new();
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"error while loading categories: {ex.Message}");
+            }
+            return new Category();
         }
 
         public Task<List<Category>> GetChildCategoriesAsync(Guid parentId)

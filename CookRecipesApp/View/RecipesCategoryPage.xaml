@@ -6,6 +6,7 @@
              xmlns:sharpnado="clr-namespace:Sharpnado.MaterialFrame;assembly=Maui.MaterialFrame"
              xmlns:viewmodels="clr-namespace:CookRecipesApp.ViewModel"
              xmlns:models="clr-namespace:CookRecipesApp.Shared.Models;assembly=CookRecipesApp.Shared"
+             xmlns:dtos="clr-namespace:CookRecipesApp.Shared.DTOs;assembly=CookRecipesApp.Shared"
              x:DataType="viewmodel:RecipesCategoryViewModel"
              x:Class="CookRecipesApp.View.RecipesCategoryPage"
              Title="RecipesCategoryPage"
@@ -101,7 +102,7 @@
 
                 <CollectionView Grid.Row="3" ItemsSource="{Binding FavoriteRecipes}" ItemsLayout="HorizontalList">
                     <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="models:Recipe">
+                        <DataTemplate x:DataType="dtos:RecipePreviewDto">
                             <Grid
                                 Margin="5"
                                 HorizontalOptions="Start"
@@ -110,7 +111,7 @@
                                 RowDefinitions="187.5, 100">
                                 <Grid.GestureRecognizers>
                                     <TapGestureRecognizer
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}},Path=BindingContext.RecepieBtnCommand}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}},Path=BindingContext.RecipeBtnCommand}"
                                         CommandParameter="{Binding .}" />
                                 </Grid.GestureRecognizers>
                                 <Border
@@ -165,7 +166,7 @@
                                         </HorizontalStackLayout>
                                         <HorizontalStackLayout Grid.Row="2" Grid.Column="0" Margin="5, 0, 0, 0">
                                             <Image Source="rating.png" Margin="5"/>
-                                            <Label Text="{Binding Rating}" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
+                                            <Label Text="{Binding Rating, StringFormat='{0:F1}'}" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
                                             <Label Text="/5" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
                                         </HorizontalStackLayout>
                                         <HorizontalStackLayout Grid.Row="0" Grid.Column="1">
@@ -174,7 +175,7 @@
                                         </HorizontalStackLayout>
                                         <HorizontalStackLayout Grid.Row="1" Grid.Column="1">
                                             <Image Source="calories.png" Margin="5"/>
-                                            <Label Text="{Binding Calories}" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
+                                            <Label Text="{Binding Calories, StringFormat='{0:F0}'}" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
                                             <Label Text=" kcal" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
                                         </HorizontalStackLayout>
                                         <HorizontalStackLayout Grid.Row="2" Grid.Column="1">
@@ -205,7 +206,7 @@
 
                 <CollectionView Grid.Row="5" ItemsSource="{Binding FavoriteRecipes}" ItemsLayout="HorizontalList">
                     <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="models:Recipe">
+                        <DataTemplate x:DataType="dtos:RecipePreviewDto">
                             <Grid
                                  Margin="5"
                                  HorizontalOptions="Start"
@@ -213,7 +214,7 @@
                                  RowDefinitions="187.5, 100">
                                 <Grid.GestureRecognizers>
                                     <TapGestureRecognizer
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}},Path=BindingContext.RecepieBtnCommand}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}},Path=BindingContext.RecipeBtnCommand}"
                                         CommandParameter="{Binding .}" />
                                 </Grid.GestureRecognizers>
                                 <Border
@@ -254,7 +255,7 @@
                                      StrokeShape="RoundRectangle, 0, 0, 15, 15"
                                      StrokeThickness="0"
                                      BackgroundColor="#212121">
-                                     <Grid
+                                    <Grid
                                          RowDefinitions="*, *, *"
                                          ColumnDefinitions="*, *">
                                         <HorizontalStackLayout Grid.Row="0" Grid.Column="0" Margin="5, 0, 0, 0">
@@ -268,7 +269,7 @@
                                         </HorizontalStackLayout>
                                         <HorizontalStackLayout Grid.Row="2" Grid.Column="0" Margin="5, 0, 0, 0">
                                             <Image Source="rating.png" Margin="5"/>
-                                            <Label Text="{Binding Rating}" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
+                                            <Label Text="{Binding Rating, StringFormat='{0:F1}'}" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
                                             <Label Text="/5" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
                                         </HorizontalStackLayout>
                                         <HorizontalStackLayout Grid.Row="0" Grid.Column="1">
@@ -277,14 +278,13 @@
                                         </HorizontalStackLayout>
                                         <HorizontalStackLayout Grid.Row="1" Grid.Column="1">
                                             <Image Source="calories.png" Margin="5"/>
-                                            <Label Text="{Binding Calories}" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
+                                            <Label Text="{Binding Calories, StringFormat='{0:F0}'}" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
                                             <Label Text=" kcal" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
                                         </HorizontalStackLayout>
                                         <HorizontalStackLayout Grid.Row="2" Grid.Column="1">
                                             <Image Source="fridge.png" Margin="5"/>
                                             <Label Text="NotImplemented" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"/>
                                         </HorizontalStackLayout>
-
                                     </Grid>
                                 </Border>
                             </Grid>

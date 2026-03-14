@@ -18,18 +18,38 @@
         ColumnDefinitions="*"
         BackgroundColor="#1f1f1f"
         MaximumWidthRequest="1300">
+        <Border
+            ZIndex="90"
+            Grid.Row="0"
+            Margin="6, 0"
+            StrokeShape="RoundRectangle, 23"
+            Stroke="Transparent"
+            MaximumWidthRequest="70"
+            MaximumHeightRequest="70"
+            HorizontalOptions="Start"
+            VerticalOptions="Start">
+            <Border.Background>
+                <RadialGradientBrush Center="0.5, 0.5" Radius="0.8">
+                    <GradientStop Color="Transparent" Offset="0.8" />
+                    <GradientStop Color="{StaticResource PineTeal}" Offset="1" />
+                </RadialGradientBrush>
+            </Border.Background>
+            <ImageButton WidthRequest="65" HeightRequest="65" Source="back.png" Command="{Binding GoBackBtnCommand}"/>
+        </Border>
+
         <ScrollView
             Grid.Row="0" Grid.Column="0"
             Margin="10, 10">
             <Grid
-                RowDefinitions="45, 60, 250, 90, Auto, Auto, 20, 70">
+                RowDefinitions="55, 60, 250, 90, Auto, Auto, 20, 70">
                 <Label
                     Grid.Row="0"
                     Text="Recipe name"
                     FontFamily="Alegreya"
                     FontAttributes="Bold"
                     FontSize="30"
-                    Margin="10, 0, 0, 0"/>
+                    VerticalOptions="Center"
+                    Margin="60, 0, 0, 0"/>
                 <Border
                     Grid.Row="1"
                     StrokeShape="RoundRectangle, 20"

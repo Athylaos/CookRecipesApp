@@ -1,8 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using CookRecipesApp.Shared.Models;
 using CookRecipesApp.Service;
 using CookRecipesApp.Service.Interface;
+using CookRecipesApp.Shared.DTOs;
+using CookRecipesApp.Shared.Models;
 using CookRecipesApp.View;
 using System;
 using System.Collections.Generic;
@@ -23,14 +24,14 @@ namespace CookRecipesApp.ViewModel
             _recipeService = recipeService;
         }
 
-        Guid categoryId;
-        public Guid CategoryId
+        [ObservableProperty]
+        private string categoryId;
+
+        partial void OnCategoryIdChanged(string value)
         {
-            get => categoryId;
-            set
+            if (Guid.TryParse(value, out var guid))
             {
-                SetProperty(ref categoryId, value);
-                _ = LoadCategoryAsync(value);
+                _ = LoadCategoryAsync(guid);
             }
         }
 
@@ -38,26 +39,28 @@ namespace CookRecipesApp.ViewModel
         Category selectedCategory;
 
         [ObservableProperty]
-        private ObservableCollection<Recipe> favoriteRecipes = new ObservableCollection<Recipe>();
+        private ObservableCollection<RecipePreviewDto> favoriteRecipes = new ObservableCollection<RecipePreviewDto>();
 
         public async Task LoadCategoryAsync(Guid id)
         {
-            SelectedCategory = await _categoryService.GetCategoryByIdAsync(id);
+            SelectedCategory = await _categoryService.GetCategoryByIdAsync(id) ?? new();
 
-            var favoriteRecipes = await _recipeService.GetRecipesAsync(3);
+            var favoriteRecipesApi = await _recipeService.GetFilteredRecipePreviewsAsync(new RecipeFilterParametrs() { Amount = 10, CategoryId = id });
 
-            foreach(var fvr in  favoriteRecipes)
+            FavoriteRecipes.Clear();
+            foreach(var fvr in  favoriteRecipesApi)
             {
                 FavoriteRecipes.Add(fvr);
             }
         }
 
         [RelayCommand]
-        public async Task RecipeBtn(Recipe recipe)
+        public async Task RecipeBtn(RecipePreviewDto recipe)
         {
             if (recipe == null) return;
 
-            await Shell.Current.GoToAsync($"{nameof(RecipeDetailsPage)}?RecipeId={recipe.Id}", true);
+            await Shell.Current.GoToAsync($"{nameof(RecipeDetailsPage)}?RecipeIdString={recipe.Id}", true);
+
         }
 
         [RelayCommand]

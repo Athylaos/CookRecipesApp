@@ -95,6 +95,8 @@ namespace CookRecipesApp.API.Endpoints
                         Difficulty = r.Difficulty,
                         Rating = r.Rating,
                         UserName = r.User.Name,
+                        Calories = r.Calories,
+                        ServingsAmount = r.ServingsAmount,
                         IsFavorite = currentUserId != null && r.RecipesUsers.Any(ru => ru.UsersId == currentUserId && ru.IsFavorite)
                     })
                     .ToListAsync();

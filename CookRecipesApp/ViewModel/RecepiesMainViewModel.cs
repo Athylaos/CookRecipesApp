@@ -75,14 +75,10 @@ namespace CookRecipesApp.ViewModel
         [RelayCommand]
         public async Task RecipeBtn(RecipePreviewDto recipe)
         {
-            if (recipe == null) return;
+            if (recipe is null) return;
 
-            var navigationParameter = new Dictionary<string, object>
-                {
-                    { "RecipeId", recipe.Id }
-                };
-
-            await Shell.Current.GoToAsync(nameof(RecipeDetailsPage), true, navigationParameter);
+            await Shell.Current.GoToAsync($"{nameof(RecipeDetailsPage)}?RecipeIdString={recipe.Id}", true);
+ 
         }
     }
 }
