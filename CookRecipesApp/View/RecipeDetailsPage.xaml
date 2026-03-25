@@ -246,7 +246,7 @@
                                         StrokeShape="RoundRectangle, 21"
                                         Stroke="Transparent"
                                         Padding="7, 3">
-                                        <Label Text="{Binding Description}" TextColor="{StaticResource Porcelain}" FontSize="20" FontFamily="nunito"/>
+                                        <Label Text="{Binding Description}" TextColor="{StaticResource Porcelain}" FontSize="20" FontFamily="Nunito"/>
                                     </Border>
                                 </Grid>
                             </Border>

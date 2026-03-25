@@ -124,7 +124,7 @@ namespace CookRecipesApp.Service.Services
             return response ?? new List<RecipePreviewDto>();
         }
 
-        public async Task<List<RecipePreviewDto>> GetFilteredRecipePreviewsAsync(RecipeFilterParametrs filter)
+        public async Task<List<RecipePreviewDto>> GetFilteredRecipePreviewsAsync(RecipeFilterParametrs filter, CancellationToken? ct)
         {
             try
             {
@@ -135,8 +135,13 @@ namespace CookRecipesApp.Service.Services
                 if (filter.MaxCookingTime.HasValue) url += $"&maxCookingTime={filter.MaxCookingTime}";
                 if (filter.MaxDifficulty.HasValue) url += $"&maxDifficulty={filter.MaxDifficulty}";
 
-                var response = await _httpClient.GetFromJsonAsync<List<RecipePreviewDto>>(url);
+                var response = await _httpClient.GetFromJsonAsync<List<RecipePreviewDto>>(url, ct??CancellationToken.None);
                 return response ?? new();
+            }
+            catch (OperationCanceledException)
+            {
+                Debug.WriteLine("Request was cancelled by user.");
+                return new();
             }
             catch (Exception ex)
             {

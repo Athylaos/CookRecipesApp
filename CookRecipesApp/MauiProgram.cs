@@ -63,11 +63,15 @@ namespace CookRecipesApp
             .AddHttpMessageHandler<AuthHttpMessageHandler>()
             .ConfigurePrimaryHttpMessageHandler(() =>
             {
-                var handler = new HttpClientHandler();
-#if DEBUG
+#if ANDROID
+                var handler = new Xamarin.Android.Net.AndroidMessageHandler();
                 handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
-#endif
                 return handler;
+#else
+        var handler = new HttpClientHandler();
+        handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+        return handler;
+#endif
             });
 
 

@@ -1,15 +1,18 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Maui.Extensions;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using CookRecipesApp.Shared.Models;
 using CookRecipesApp.Service;
 using CookRecipesApp.Service.Interface;
+using CookRecipesApp.Shared.DTOs;
+using CookRecipesApp.Shared.Models;
 using CookRecipesApp.View;
+using CookRecipesApp.View.Popups;
+using CookRecipesApp.ViewModel.Popups;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Text;
-using CookRecipesApp.Shared.DTOs;
 
 namespace CookRecipesApp.ViewModel
 {
@@ -20,6 +23,17 @@ namespace CookRecipesApp.ViewModel
         private IRecipeService _recipesService;
         private IUserService _userService;
         [ObservableProperty] private string test;
+        private CancellationTokenSource? _searchCts;
+
+        [ObservableProperty]
+        bool isSearching;
+        [ObservableProperty]
+        string searchTerm;
+        [ObservableProperty]
+        RecipeFilterParametrs filterParametrs;
+        [ObservableProperty]
+        bool isEmpty;
+        public ObservableCollection<RecipePreviewDto> SearchedRecipes { get; set; } = new();     
 
         public ObservableCollection<Category> Categories { get; set; } = new();
         public ObservableCollection<RecipePreviewDto> FavouriteRecipes { get; set; } = new();
@@ -41,7 +55,7 @@ namespace CookRecipesApp.ViewModel
                 Categories.Add(ct);
             }
 
-            var rcps = await _recipesService.GetFilteredRecipePreviewsAsync(new RecipeFilterParametrs() { OnlyFavorites = false, Amount = 10 });
+            var rcps = await _recipesService.GetFilteredRecipePreviewsAsync(new RecipeFilterParametrs() { OnlyFavorites = false, Amount = 10 }, null);
             FavouriteRecipes.Clear();
             foreach (var r in rcps)
             {
@@ -79,6 +93,93 @@ namespace CookRecipesApp.ViewModel
 
             await Shell.Current.GoToAsync($"{nameof(RecipeDetailsPage)}?RecipeIdString={recipe.Id}", true);
  
+        }
+
+
+        partial void OnSearchTermChanged(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                IsSearching = false;
+                return;
+            }
+            RestartSearch(true);
+        }
+
+        private void RestartSearch(bool isDebounced)
+        {
+            IsSearching = true;
+            _searchCts?.Cancel();
+            _searchCts?.Dispose();
+            _searchCts = new CancellationTokenSource();
+
+            _ = SearchAsync(_searchCts.Token, isDebounced);
+        }
+
+        [RelayCommand]
+        public async Task OpenFilterPopup()
+        {
+            var vm = new RecipeFilterViewModel { FilterParametrs = FilterParametrs??new() };
+            var popup = new RecipeFilterPopup(vm);
+            Shell.Current.CurrentPage.ShowPopup(popup);
+
+            var result = await vm.Result;
+            if (result != null)
+            {
+                FilterParametrs = result;
+                RestartSearch(false);
+            }
+        }
+
+        [RelayCommand]
+        public void ClearFilters()
+        {
+            SearchTerm = string.Empty;
+            FilterParametrs = new RecipeFilterParametrs();
+            if (string.IsNullOrWhiteSpace(SearchTerm))
+            {
+                IsSearching = false;
+                return;
+            }
+            RestartSearch(false);
+        }
+
+        private async Task SearchAsync(CancellationToken token, bool withDelay)
+        {
+            try
+            {
+                if (withDelay)
+                    await Task.Delay(500, token);
+
+                if (!IsSearching)
+                {
+                    MainThread.BeginInvokeOnMainThread(() => {
+                        IsEmpty = false;
+                        SearchedRecipes.Clear();
+                    });
+                    return;
+                }
+
+                if (FilterParametrs is null) FilterParametrs = new();
+                FilterParametrs.SearchTerm = SearchTerm;
+
+                var results = await _recipesService.GetFilteredRecipePreviewsAsync(FilterParametrs, token);
+
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    if (token.IsCancellationRequested) return;
+
+                    IsSearching = true;
+                    SearchedRecipes.Clear();
+
+                    foreach (var r in results)
+                        SearchedRecipes.Add(r);
+
+                    IsEmpty = SearchedRecipes.Count == 0;
+                });
+            }
+            catch (OperationCanceledException) { }
+            catch (Exception ex) { Debug.WriteLine(ex.Message); }
         }
     }
 }

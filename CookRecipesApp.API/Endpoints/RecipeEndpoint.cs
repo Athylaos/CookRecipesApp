@@ -77,6 +77,9 @@ namespace CookRecipesApp.API.Endpoints
                 if (filter.MaxDifficulty.HasValue)
                     query = query.Where(r => r.Difficulty <= filter.MaxDifficulty);
 
+                if (filter.MaxCalories.HasValue)
+                    query = query.Where(r => r.Calories <= filter.MaxCalories);
+
                 if (filter.OnlyFavorites)
                 {
                     if (currentUserId == null) return Results.Unauthorized();

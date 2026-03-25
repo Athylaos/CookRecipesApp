@@ -1,12 +1,14 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace CookRecipesApp.ModelsUI
 {
-    public class RatingStar
+    public partial class RatingStar : ObservableObject
     {
         public int RatingValue { get; set; }
-        public string Icon { get; set; }
+        [ObservableProperty]
+        public string icon;
     }
 }

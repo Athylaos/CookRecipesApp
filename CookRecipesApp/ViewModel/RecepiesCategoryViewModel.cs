@@ -45,7 +45,7 @@ namespace CookRecipesApp.ViewModel
         {
             SelectedCategory = await _categoryService.GetCategoryByIdAsync(id) ?? new();
 
-            var favoriteRecipesApi = await _recipeService.GetFilteredRecipePreviewsAsync(new RecipeFilterParametrs() { Amount = 10, CategoryId = id });
+            var favoriteRecipesApi = await _recipeService.GetFilteredRecipePreviewsAsync(new RecipeFilterParametrs() { Amount = 10, CategoryId = id }, null);
 
             FavoriteRecipes.Clear();
             foreach(var fvr in  favoriteRecipesApi)

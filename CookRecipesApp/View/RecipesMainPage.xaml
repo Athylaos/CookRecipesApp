@@ -23,29 +23,56 @@
         >
         <Grid
             Grid.Row="0" Grid.Column="0"
-            ColumnDefinitions="*, 50"
+            ColumnDefinitions="50, *, 50"
             Margin="5, 0"
             ZIndex="10"
             >
             <Border
-                Grid.Column="0"
+                Grid.Column="2"
+                VerticalOptions="Center"
+                HorizontalOptions="Start"
+                WidthRequest="50"
+                HeightRequest="50"
+                StrokeShape="RoundRectangle, 15"
+                Padding="4"
+                Stroke="{StaticResource DarkEvergreen}"
+                BackgroundColor="{StaticResource PineTeal}">
+                <ImageButton
+                    Source="filter.png"
+                    Aspect="AspectFill"
+                    Background="Transparent"
+                    Command="{Binding OpenFilterPopupCommand}"
+                    Padding="1"/>
+            </Border>
+            <Border
+                Grid.Column="1"
                 Margin="7, 0"
+                Padding="15, 0, 0, 0"
                 StrokeShape="RoundRectangle, 30"
                 BackgroundColor="#212121"
                 Stroke="Transparent"
                 VerticalOptions="Center"
                 HeightRequest="50">
-                <SearchBar
-                    TextColor="{StaticResource Porcelain}"
-                    Margin=" -5, 5, 0, 0"
-                    PlaceholderColor="{StaticResource PineTeal}"
-                    Placeholder="Search"
-                    SearchIconColor="{StaticResource PineTeal}"
-                    CancelButtonColor="{StaticResource PineTeal}"
-            />
+                <Grid ColumnDefinitions="*, 60">
+                    <Entry
+                        TextColor="{StaticResource Porcelain}"
+                        Text="{Binding SearchTerm, Mode=OneWayToSource}"
+                        Margin=" -5, 0, 0, 0"                   
+                        PlaceholderColor="{StaticResource PineTeal}"
+                        Placeholder="Search"
+                        VerticalOptions="Center"/>
+                    <Image
+                        Source="search.png"
+                        Aspect="AspectFit"
+                        Margin="15, 10, 15, 13"
+                        Grid.Column="1"
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center"/>
+                </Grid>
+
             </Border>
             <Border
-                Grid.Column="1"
+                Grid.Column="0"
                 VerticalOptions="Center"
                 HorizontalOptions="Start"
                 WidthRequest="50"
@@ -64,9 +91,129 @@
 
         </Grid>
 
+        <ScrollView
+            IsVisible="{Binding IsSearching}"
+            Orientation="Vertical"
+            Grid.RowSpan="3" Grid.Row="0" Grid.Column="0"
+            Padding="10,60, 10, 60">
+            <Grid>
+                <VerticalStackLayout 
+                    IsVisible="{Binding IsEmpty}" 
+                    VerticalOptions="Center" 
+                    HorizontalOptions="Center"
+                    Spacing="15"
+                    Padding="30">
+                    <Image />
+                    <Label 
+                        Text="We don't know this one"
+                        FontSize="23"
+                        FontAttributes="Bold"
+                        HorizontalOptions="Center"
+                        TextColor="{StaticResource Porcelain}" />
+                    <Label 
+                        Text="Try simplifying your search or removing filters"
+                        HorizontalTextAlignment="Center"
+                        FontSize="14"
+                        TextColor="LightGrey" />
+                </VerticalStackLayout>
 
+                <CollectionView ItemsSource="{Binding SearchedRecipes}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="dtos:RecipePreviewDto">
+                            <Grid
+                                Margin="5"
+                                HorizontalOptions="Start"
+                                Grid.Row="3"
+                                RowDefinitions="Auto"
+                                ColumnDefinitions="2.7*, *">
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}},Path=BindingContext.RecipeBtnCommand}"
+                                        CommandParameter="{Binding .}" />
+                                </Grid.GestureRecognizers>
+                                <Border
+                                    Grid.Row="0"
+                                    Grid.Column="0"
+                                    StrokeShape="RoundRectangle, 15, 0, 15, 0"
+                                    StrokeThickness="0">
+                                    <Image
+                                        Source="{Binding PhotoUrl}"
+                                        Aspect="AspectFit"/>
+                                </Border>
+                                <Border
+                                    StrokeThickness="0"
+                                    BackgroundColor="Transparent"
+                                    Grid.Row="0"
+                                    Grid.Column="0"
+                                    StrokeShape="RoundRectangle, 14, 0, 14, 0">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0.2, 1" EndPoint="0.5, 0">
+                                            <GradientStop Color="#cc000000" Offset="0.0" />
+                                            <GradientStop Color="Transparent" Offset="1" />
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                </Border>
+
+                                <Label
+                                    Text="{Binding Title}"
+                                    TextColor="{StaticResource Porcelain}"
+                                    Grid.Row="0"
+                                    Grid.Column="0"
+                                    FontAttributes="Bold"
+                                    Margin="8"
+                                    FontSize="20"  
+                                    VerticalOptions="End"
+                                    Shadow="3, 3, 3, Black 1"
+                                    FontFamily="Alegreya"/>
+
+                                <Border
+                                    Grid.Row="0"
+                                    Grid.Column="1"
+                                    StrokeShape="RoundRectangle, 0, 15, 0, 15"
+                                    StrokeThickness="0"
+                                    BackgroundColor="#212121">
+                                    <VerticalStackLayout VerticalOptions="Center">
+                                        <HorizontalStackLayout Grid.Row="0" Grid.Column="0" Margin="5, 0, 0, 0">
+                                            <Image Source="time.png" Margin="0, 2, 7, 2" HeightRequest="25"/>
+                                            <Label Text="{Binding CookingTime}" VerticalOptions="Center" FontFamily="Nunito" FontSize="15" FontAttributes="Bold"/>
+                                            <Label Text="m" VerticalOptions="Center" FontFamily="Nunito" FontSize="15" FontAttributes="Bold"/>
+                                        </HorizontalStackLayout>
+                                        <HorizontalStackLayout Grid.Row="1" Grid.Column="0" Margin="5, 0, 0, 0">
+                                            <Image Source="spoon_fork.png" Margin="0, 2, 7, 2" HeightRequest="25"/>
+                                            <Label Text="{Binding ServingsAmount}" VerticalOptions="Center" FontFamily="Nunito" FontSize="15"  FontAttributes="Bold"/>
+                                        </HorizontalStackLayout>
+                                        <HorizontalStackLayout Grid.Row="2" Grid.Column="0" Margin="5, 0, 0, 0">
+                                            <Image Source="rating.png" Margin="0, 2, 7, 2" HeightRequest="25"/>
+                                            <Label Text="{Binding Rating, StringFormat='{0:F1}'}" VerticalOptions="Center" FontFamily="Nunito" FontSize="15" FontAttributes="Bold"/>
+                                            <Label Text="/5" VerticalOptions="Center" FontFamily="Nunito" FontSize="15" FontAttributes="Bold"/>
+                                        </HorizontalStackLayout>
+                                        <HorizontalStackLayout Grid.Row="0" Grid.Column="1">
+                                            <Image Source="difficulty.png" Margin="5, 2, 7, 2" HeightRequest="25"/>
+                                            <Label Text="{Binding Difficulty}" VerticalOptions="Center" FontFamily="Nunito" FontSize="15" FontAttributes="Bold"/>
+                                        </HorizontalStackLayout>
+                                        <HorizontalStackLayout Grid.Row="1" Grid.Column="1">
+                                            <Image Source="calories.png" Margin="4, 2, 7, 2" HeightRequest="25"/>
+                                            <Label Text="{Binding Calories, StringFormat='{0:F0}'}" VerticalOptions="Center" FontFamily="Nunito" FontSize="15" FontAttributes="Bold"/>
+                                            <Label Text=" kcal" VerticalOptions="Center" FontFamily="Nunito" FontSize="15" FontAttributes="Bold"/>
+                                        </HorizontalStackLayout>
+                                        <HorizontalStackLayout Grid.Row="2" Grid.Column="1">
+                                            <Image Source="fridge.png" Margin="6, 2, 7, 2" HeightRequest="25"/>
+                                            <Label Text="NotImplemented" VerticalOptions="Center" FontFamily="Nunito" FontSize="15" FontAttributes="Bold"/>
+                                        </HorizontalStackLayout>
+
+                                    </VerticalStackLayout>
+                                </Border>
+                            </Grid>
+
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Grid>
+            
+        </ScrollView>
 
         <ScrollView
+            IsVisible="{Binding IsSearching, Converter={toolkit:InvertedBoolConverter}}"
             Orientation="Vertical"
             Grid.RowSpan="3" Grid.Row="0" Grid.Column="0"
             Padding="10,60, 10, 60">

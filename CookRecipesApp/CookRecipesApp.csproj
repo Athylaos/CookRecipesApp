@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFrameworks>net10.0-android;net10.0-maccatalyst</TargetFrameworks>
@@ -57,6 +57,38 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="Resources\Fonts\Alegreya\Alegreya-Italic-VariableFont_wght.ttf" />
+	  <None Remove="Resources\Fonts\Alegreya\Alegreya-VariableFont_wght.ttf" />
+	  <None Remove="Resources\Fonts\Alegreya\static\Alegreya-Black.ttf" />
+	  <None Remove="Resources\Fonts\Alegreya\static\Alegreya-BlackItalic.ttf" />
+	  <None Remove="Resources\Fonts\Alegreya\static\Alegreya-Bold.ttf" />
+	  <None Remove="Resources\Fonts\Alegreya\static\Alegreya-BoldItalic.ttf" />
+	  <None Remove="Resources\Fonts\Alegreya\static\Alegreya-ExtraBold.ttf" />
+	  <None Remove="Resources\Fonts\Alegreya\static\Alegreya-ExtraBoldItalic.ttf" />
+	  <None Remove="Resources\Fonts\Alegreya\static\Alegreya-Italic.ttf" />
+	  <None Remove="Resources\Fonts\Alegreya\static\Alegreya-Medium.ttf" />
+	  <None Remove="Resources\Fonts\Alegreya\static\Alegreya-MediumItalic.ttf" />
+	  <None Remove="Resources\Fonts\Alegreya\static\Alegreya-Regular.ttf" />
+	  <None Remove="Resources\Fonts\Alegreya\static\Alegreya-SemiBold.ttf" />
+	  <None Remove="Resources\Fonts\Alegreya\static\Alegreya-SemiBoldItalic.ttf" />
+	  <None Remove="Resources\Fonts\Nunito\Nunito-Italic-VariableFont_wght.ttf" />
+	  <None Remove="Resources\Fonts\Nunito\Nunito-VariableFont_wght.ttf" />
+	  <None Remove="Resources\Fonts\Nunito\static\Nunito-Black.ttf" />
+	  <None Remove="Resources\Fonts\Nunito\static\Nunito-BlackItalic.ttf" />
+	  <None Remove="Resources\Fonts\Nunito\static\Nunito-Bold.ttf" />
+	  <None Remove="Resources\Fonts\Nunito\static\Nunito-BoldItalic.ttf" />
+	  <None Remove="Resources\Fonts\Nunito\static\Nunito-ExtraBold.ttf" />
+	  <None Remove="Resources\Fonts\Nunito\static\Nunito-ExtraBoldItalic.ttf" />
+	  <None Remove="Resources\Fonts\Nunito\static\Nunito-ExtraLight.ttf" />
+	  <None Remove="Resources\Fonts\Nunito\static\Nunito-ExtraLightItalic.ttf" />
+	  <None Remove="Resources\Fonts\Nunito\static\Nunito-Italic.ttf" />
+	  <None Remove="Resources\Fonts\Nunito\static\Nunito-Light.ttf" />
+	  <None Remove="Resources\Fonts\Nunito\static\Nunito-LightItalic.ttf" />
+	  <None Remove="Resources\Fonts\Nunito\static\Nunito-Medium.ttf" />
+	  <None Remove="Resources\Fonts\Nunito\static\Nunito-MediumItalic.ttf" />
+	  <None Remove="Resources\Fonts\Nunito\static\Nunito-Regular.ttf" />
+	  <None Remove="Resources\Fonts\Nunito\static\Nunito-SemiBold.ttf" />
+	  <None Remove="Resources\Fonts\Nunito\static\Nunito-SemiBoldItalic.ttf" />
 	  <None Remove="Resources\Images\Categories\breakfast_icon.png" />
 	  <None Remove="Resources\Images\Categories\dessert_icon.png" />
 	  <None Remove="Resources\Images\Categories\dinner_icon.png" />
@@ -78,7 +110,43 @@
 	  <None Remove="Resources\Images\Icons\menu.png" />
 	  <None Remove="Resources\Images\Icons\plus.png" />
 	  <None Remove="Resources\Images\Icons\rating.png" />
+	  <None Remove="Resources\Images\Icons\search.png" />
 	  <None Remove="Resources\Images\Icons\share.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiFont Include="Resources\Fonts\Alegreya\Alegreya-Italic-VariableFont_wght.ttf" />
+	  <MauiFont Include="Resources\Fonts\Alegreya\Alegreya-VariableFont_wght.ttf" />
+	  <MauiFont Include="Resources\Fonts\Alegreya\static\Alegreya-Black.ttf" />
+	  <MauiFont Include="Resources\Fonts\Alegreya\static\Alegreya-BlackItalic.ttf" />
+	  <MauiFont Include="Resources\Fonts\Alegreya\static\Alegreya-Bold.ttf" />
+	  <MauiFont Include="Resources\Fonts\Alegreya\static\Alegreya-BoldItalic.ttf" />
+	  <MauiFont Include="Resources\Fonts\Alegreya\static\Alegreya-ExtraBold.ttf" />
+	  <MauiFont Include="Resources\Fonts\Alegreya\static\Alegreya-ExtraBoldItalic.ttf" />
+	  <MauiFont Include="Resources\Fonts\Alegreya\static\Alegreya-Italic.ttf" />
+	  <MauiFont Include="Resources\Fonts\Alegreya\static\Alegreya-Medium.ttf" />
+	  <MauiFont Include="Resources\Fonts\Alegreya\static\Alegreya-MediumItalic.ttf" />
+	  <MauiFont Include="Resources\Fonts\Alegreya\static\Alegreya-Regular.ttf" />
+	  <MauiFont Include="Resources\Fonts\Alegreya\static\Alegreya-SemiBold.ttf" />
+	  <MauiFont Include="Resources\Fonts\Alegreya\static\Alegreya-SemiBoldItalic.ttf" />
+	  <MauiFont Include="Resources\Fonts\Nunito\Nunito-Italic-VariableFont_wght.ttf" />
+	  <MauiFont Include="Resources\Fonts\Nunito\Nunito-VariableFont_wght.ttf" />
+	  <MauiFont Include="Resources\Fonts\Nunito\static\Nunito-Black.ttf" />
+	  <MauiFont Include="Resources\Fonts\Nunito\static\Nunito-BlackItalic.ttf" />
+	  <MauiFont Include="Resources\Fonts\Nunito\static\Nunito-Bold.ttf" />
+	  <MauiFont Include="Resources\Fonts\Nunito\static\Nunito-BoldItalic.ttf" />
+	  <MauiFont Include="Resources\Fonts\Nunito\static\Nunito-ExtraBold.ttf" />
+	  <MauiFont Include="Resources\Fonts\Nunito\static\Nunito-ExtraBoldItalic.ttf" />
+	  <MauiFont Include="Resources\Fonts\Nunito\static\Nunito-ExtraLight.ttf" />
+	  <MauiFont Include="Resources\Fonts\Nunito\static\Nunito-ExtraLightItalic.ttf" />
+	  <MauiFont Include="Resources\Fonts\Nunito\static\Nunito-Italic.ttf" />
+	  <MauiFont Include="Resources\Fonts\Nunito\static\Nunito-Light.ttf" />
+	  <MauiFont Include="Resources\Fonts\Nunito\static\Nunito-LightItalic.ttf" />
+	  <MauiFont Include="Resources\Fonts\Nunito\static\Nunito-Medium.ttf" />
+	  <MauiFont Include="Resources\Fonts\Nunito\static\Nunito-MediumItalic.ttf" />
+	  <MauiFont Include="Resources\Fonts\Nunito\static\Nunito-Regular.ttf" />
+	  <MauiFont Include="Resources\Fonts\Nunito\static\Nunito-SemiBold.ttf" />
+	  <MauiFont Include="Resources\Fonts\Nunito\static\Nunito-SemiBoldItalic.ttf" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -109,6 +177,7 @@
 	  <MauiImage Include="Resources\Images\Icons\nutrition.png" />
 	  <MauiImage Include="Resources\Images\Icons\plus.png" />
 	  <MauiImage Include="Resources\Images\Icons\rating.png" />
+	  <MauiImage Include="Resources\Images\Icons\search.png" />
 	  <MauiImage Include="Resources\Images\Icons\share.png" />
 	  <MauiImage Include="Resources\Images\Icons\spoon_fork.png" />
 	  <MauiImage Include="Resources\Images\Icons\time.png" />
@@ -137,6 +206,9 @@
 	  <Compile Update="View\AddRecipePage.xaml.cs">
 	    <DependentUpon>AddRecipePage.xaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="View\Popups\RecipeFilterPopup.xaml.cs">
+	    <DependentUpon>RecipeFilterPopup.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="View\RecipesMainPage.xaml.cs">
 	    <DependentUpon>RecipesMainPage.xaml</DependentUpon>
 	  </Compile>
@@ -153,6 +225,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="View\LoginPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="View\Popups\RecipeFilterPopup.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="View\Popups\AddIngredientPopup.xaml">

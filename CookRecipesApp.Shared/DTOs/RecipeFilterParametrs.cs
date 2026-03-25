@@ -13,5 +13,6 @@ namespace CookRecipesApp.Shared.DTOs
         public int? MaxDifficulty { get; set; }
         public bool OnlyFavorites { get; set; } = false;
         public int Amount { get; set; } = 10;
+        public int? MaxCalories { get; set; }
     }
 }

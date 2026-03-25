@@ -13,7 +13,7 @@ namespace CookRecipesApp.Service.Interface
         public Task<List<Recipe>> GetRecipesAsync(int amount);
 
         public Task<List<RecipePreviewDto>> GetRecipePreviewsAsync(int amount);
-        public Task<List<RecipePreviewDto>> GetFilteredRecipePreviewsAsync(RecipeFilterParametrs filterParametrs);
+        public Task<List<RecipePreviewDto>> GetFilteredRecipePreviewsAsync(RecipeFilterParametrs filterParametrs, CancellationToken? ct);
 
         public Task<bool?> ChangeFavoriteAsync(Guid recipeId, Guid userId);
         public Task<bool> IsFavoriteAsync(Guid recipeId, Guid userId);
