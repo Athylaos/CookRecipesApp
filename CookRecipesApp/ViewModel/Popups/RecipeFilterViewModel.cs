@@ -51,8 +51,7 @@ namespace CookRecipesApp.ViewModel.Popups
 
         [ObservableProperty]
         bool onlyFavorite;
-        [ObservableProperty]
-        int currentRating;
+        int currentRating = -1;
 
         partial void OnOnlyFavoriteChanged(bool value)
         {
@@ -157,7 +156,7 @@ namespace CookRecipesApp.ViewModel.Popups
 
             if (RatingOn)
             {
-                FilterParametrs.MinRating = CurrentRating;
+                FilterParametrs.MinRating = currentRating;
             }
             else
             {
@@ -176,6 +175,10 @@ namespace CookRecipesApp.ViewModel.Popups
 
             FilterParametrs.OnlyFavorites = OnlyFavorite;
 
+            if(!CookingTimeOn && !CaloriesOn && !RatingOn && selectedDifficulty is null && !OnlyFavorite)
+            {
+                _resultSource.TrySetResult(null);
+            }
             _resultSource.TrySetResult(FilterParametrs);
         }
 
@@ -189,7 +192,7 @@ namespace CookRecipesApp.ViewModel.Popups
         private void SelectRating(int rating)
         {
             RatingOn = true;
-            CurrentRating = rating;
+            currentRating = rating;
             for (int i = 1; i <= 5; i++)
             {
                 RatingStars[i - 1].Icon = i <= rating ? "favorite_full.png" : "favorite.png";

@@ -128,14 +128,33 @@ namespace CookRecipesApp.Service.Services
         {
             try
             {
-                var url = $"{BaseUrl}/getPreviews/filtered?amount={filter.Amount}&onlyFavorites={filter.OnlyFavorites}";
+                var url = $"{BaseUrl}/getPreviews/filtered?" +
+                          $"amount={filter.Amount}" +
+                          $"&skip={filter.Skip}" +
+                          $"&onlyFavorites={filter.OnlyFavorites.ToString().ToLower()}" +
+                          $"&onlyMine={filter.OnlyMine.ToString().ToLower()}" +
+                          $"&sort={(int)filter.Sort}" +
+                          $"&sortDescending={filter.SortDescending.ToString().ToLower()}";
 
-                if (!string.IsNullOrEmpty(filter.SearchTerm)) url += $"&searchTerm={Uri.EscapeDataString(filter.SearchTerm)}";
-                if (filter.CategoryId.HasValue) url += $"&categoryId={filter.CategoryId}";
-                if (filter.MaxCookingTime.HasValue) url += $"&maxCookingTime={filter.MaxCookingTime}";
-                if (filter.MaxDifficulty.HasValue) url += $"&maxDifficulty={filter.MaxDifficulty}";
+                if (!string.IsNullOrEmpty(filter.SearchTerm))
+                    url += $"&searchTerm={Uri.EscapeDataString(filter.SearchTerm)}";
 
-                var response = await _httpClient.GetFromJsonAsync<List<RecipePreviewDto>>(url, ct??CancellationToken.None);
+                if (filter.CategoryId.HasValue)
+                    url += $"&categoryId={filter.CategoryId}";
+
+                if (filter.MinRating.HasValue)
+                    url += $"&minRating={filter.MinRating}";
+
+                if (filter.MaxCookingTime.HasValue)
+                    url += $"&maxCookingTime={filter.MaxCookingTime}";
+
+                if (filter.MaxDifficulty.HasValue)
+                    url += $"&maxDifficulty={filter.MaxDifficulty}";
+
+                if (filter.MaxCalories.HasValue)
+                    url += $"&maxCalories={filter.MaxCalories}";
+
+                var response = await _httpClient.GetFromJsonAsync<List<RecipePreviewDto>>(url, ct ?? CancellationToken.None);
                 return response ?? new();
             }
             catch (OperationCanceledException)

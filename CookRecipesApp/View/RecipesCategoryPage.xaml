@@ -27,7 +27,7 @@
             Padding="5">
 
             <Grid
-                RowDefinitions="60, 60, 50, 300, 50, 300, 65">
+                RowDefinitions="60, 0, 50, 300, 50, 300, 65">
 
                 <Border
                     Grid.Row="0"
@@ -47,46 +47,6 @@
                     FontSize="35"                            
                     Margin="9, 5"
                     Shadow="3, 3, 3, Black 1"/>
-
-                <Grid
-                    Grid.Row="1" Grid.Column="0"
-                    ColumnDefinitions="*, 50"
-                    Margin="5, 5"
-                    ZIndex="10"
-                    VerticalOptions="Start">
-                    <Border
-                        Grid.Column="0"
-                        Margin="7, 0"
-                        StrokeShape="RoundRectangle, 30"
-                        BackgroundColor="#212121"
-                        Stroke="Transparent"
-                        VerticalOptions="Center"
-                        HeightRequest="50">
-                        <SearchBar
-                            TextColor="{StaticResource Porcelain}"
-                            Margin=" -5, 5, 0, 0"
-                            PlaceholderColor="{StaticResource PineTeal}"
-                            Placeholder="Search"
-                            SearchIconColor="{StaticResource PineTeal}"
-                            CancelButtonColor="{StaticResource PineTeal}"/>
-                    </Border>
-                    <Border
-                        Grid.Column="2"
-                        VerticalOptions="Center"
-                        HorizontalOptions="Start"
-                        WidthRequest="50"
-                        HeightRequest="50"
-                        StrokeShape="RoundRectangle, 15"
-                        Padding="4"
-                        Stroke="{StaticResource DarkEvergreen}"
-                        BackgroundColor="{StaticResource PineTeal}">
-                        <ImageButton
-                            Source="filter.png"
-                            Aspect="AspectFill"
-                            Background="Transparent"
-                            Padding="1"/>
-                    </Border>
-                </Grid>
 
                 <Label
                     Text="Favorite"                

@@ -74,6 +74,9 @@ namespace CookRecipesApp.API.Endpoints
                 if (filter.MaxCookingTime.HasValue)
                     query = query.Where(r => r.CookingTime <= filter.MaxCookingTime);
 
+                if (filter.MinRating.HasValue)
+                    query = query.Where(r => r.Rating >= filter.MinRating);
+
                 if (filter.MaxDifficulty.HasValue)
                     query = query.Where(r => r.Difficulty <= filter.MaxDifficulty);
 
@@ -85,9 +88,34 @@ namespace CookRecipesApp.API.Endpoints
                     if (currentUserId == null) return Results.Unauthorized();
                     query = query.Where(r => r.RecipesUsers.Any(ru => ru.UsersId == currentUserId && ru.IsFavorite));
                 }
+                if (filter.OnlyMine)
+                {
+                    if (currentUserId == null) return Results.Unauthorized();
+                    query = query.Where(r => r.UserId == currentUserId);
+                }
+
+                query = filter.Sort switch
+                {
+                    SortBy.Rating => filter.SortDescending
+                        ? query.OrderByDescending(r => r.Rating)
+                        : query.OrderBy(r => r.Rating),
+
+                    SortBy.CookingTime => filter.SortDescending
+                        ? query.OrderByDescending(r => r.CookingTime)
+                        : query.OrderBy(r => r.CookingTime),
+
+                    SortBy.Calories => filter.SortDescending
+                        ? query.OrderByDescending(r => r.Calories)
+                        : query.OrderBy(r => r.Calories),
+
+                    SortBy.Oldest => query.OrderBy(r => r.RecipeCreated),
+
+                    _ => query.OrderByDescending(r => r.RecipeCreated)
+                };
 
                 var results = await query
                     .OrderByDescending(r => r.RecipeCreated)
+                    .Skip(filter.Skip)
                     .Take(filter.Amount)
                     .Select(r => new RecipePreviewDto
                     {

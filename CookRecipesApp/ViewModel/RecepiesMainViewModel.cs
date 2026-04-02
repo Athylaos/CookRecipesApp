@@ -37,7 +37,9 @@ namespace CookRecipesApp.ViewModel
 
         public ObservableCollection<Category> Categories { get; set; } = new();
         public ObservableCollection<RecipePreviewDto> FavouriteRecipes { get; set; } = new();
-
+        public ObservableCollection<RecipePreviewDto> PopularRecipes { get; set; } = new();
+        public ObservableCollection<RecipePreviewDto> FastRecipes { get; set; } = new();
+        public ObservableCollection<RecipePreviewDto> MyOwnRecipes { get; set; } = new();
         public RecipesMainViewModel(ICategoryService category, IIngredientService ingredient, IRecipeService recipe, IUserService user)
         {
             _categoryService = category;
@@ -55,13 +57,33 @@ namespace CookRecipesApp.ViewModel
                 Categories.Add(ct);
             }
 
-            var rcps = await _recipesService.GetFilteredRecipePreviewsAsync(new RecipeFilterParametrs() { OnlyFavorites = false, Amount = 10 }, null);
+            var fvRcps = await _recipesService.GetFilteredRecipePreviewsAsync(new RecipeFilterParametrs() { OnlyFavorites = true}, null);
             FavouriteRecipes.Clear();
-            foreach (var r in rcps)
+            foreach (var r in fvRcps)
             {
                 FavouriteRecipes.Add(r);
             }
 
+            var popRcps = await _recipesService.GetFilteredRecipePreviewsAsync(new RecipeFilterParametrs() { MinRating = 4 }, null);
+            PopularRecipes.Clear();
+            foreach (var r in popRcps)
+            {
+                PopularRecipes.Add(r);
+            }
+
+            var fstRcps = await _recipesService.GetFilteredRecipePreviewsAsync(new RecipeFilterParametrs() { MaxCookingTime = 20 }, null);
+            FastRecipes.Clear();
+            foreach (var r in fstRcps)
+            {
+                FastRecipes.Add(r);
+            }
+
+            var myRcps = await _recipesService.GetFilteredRecipePreviewsAsync(new RecipeFilterParametrs() { OnlyMine = true }, null);
+            MyOwnRecipes.Clear();
+            foreach (var r in myRcps)
+            {
+                MyOwnRecipes.Add(r);
+            }
         }
 
         [RelayCommand]
@@ -129,6 +151,18 @@ namespace CookRecipesApp.ViewModel
                 FilterParametrs = result;
                 RestartSearch(false);
             }
+            else
+            {
+                if (string.IsNullOrWhiteSpace(SearchTerm))
+                {
+                    IsSearching = false;
+                }
+                else
+                {
+                    FilterParametrs = new();
+                    RestartSearch(false);
+                }
+            }
         }
 
         [RelayCommand]
@@ -136,12 +170,8 @@ namespace CookRecipesApp.ViewModel
         {
             SearchTerm = string.Empty;
             FilterParametrs = new RecipeFilterParametrs();
-            if (string.IsNullOrWhiteSpace(SearchTerm))
-            {
-                IsSearching = false;
-                return;
-            }
-            RestartSearch(false);
+            IsSearching = false;
+            return;
         }
 
         private async Task SearchAsync(CancellationToken token, bool withDelay)
