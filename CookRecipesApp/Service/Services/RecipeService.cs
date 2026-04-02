@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text;
+using System.Text.Json;
 
 namespace CookRecipesApp.Service.Services
 {
@@ -93,11 +94,25 @@ namespace CookRecipesApp.Service.Services
             }
         }
 
-        public async Task<Guid?> SaveRecipeAsync(RecipeCreateDto createDto)
+        public async Task<Guid?> SaveRecipeAsync(RecipeCreateDto createDto, FileResult? photo)
         {
             try
             {
-                var response = await _httpClient.PostAsJsonAsync<RecipeCreateDto>($"{BaseUrl}/create", createDto);
+                using var content = new MultipartFormDataContent();
+                var recipeJson = JsonSerializer.Serialize(createDto);
+                content.Add(new StringContent(recipeJson, Encoding.UTF8, "application/json"), "recipeData");
+
+                if (photo != null)
+                {
+                    var fileStream = await photo.OpenReadAsync();
+                    var fileContent = new StreamContent(fileStream);
+
+                    fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(photo.ContentType);
+
+                    content.Add(fileContent, "image", photo.FileName);
+                }
+
+                var response = await _httpClient.PostAsync($"{BaseUrl}/create", content);
                 if (response.IsSuccessStatusCode)
                 {
                     var guid = await response.Content.ReadFromJsonAsync<Guid>();

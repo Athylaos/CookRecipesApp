@@ -39,6 +39,9 @@ namespace CookRecipesApp.ViewModel
         private readonly ICategoryService _categoryService;
         private readonly IUnitService _unitsService;
 
+        [ObservableProperty]
+        ImageSource selectedImageSource;
+
         [ObservableProperty] string title;
         [ObservableProperty] string time;
         [ObservableProperty] string servings;
@@ -55,6 +58,7 @@ namespace CookRecipesApp.ViewModel
         [ObservableProperty] string warningText;
         [ObservableProperty] bool warningEnabled;
         private bool _isInitialized = false;
+        private FileResult? _selectedPhoto;
 
 
 
@@ -67,7 +71,7 @@ namespace CookRecipesApp.ViewModel
             _unitsService = unitService;
             AddCookingStepBtn();
             AddCookingStepBtn();
-            PhotoPath = "default_recipe_picture.png";
+            SelectedImageSource = "default_recipe_picture.png";
         }
 
         public async Task StartAsync()
@@ -101,25 +105,24 @@ namespace CookRecipesApp.ViewModel
             {
                 var result = await MediaPicker.PickPhotosAsync(new MediaPickerOptions
                 {
-                    Title = "Choose a photo for the recipe"
+                    Title = "Choose a photo for the recipe",
+                    SelectionLimit = 1
+
                 });
 
-                if (result != null)
+                if (result != null && result.Count > 0)
                 {
-                    PhotoPath = result.First().FullPath;
-
-                    var newPath = System.IO.Path.Combine(FileSystem.AppDataDirectory, result.First().FileName);
-                    using var source = await result.First().OpenReadAsync();
-                    using var dest = File.OpenWrite(newPath);
-                    await source.CopyToAsync(dest);
-                    PhotoPath = newPath;
+                    _selectedPhoto = result.First();
+                    var stream = await _selectedPhoto.OpenReadAsync();
+                    SelectedImageSource = ImageSource.FromStream(() => stream);
                 }
             }
             catch (Exception ex)
             {
-                
+                await Shell.Current.DisplayAlertAsync("Error", "Unable to load photo: " + ex.Message, "OK");
             }
         }
+
 
 
         [RelayCommand]
@@ -257,7 +260,7 @@ namespace CookRecipesApp.ViewModel
 
             };
 
-            await _recipesService.SaveRecipeAsync(rc);
+            await _recipesService.SaveRecipeAsync(rc, _selectedPhoto);
 
 
             Title = string.Empty;
@@ -270,11 +273,6 @@ namespace CookRecipesApp.ViewModel
 
 
             await Shell.Current.Navigation.PopAsync(true);
-
-
-
-
-
         }
 
     }

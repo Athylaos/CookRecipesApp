@@ -5,7 +5,7 @@ namespace CookRecipesApp.Service.Interface
 {
     public interface IRecipeService
     {
-        public Task<Guid?> SaveRecipeAsync(RecipeCreateDto createDto);
+        public Task<Guid?> SaveRecipeAsync(RecipeCreateDto createDto, FileResult? photo);
         public Task<RecipeDetailsDto?> GetRecipeDetailsAsync(Guid id);
         public Task UpdateRecipeAsync(Recipe recipe);
         public Task DeleteRecipeAsync(Guid id);
@@ -19,8 +19,8 @@ namespace CookRecipesApp.Service.Interface
         public Task<bool> IsFavoriteAsync(Guid recipeId, Guid userId);
 
         public Task<PostCommentResponse?> PostCommentAsync(Comment comment);
-        public Task<PostCommentResponse?> GetRecipeCommentAsync(Guid recipeId, Guid? userId); // userId as an prep for future admin functions
-        public Task<DeleteCommentResponse?> DeleteRecipeCommentAsync(Guid recipeId, Guid? userId); // userId as an prep for future admin functions
+        public Task<PostCommentResponse?> GetRecipeCommentAsync(Guid recipeId, Guid? userId); // userId as an prep for future admin functions ??
+        public Task<DeleteCommentResponse?> DeleteRecipeCommentAsync(Guid recipeId, Guid? userId); // userId as an prep for future admin functions ??
 
     }
 }

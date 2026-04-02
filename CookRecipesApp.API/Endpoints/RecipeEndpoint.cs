@@ -3,8 +3,13 @@ using CookRecipesApp.Shared.DTOs;
 using CookRecipesApp.Shared.Models;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using Microsoft.EntityFrameworkCore;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
+using System.Buffers.Text;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace CookRecipesApp.API.Endpoints
 {
@@ -29,8 +34,11 @@ namespace CookRecipesApp.API.Endpoints
             });
 
             //---------------------------------------------------------------Get previews
-            group.MapGet("/getPreviews", async (int? amount, CookRecipesDbContext db) =>
+            group.MapGet("/getPreviews", async (HttpRequest request, int? amount, CookRecipesDbContext db) =>
             {
+                var imageBaseUrl = $"{request.Scheme}://{request.Host}/images/recipes/";
+                var defaultImage = "default_recipe.png";
+
                 var query = db.Recipes
                     .OrderByDescending(r => r.RecipeCreated)
                     .AsNoTracking()
@@ -38,7 +46,7 @@ namespace CookRecipesApp.API.Endpoints
                     {
                         Id = r.Id,
                         Title = r.Title,
-                        PhotoUrl = r.PhotoUrl,
+                        PhotoUrl = $"{imageBaseUrl}{(string.IsNullOrWhiteSpace(r.PhotoUrl) ? defaultImage : r.PhotoUrl)}",
                         CookingTime = r.CookingTime,
                         ServingsAmount = r.ServingsAmount,
                         Difficulty = r.Difficulty,
@@ -58,8 +66,11 @@ namespace CookRecipesApp.API.Endpoints
             });
 
             //---------------------------------------------------------------Get previews filtered
-            group.MapGet("/getPreviews/filtered", async ([AsParameters] RecipeFilterParametrs filter, ClaimsPrincipal user, CookRecipesDbContext db) =>
+            group.MapGet("/getPreviews/filtered", async (HttpRequest request,[AsParameters] RecipeFilterParametrs filter, ClaimsPrincipal user, CookRecipesDbContext db) =>
             {
+                var imageBaseUrl = $"{request.Scheme}://{request.Host}/images/recipes/";
+                var defaultImage = "default_recipe.png";
+
                 var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 Guid? currentUserId = userIdClaim != null ? Guid.Parse(userIdClaim) : null;
 
@@ -121,7 +132,7 @@ namespace CookRecipesApp.API.Endpoints
                     {
                         Id = r.Id,
                         Title = r.Title,
-                        PhotoUrl = r.PhotoUrl,
+                        PhotoUrl = $"{imageBaseUrl}{(string.IsNullOrWhiteSpace(r.PhotoUrl) ? defaultImage : r.PhotoUrl)}",
                         CookingTime = r.CookingTime,
                         Difficulty = r.Difficulty,
                         Rating = r.Rating,
@@ -164,8 +175,11 @@ namespace CookRecipesApp.API.Endpoints
 
 
             //---------------------------------------------------------------Get recipe details
-            group.MapGet("/getRecipeDetails/{recipeId:guid}", async (Guid recipeId, ClaimsPrincipal user, CookRecipesDbContext db) =>
+            group.MapGet("/getRecipeDetails/{recipeId:guid}", async (HttpRequest request, Guid recipeId, ClaimsPrincipal user, CookRecipesDbContext db) =>
             {
+                var imageBaseUrl = $"{request.Scheme}://{request.Host}/images/recipes/";
+                var defaultImage = "default_recipe.png";
+
                 var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 Guid? currentUserId = userIdClaim != null ? Guid.Parse(userIdClaim) : null;
 
@@ -174,7 +188,7 @@ namespace CookRecipesApp.API.Endpoints
                     Id = r.Id,
                     UserId = r.UserId,
                     Title = r.Title,
-                    PhotoUrl = r.PhotoUrl,
+                    PhotoUrl = $"{imageBaseUrl}{(string.IsNullOrWhiteSpace(r.PhotoUrl) ? defaultImage : r.PhotoUrl)}",
                     CookingTime = r.CookingTime,
                     ServingsAmount = r.ServingsAmount,
                     Difficulty = (DifficultyLevel)r.Difficulty,
@@ -213,12 +227,60 @@ namespace CookRecipesApp.API.Endpoints
 
 
             //---------------------------------------------------------------Create recipe
-            group.MapPost("/create", async (RecipeCreateDto dto, ClaimsPrincipal user, CookRecipesDbContext db) =>
+            group.MapPost("/create", async (HttpRequest request, ClaimsPrincipal user, CookRecipesDbContext db, IWebHostEnvironment env) =>
             {
                 var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 if (userIdClaim == null) return Results.Unauthorized();
-
                 var userId = Guid.Parse(userIdClaim);
+
+                var form = await request.ReadFormAsync();
+
+                var dtoStr = form["recipeData"];
+                if (string.IsNullOrEmpty(dtoStr)) return Results.BadRequest("Missing recipe data.");
+
+                var dto = JsonSerializer.Deserialize<RecipeCreateDto>(dtoStr, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                if (dto == null) return Results.BadRequest("Invalid recipe data.");
+            
+                string finalPhotoUrl = "default_recipe_picture.png";
+                var file = form.Files.GetFile("image");
+
+                if (file is { Length: > 0 })
+                {
+                    var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp" };
+                    var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+
+                    if (!allowedExtensions.Contains(extension))
+                        return Results.BadRequest("Unsupported image format.");
+
+                    var uploadFolder = Path.Combine(env.WebRootPath, "images", "recipes");
+                    if (!Directory.Exists(uploadFolder)) Directory.CreateDirectory(uploadFolder);
+
+                    var fileName = $"{Guid.NewGuid()}.jpg";
+                    var filePath = Path.Combine(uploadFolder, fileName);
+
+                    try
+                    {
+                        using (var image = await Image.LoadAsync(file.OpenReadStream()))
+                        {
+                            image.Mutate(x => x.Resize(new ResizeOptions
+                            {
+                                Mode = ResizeMode.Max,
+                                Size = new Size(1200, 0)
+                            }));
+
+                            await image.SaveAsJpegAsync(filePath, new SixLabors.ImageSharp.Formats.Jpeg.JpegEncoder
+                            {
+                                Quality = 80
+                            });
+                        }
+
+                        finalPhotoUrl = fileName;
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"Image Processing Error: {ex.Message}");
+                    }
+                }
 
                 var ingredientIds = dto.RecipeIngredients.Select(x => x.IngredientId).ToList();
                 var dbIngredients = await db.Ingredients.Include(x => x.IngredientUnits).Where(x => ingredientIds.Contains(x.Id)).ToListAsync();
@@ -230,7 +292,7 @@ namespace CookRecipesApp.API.Endpoints
                     Id = Guid.NewGuid(),
                     UserId = userId,
                     Title = dto.Title,
-                    PhotoUrl = dto.PhotoUrl,
+                    PhotoUrl = finalPhotoUrl,
                     CookingTime = dto.CookingTime,
                     ServingsAmount = dto.ServingsAmount,
                     ServingUnit = dto.ServingUnit,

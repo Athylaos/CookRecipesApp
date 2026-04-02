@@ -58,7 +58,7 @@ namespace CookRecipesApp
 
             builder.Services.AddHttpClient("CookApi", client =>
             {
-                client.BaseAddress = new Uri("https://10.0.1.160:7141/api/");
+                client.BaseAddress = new Uri("http://10.0.1.160:5017/api/");
             })
             .AddHttpMessageHandler<AuthHttpMessageHandler>()
             .ConfigurePrimaryHttpMessageHandler(() =>

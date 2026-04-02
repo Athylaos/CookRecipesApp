@@ -333,7 +333,7 @@
                                     </Border.GestureRecognizers>
 
                                     <Grid
-                                        BackgroundColor="Wheat">
+                                        BackgroundColor="DarkGrey">
                                         <Image 
                                             Source="{Binding PhotoUrl}"
                                             Aspect="AspectFill"/>
@@ -409,7 +409,7 @@
                                 </Border.GestureRecognizers>
 
                                 <Grid
-                                    BackgroundColor="Wheat">
+                                    BackgroundColor="DarkGrey">
                                     <Image 
                                         Source="{Binding PhotoUrl}"
                                         Aspect="AspectFill"/>
@@ -487,7 +487,7 @@
                                 </Border.GestureRecognizers>
 
                                 <Grid
-                                    BackgroundColor="Wheat">
+                                    BackgroundColor="DarkGrey">
                                     <Image 
                                         Source="{Binding PhotoUrl}"
                                         Aspect="AspectFill"/>
@@ -564,7 +564,7 @@
                                     </Border.GestureRecognizers>
 
                                     <Grid
-                                    BackgroundColor="Wheat">
+                                    BackgroundColor="DarkGrey">
                                         <Image 
                                         Source="{Binding PhotoUrl}"
                                         Aspect="AspectFill"/>

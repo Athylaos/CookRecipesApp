@@ -76,7 +76,7 @@
                             Stroke="{StaticResource Black}"
                             StrokeShape="RoundRectangle, 15"
                             StrokeThickness="1">
-                            <Image Source="{Binding PhotoPath}" Aspect="AspectFill"/>
+                            <Image Source="{Binding SelectedImageSource}" Aspect="AspectFill"/>
                         </Border>
                         <Button Text="Add photo" Background="{StaticResource PineTeal}" BorderColor="{StaticResource Evergreen}" BorderWidth="1" Command="{Binding AddPhotoBtnCommand}"/>
                     </VerticalStackLayout>
