@@ -94,7 +94,7 @@
                                 Margin="0, 0, 7, 0">
                                 <Entry Keyboard="Numeric" TextColor="{StaticResource Porcelain}" Margin="05, 0, 0, 0" Text="{Binding Time}"/>
                             </Border>
-                            <Label Grid.Column="1" Text="Minutes" VerticalOptions="Center" HorizontalOptions="Start"/>
+                            <Label Grid.Column="1" Text="Minutes" FontSize="16" VerticalOptions="Center" HorizontalOptions="Start" FontFamily="Nunito" FontAttributes="Bold"/>
                         </Grid>
 
                         <Label Margin="10, 5, 0, 5"  Text="Servings" FontSize="20" FontFamily="Alegreya"/>
@@ -108,7 +108,7 @@
                                 Margin="0, 0, 7, 0">
                                 <Entry Keyboard="Numeric" TextColor="{StaticResource Porcelain}" Margin="05, 0, 0, 0" Text="{Binding Servings}"/>
                             </Border>
-                            <Picker Grid.Column="1" TextColor="{StaticResource Porcelain}" Margin="5, 0" ItemsSource="{Binding ServingUnits}" SelectedItem="{Binding SelectedServingUnit}" TitleColor="{StaticResource Porcelain}" Title="Select unit" ItemDisplayBinding="{Binding Name}"/>
+                            <Picker Grid.Column="1" FontFamily="Nunito" FontAttributes="Bold" FontSize="16" TextColor="{StaticResource Porcelain}" Margin="5, 0" ItemsSource="{Binding ServingUnits}" SelectedItem="{Binding SelectedServingUnit}" TitleColor="{StaticResource Porcelain}" Title="Select unit" ItemDisplayBinding="{Binding Name}"/>
                         </Grid>
 
                         <Label Margin="10, 5, 0, 5"  Text="Difficulty" FontSize="20" FontFamily="Alegreya"/>

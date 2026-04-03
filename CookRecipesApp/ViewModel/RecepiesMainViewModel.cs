@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CookRecipesApp.Service;
 using CookRecipesApp.Service.Interface;
+using CookRecipesApp.Service.Services;
 using CookRecipesApp.Shared.DTOs;
 using CookRecipesApp.Shared.Models;
 using CookRecipesApp.View;
@@ -22,8 +23,11 @@ namespace CookRecipesApp.ViewModel
         private IIngredientService _ingredientsService;
         private IRecipeService _recipesService;
         private IUserService _userService;
-        [ObservableProperty] private string test;
+
         private CancellationTokenSource? _searchCts;
+        private const int _RecipeLoadAmount = 4;
+        [ObservableProperty]
+        bool loadingRecipes;
 
         [ObservableProperty]
         bool isSearching;
@@ -33,13 +37,47 @@ namespace CookRecipesApp.ViewModel
         RecipeFilterParametrs filterParametrs;
         [ObservableProperty]
         bool isEmpty;
-        public ObservableCollection<RecipePreviewDto> SearchedRecipes { get; set; } = new();     
+        public ObservableCollection<RecipePreviewDto> SearchedRecipes { get; set; } = new();
 
+#region RecipeCollections
         public ObservableCollection<Category> Categories { get; set; } = new();
         public ObservableCollection<RecipePreviewDto> FavouriteRecipes { get; set; } = new();
         public ObservableCollection<RecipePreviewDto> PopularRecipes { get; set; } = new();
         public ObservableCollection<RecipePreviewDto> FastRecipes { get; set; } = new();
         public ObservableCollection<RecipePreviewDto> MyOwnRecipes { get; set; } = new();
+
+        [ObservableProperty]
+        bool favouriteVisible;
+        [ObservableProperty]
+        bool popularVisible;
+        [ObservableProperty]
+        bool fastVisible;
+        [ObservableProperty]
+        bool myOwnVisible;
+
+        private readonly RecipeFilterParametrs _favouriteFilter = new  RecipeFilterParametrs()
+        {
+            OnlyFavorites = true,
+            Amount = 4
+        };
+        private readonly RecipeFilterParametrs _popularFilter = new RecipeFilterParametrs()
+        {
+            MinRating = 4,
+            Amount = 4
+        };
+        private readonly RecipeFilterParametrs _fastFilter = new RecipeFilterParametrs()
+        {
+            MaxCookingTime = 20,
+            Amount = 4
+        };
+        private readonly RecipeFilterParametrs _myOwnFilter = new RecipeFilterParametrs()
+        {
+            //OnlyMine = true,
+            Amount = 4
+        };
+
+        #endregion
+
         public RecipesMainViewModel(ICategoryService category, IIngredientService ingredient, IRecipeService recipe, IUserService user)
         {
             _categoryService = category;
@@ -57,34 +95,117 @@ namespace CookRecipesApp.ViewModel
                 Categories.Add(ct);
             }
 
-            var fvRcps = await _recipesService.GetFilteredRecipePreviewsAsync(new RecipeFilterParametrs() { OnlyFavorites = true}, null);
+            await RefreshRecipesLists();
+
+        }
+
+        private async Task RefreshRecipesLists()
+        {
+            var fvRcps = await _recipesService.GetFilteredRecipePreviewsAsync(_favouriteFilter, null);
             FavouriteRecipes.Clear();
-            foreach (var r in fvRcps)
+            if (fvRcps is null || fvRcps.Count == 0)
             {
-                FavouriteRecipes.Add(r);
+                FavouriteVisible = false;
+            }
+            else
+            {
+                FavouriteVisible = true;
+                foreach (var r in fvRcps)
+                {
+                    FavouriteRecipes.Add(r);
+                }
             }
 
-            var popRcps = await _recipesService.GetFilteredRecipePreviewsAsync(new RecipeFilterParametrs() { MinRating = 4 }, null);
+            var popRcps = await _recipesService.GetFilteredRecipePreviewsAsync(_popularFilter, null);
             PopularRecipes.Clear();
-            foreach (var r in popRcps)
+            if (popRcps is null || popRcps.Count == 0)
             {
-                PopularRecipes.Add(r);
+                PopularVisible = false;
+            }
+            else
+            {
+                PopularVisible = true;
+                foreach (var r in popRcps)
+                {
+                    PopularRecipes.Add(r);
+                }
             }
 
-            var fstRcps = await _recipesService.GetFilteredRecipePreviewsAsync(new RecipeFilterParametrs() { MaxCookingTime = 20 }, null);
+
+            var fstRcps = await _recipesService.GetFilteredRecipePreviewsAsync(_fastFilter, null);
             FastRecipes.Clear();
-            foreach (var r in fstRcps)
+            if (fstRcps is null || fstRcps.Count == 0)
             {
-                FastRecipes.Add(r);
+                FastVisible = false;
+            }
+            else
+            {
+                FastVisible = true;
+                foreach (var r in fstRcps)
+                {
+                    FastRecipes.Add(r);
+                }
             }
 
-            var myRcps = await _recipesService.GetFilteredRecipePreviewsAsync(new RecipeFilterParametrs() { OnlyMine = true }, null);
+            var myRcps = await _recipesService.GetFilteredRecipePreviewsAsync(_myOwnFilter, null);
             MyOwnRecipes.Clear();
-            foreach (var r in myRcps)
+            if (myRcps is null || myRcps.Count == 0)
             {
-                MyOwnRecipes.Add(r);
+                MyOwnVisible = false;
+            }
+            else
+            {
+                MyOwnVisible = true;
+                foreach (var r in myRcps)
+                {
+                    MyOwnRecipes.Add(r);
+                }
+            }
+
+        }
+
+        private async Task LoadMoreRecipesAsync(RecipeFilterParametrs filterPar, ObservableCollection<RecipePreviewDto> list)
+        {
+            if (LoadingRecipes) return;
+
+            try
+            {
+                LoadingRecipes = true;
+                var skip = list.Count;
+                var filter = filterPar.Clone();
+                filter.Skip = skip;
+                filter.Amount = _RecipeLoadAmount;
+
+                var newRecipes = await _recipesService.GetFilteredRecipePreviewsAsync(filter, null);
+
+                if (newRecipes != null && newRecipes.Any())
+                {
+                    foreach (var recipe in newRecipes)
+                    {
+                        if(!list.Any(x=>x.Id == recipe.Id)) list.Add(recipe);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Loading error: {ex.Message}");
+            }
+            finally
+            {
+                LoadingRecipes = false;
             }
         }
+
+        [RelayCommand]
+        public async Task LoadMoreFavouriteAsync() => await LoadMoreRecipesAsync(_favouriteFilter, FavouriteRecipes);
+        [RelayCommand]
+        public async Task LoadMorePopularAsync() => await LoadMoreRecipesAsync (_popularFilter, PopularRecipes);
+        [RelayCommand]
+        public async Task LoadMoreFastAsync() => await LoadMoreRecipesAsync(_fastFilter, FastRecipes);
+        [RelayCommand]
+        public async Task LoadMoreMyOwnAsync() => await LoadMoreRecipesAsync(_myOwnFilter, MyOwnRecipes);
+
+        
 
         [RelayCommand]
         public async Task AddRecipeBtn()

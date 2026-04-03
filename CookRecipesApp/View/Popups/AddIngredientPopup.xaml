@@ -238,7 +238,7 @@
             <Button Text="Create ingredient" Command="{Binding ToggleModesCommand}" BackgroundColor="Transparent" TextColor="Gray"/>
 
 
-        <Grid ColumnDefinitions="100, *" ColumnSpacing="10">
+            <Grid ColumnDefinitions="100, *" ColumnSpacing="10">
 
                 <Border
                     Grid.Column="0"
@@ -269,8 +269,6 @@
                         Margin="7, 0, 7, 0"/>
                 </Border>
             </Grid>
-            <Label Text="{Binding SelectedIngredient.SelectedUnit.Name}" TextColor="White"></Label>
-            <Label Text="{Binding SelectedIngredient.Name}" TextColor="White"></Label>
 
             <Button Text="Add" Command="{Binding ConfirmCommand}" 
                 BackgroundColor="{StaticResource PineTeal}" CornerRadius="10"/>

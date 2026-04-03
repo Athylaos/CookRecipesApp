@@ -27,5 +27,12 @@ namespace CookRecipesApp.Shared.DTOs
         public int? MaxCalories { get; set; }
         public SortBy Sort { get; set; } = SortBy.Newest;
         public bool SortDescending { get; set; } = true;
+
+    
+        public RecipeFilterParametrs Clone()
+        {
+            return (RecipeFilterParametrs)this.MemberwiseClone();
+        }
+
     }
 }

@@ -301,10 +301,10 @@
             
         </ScrollView>
 
-        <Grid
+
+        <VerticalStackLayout
             Grid.Column="0"
-            Grid.Row="1"
-            RowDefinitions="40,160,40,160,40,160,40,160">
+            Grid.Row="1">            
             <Label
                 Text="Favourite"                
                 TextColor="{StaticResource Porcelain}"
@@ -313,11 +313,16 @@
                 VerticalOptions="End"
                 FontSize="30"
                 Grid.Row="0"
-                />
+                MaximumHeightRequest="40"
+                IsVisible="{Binding FavouriteVisible}"/>
                 <CollectionView ItemsSource="{Binding FavouriteRecipes}"
                     Grid.Row="1"               
                     ItemsLayout="HorizontalList"
-                    Margin="0,0,0,8">
+                    Margin="0,0,0,8"
+                    MaximumHeightRequest="160"
+                    IsVisible="{Binding FavouriteVisible}"
+                    RemainingItemsThreshold="3"
+                    RemainingItemsThresholdReachedCommand="{Binding LoadMoreFavouriteCommand}">
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="dtos:RecipePreviewDto">
                                 <Border
@@ -389,11 +394,17 @@
                     Margin="5, 0, 0, 2"
                     VerticalOptions="End"
                     FontSize="30"
-                    Grid.Row="2"/>
-                <CollectionView ItemsSource="{Binding PopularRecipes}"
+                    Grid.Row="2"
+                    MaximumHeightRequest="40"
+                    IsVisible="{Binding PopularVisible}"/>
+                    <CollectionView ItemsSource="{Binding PopularRecipes}"
                     Grid.Row="3"               
                     ItemsLayout="HorizontalList"
-                    Margin="0,0,0,8">
+                    Margin="0,0,0,8"
+                    MaximumHeightRequest="160"
+                    IsVisible="{Binding PopularVisible}"
+                    RemainingItemsThreshold="3"
+                    RemainingItemsThresholdReachedCommand="{Binding LoadMorePopularCommand}">
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="dtos:RecipePreviewDto">
                             <Border
@@ -466,12 +477,16 @@
                 VerticalOptions="End"
                 FontSize="30"
                 Grid.Row="4"
-                />
-
-            <CollectionView ItemsSource="{Binding FastRecipes}"
-                Grid.Row="5"               
-                ItemsLayout="HorizontalList"
-                Margin="0,0,0,8">
+                MaximumHeightRequest="40"
+                IsVisible="{Binding FastVisible}"/>
+                <CollectionView ItemsSource="{Binding FastRecipes}"
+                    Grid.Row="5"               
+                    ItemsLayout="HorizontalList"
+                    Margin="0,0,0,8"
+                    MaximumHeightRequest="160"
+                    IsVisible="{Binding FastVisible}"
+                    RemainingItemsThreshold="3"
+                    RemainingItemsThresholdReachedCommand="{Binding LoadMoreFastCommand}">
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="dtos:RecipePreviewDto">
                             <Border
@@ -543,12 +558,17 @@
                     Margin="5, 0, 0, 2"
                     VerticalOptions="End"
                     FontSize="30"
-                    Grid.Row="6"/>
-
+                    Grid.Row="6"
+                    MaximumHeightRequest="40"
+                    IsVisible="{Binding MyOwnVisible}"/>
                     <CollectionView ItemsSource="{Binding MyOwnRecipes}"
                         Grid.Row="7"               
                         ItemsLayout="HorizontalList"
-                        Margin="0,0,0,8">
+                        Margin="0,0,0,8"
+                        MaximumHeightRequest="160"
+                        IsVisible="{Binding MyOwnVisible}"
+                        RemainingItemsThreshold="3"
+                        RemainingItemsThresholdReachedCommand="{Binding LoadMoreMyOwnCommand}">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="dtos:RecipePreviewDto">
                                 <Border
@@ -612,7 +632,7 @@
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
-                </Grid>                
+                </VerticalStackLayout>                
             </Grid>
                        
         </ScrollView>
