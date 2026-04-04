@@ -139,7 +139,8 @@
                                 HorizontalOptions="Start"
                                 Grid.Row="3"
                                 RowDefinitions="Auto"
-                                ColumnDefinitions="2.7*, *">
+                                ColumnDefinitions="280, *"
+                                HeightRequest="210">
                                 <Grid.GestureRecognizers>
                                     <TapGestureRecognizer
                                         Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}},Path=BindingContext.RecipeBtnCommand}"
@@ -152,7 +153,8 @@
                                     StrokeThickness="0">
                                     <Image
                                         Source="{Binding PhotoUrl}"
-                                        Aspect="AspectFit"/>
+                                        Aspect="AspectFill"
+                                        HeightRequest="210"/>
                                 </Border>
                                 <Border
                                     StrokeThickness="0"
@@ -185,8 +187,9 @@
                                     Grid.Column="1"
                                     StrokeShape="RoundRectangle, 0, 15, 0, 15"
                                     StrokeThickness="0"
+                                    Padding="5, 0, 0, 0"
                                     BackgroundColor="#212121">
-                                    <VerticalStackLayout VerticalOptions="Center">
+                                    <VerticalStackLayout VerticalOptions="Center" Spacing="4">
                                         <HorizontalStackLayout Grid.Row="0" Grid.Column="0" Margin="5, 0, 0, 0">
                                             <Image Source="time.png" Margin="0, 2, 7, 2" HeightRequest="25"/>
                                             <Label Text="{Binding CookingTime}" VerticalOptions="Center" FontFamily="Nunito" FontSize="15" FontAttributes="Bold"/>

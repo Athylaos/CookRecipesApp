@@ -38,9 +38,9 @@ namespace CookRecipesApp.ViewModel
         [ObservableProperty]
         bool isEmpty;
         public ObservableCollection<RecipePreviewDto> SearchedRecipes { get; set; } = new();
-
-#region RecipeCollections
         public ObservableCollection<Category> Categories { get; set; } = new();
+
+        #region RecipeCollections
         public ObservableCollection<RecipePreviewDto> FavouriteRecipes { get; set; } = new();
         public ObservableCollection<RecipePreviewDto> PopularRecipes { get; set; } = new();
         public ObservableCollection<RecipePreviewDto> FastRecipes { get; set; } = new();
@@ -72,7 +72,7 @@ namespace CookRecipesApp.ViewModel
         };
         private readonly RecipeFilterParametrs _myOwnFilter = new RecipeFilterParametrs()
         {
-            //OnlyMine = true,
+            OnlyMine = true,
             Amount = 4
         };
 
