@@ -3,10 +3,11 @@ using CookRecipesApp.Shared.DTOs;
 using CookRecipesApp.Shared.Models;
 using System;
 using System.Collections.Generic;
-using System.Net.Http.Json;
-using System.Text;
 using System.Diagnostics;
 using System.Net;
+using System.Net.Http.Json;
+using System.Text;
+using System.Text.Json;
 
 namespace CookRecipesApp.Service.Services
 {
@@ -25,7 +26,7 @@ namespace CookRecipesApp.Service.Services
             throw new NotImplementedException();
         }
 
-        public async Task<User?> GetCurrentUserAsync()
+        public async Task<UserDisplayDto?> GetCurrentUserAsync()
         {
             try
             {
@@ -39,7 +40,7 @@ namespace CookRecipesApp.Service.Services
 
                 if (response.IsSuccessStatusCode)
                 {
-                    return await response.Content.ReadFromJsonAsync<User>();
+                    return await response.Content.ReadFromJsonAsync<UserDisplayDto>();
                 }
 
                 return null;
@@ -55,7 +56,7 @@ namespace CookRecipesApp.Service.Services
         {
             try
             {
-                var response = await _httpClient.GetAsync($"api/users/getUserDisplay/{userId}");
+                var response = await _httpClient.GetAsync($"{BaseUrl}/getUserDisplay/{userId}");
 
                 if (response.StatusCode == HttpStatusCode.NotFound)
                     return null;
@@ -144,9 +145,31 @@ namespace CookRecipesApp.Service.Services
             throw new NotImplementedException();
         }
 
-        public Task UpdateUserAsync(User user)
+        public async Task<bool> UpdateUserAsync(UserUpdateDto? userUpdateDto, FileResult? photo)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using var content = new MultipartFormDataContent();
+                var userJson = JsonSerializer.Serialize(userUpdateDto);
+                content.Add(new StringContent(userJson, Encoding.UTF8, "application/json"), "userData");
+
+                if (photo != null)
+                {
+                    var fileStream = await photo.OpenReadAsync();
+                    var fileContent = new StreamContent(fileStream);
+                    fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(photo.ContentType);
+                    content.Add(fileContent, "image", photo.FileName);
+                }
+                var response = await _httpClient.PutAsync($"{BaseUrl}/update", content);
+
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error while updating user: {ex.Message}");
+                return false;
+            }
         }
+
     }
 }

@@ -20,6 +20,8 @@ namespace CookRecipesApp
 
             Routing.RegisterRoute(nameof(RecipeDetailsPage), typeof(RecipeDetailsPage));
 
+            Routing.RegisterRoute(nameof(ProfilePage), typeof(ProfilePage));
+
 
         }
     }

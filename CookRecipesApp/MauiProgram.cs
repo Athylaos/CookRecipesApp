@@ -107,6 +107,12 @@ namespace CookRecipesApp
             builder.Services.AddSingleton<RecipeDetailsPage>();
             builder.Services.AddTransient<RecipeDetailsViewModel>();
 
+            builder.Services.AddSingleton<DashboardPage>();
+            builder.Services.AddTransient<DashboardViewModel>();
+
+            builder.Services.AddSingleton<ProfilePage>();
+            builder.Services.AddTransient<ProfileViewModel>();
+
                         
             try
             {

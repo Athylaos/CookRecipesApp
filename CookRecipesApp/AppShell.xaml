@@ -11,6 +11,12 @@
         Title="Home"
         ContentTemplate="{DataTemplate view:TestPage}"
         Route="TestPage" />
+    
+    <ShellContent
+        Title="Dashboard"
+        ContentTemplate="{DataTemplate view:DashboardPage}"
+        Route="DashboardPage"/>
+    
 
     <ShellContent
         Title="Login"
@@ -21,5 +27,6 @@
         Title="RecipesMain"
         ContentTemplate="{DataTemplate view:RecipesMainPage}"
         Route="RecipesMainPage"/>
+
 
 </Shell>

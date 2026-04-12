@@ -332,5 +332,11 @@ namespace CookRecipesApp.ViewModel
             catch (OperationCanceledException) { }
             catch (Exception ex) { Debug.WriteLine(ex.Message); }
         }
+
+        [RelayCommand]
+        public void DashboardPageBtn()
+        {
+            Shell.Current.GoToAsync("//DashboardPage");
+        }
     }
 }

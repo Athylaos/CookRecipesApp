@@ -1,12 +1,18 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using BCrypt.Net;
+﻿using BCrypt.Net;
 using CookRecipesApp.API.Context;
 using CookRecipesApp.Shared.DTOs;
 using CookRecipesApp.Shared.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.IdentityModel.Tokens;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
+using System.Diagnostics;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using System.Text.Json;
 
 namespace CookRecipesApp.API.Endpoints
 {
@@ -16,7 +22,7 @@ namespace CookRecipesApp.API.Endpoints
         {
             var group = app.MapGroup("/api/users");
 
-            // UserRegistration
+            //---------------------------------------------------------------UserRegistration
             group.MapPost("/register", async (UserRegistrationDto registrationDto, CookRecipesDbContext db) =>
             {
                 if (await db.Users.AnyAsync(u => u.Email == registrationDto.Email))
@@ -43,7 +49,7 @@ namespace CookRecipesApp.API.Endpoints
                 return Results.Ok(new { newUser.Id, newUser.Email });
             });
 
-            //UserLogin
+            //---------------------------------------------------------------UserLogin
             group.MapPost("/login", async (UserLoginDto loginDto, CookRecipesDbContext db, IConfiguration config) =>
             {
                 var user = await db.Users.FirstOrDefaultAsync(u => u.Email == loginDto.Email);
@@ -72,38 +78,58 @@ namespace CookRecipesApp.API.Endpoints
             });
 
 
-            //GetMe
-            group.MapGet("/getMe", async (ClaimsPrincipal user, CookRecipesDbContext db) =>
+            //---------------------------------------------------------------GetMe
+            group.MapGet("/getMe", async (HttpRequest request, ClaimsPrincipal user, CookRecipesDbContext db) =>
             {
+                var imageBaseUrl = $"{request.Scheme}://{request.Host}/images/avatars/";
+                var defaultImage = "default_avatar.png";
+
                 var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
                 var userId = Guid.Parse(userIdClaim);
 
-                var userData = await db.Users.AsNoTracking().Where(u => u.Id == userId).Select(u => new User
+                UserDisplayDto userData = await db.Users.AsNoTracking().Where(u => u.Id == userId).Select(u => new UserDisplayDto
                 {
                     Id = u.Id,
-                    Email = u.Email,
                     Name = u.Name,
                     Surname = u.Surname,
-                    Role = u.Role,
-                    AvatarUrl = u.AvatarUrl ?? "default_avatar.png",
-                    UserCreated = u.UserCreated
+                    Email = u.Email,
+                    AvatarUrl = $"{imageBaseUrl}{(string.IsNullOrWhiteSpace(u.AvatarUrl) ? defaultImage : u.AvatarUrl)}",
+                    UserCreated = u.UserCreated,
                 }).FirstOrDefaultAsync();
+
+                if (userData == null) return Results.NotFound("User not found");
+
+                userData.PostedRecipes = await db.Recipes.AsNoTracking().Where(r => r.UserId == userId).CountAsync();
+                userData.PostedComments = await db.Comments.AsNoTracking().Where(c => c.UserId == userId).CountAsync();
+                var ratingsQuery = db.Recipes.AsNoTracking().Where(r => r.UserId == userId);
+
+                if (await ratingsQuery.AnyAsync())
+                {
+                    userData.AvgRating = await ratingsQuery.AverageAsync(r => r.Rating)??0;
+                }
+                else
+                {
+                    userData.AvgRating = 0;
+                }
+
 
                 return Results.Ok(userData);
             }).RequireAuthorization();
 
 
-            //GetUserDisplay
-            group.MapGet("/getUserDisplay/{userId:guid}", async (Guid userId,CookRecipesDbContext db) =>
+            //---------------------------------------------------------------GetUserDisplay
+            group.MapGet("/getUserDisplay/{userId:guid}", async (HttpRequest request, Guid userId,CookRecipesDbContext db) =>
             {
+                var imageBaseUrl = $"{request.Scheme}://{request.Host}/images/avatars/";
+                var defaultImage = "default_avatar.png";
 
                 var userData = await db.Users.AsNoTracking().Where(u => u.Id == userId).Select(u => new UserDisplayDto
                 {
                     Id = u.Id,
                     Name = u.Name,
                     Surname = u.Surname,
-                    AvatarUrl = u.AvatarUrl ?? "default_avatar.png",
+                    AvatarUrl = $"{imageBaseUrl}{(string.IsNullOrWhiteSpace(u.AvatarUrl) ? defaultImage : u.AvatarUrl)}",
                     UserCreated = u.UserCreated
                 }).FirstOrDefaultAsync();
 
@@ -111,10 +137,70 @@ namespace CookRecipesApp.API.Endpoints
             });
 
 
+            //---------------------------------------------------------------Upadate user
+            group.MapPut("/update", async (HttpRequest request, ClaimsPrincipal user, CookRecipesDbContext db, IWebHostEnvironment env) =>
+            {
+                var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (userIdClaim == null) return Results.Unauthorized();
 
+                var form = await request.ReadFormAsync();
 
+                var dtoStr = form["userData"];
+                if (string.IsNullOrEmpty(dtoStr)) return Results.BadRequest("Missing user data.");
 
+                var dto = JsonSerializer.Deserialize<UserUpdateDto>(dtoStr, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                if (dto == null) return Results.BadRequest("Invalid user data.");
 
+                var uId = Guid.Parse(userIdClaim);
+                var dbUser = await db.Users.FindAsync(uId);
+                if (dbUser == null) return Results.NotFound("User not found");
+
+                var file = form.Files.GetFile("image");
+                if (file is { Length: > 0 })
+                {
+                    var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp" };
+                    var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+
+                    if (!allowedExtensions.Contains(extension))
+                        return Results.BadRequest("Unsupported image format.");
+
+                    var uploadFolder = Path.Combine(env.WebRootPath, "images", "avatars");
+                    if (!Directory.Exists(uploadFolder)) Directory.CreateDirectory(uploadFolder);
+
+                    var fileName = $"{Guid.NewGuid()}.jpg";
+                    var filePath = Path.Combine(uploadFolder, fileName);
+
+                    try
+                    {
+                        using (var image = await Image.LoadAsync(file.OpenReadStream()))
+                        {
+                            image.Mutate(x => x.Resize(new ResizeOptions
+                            {
+                                Mode = ResizeMode.Crop,
+                                Size = new Size(600, 600)
+                            }));
+
+                            await image.SaveAsJpegAsync(filePath, new SixLabors.ImageSharp.Formats.Jpeg.JpegEncoder { Quality = 80 });
+                        }
+                        if (!string.IsNullOrEmpty(dbUser.AvatarUrl) && dbUser.AvatarUrl != "default_avatar.png")
+                        {
+                            var oldPath = Path.Combine(uploadFolder, dbUser.AvatarUrl);
+                            if (File.Exists(oldPath)) File.Delete(oldPath);
+                        }
+
+                        dbUser.AvatarUrl = fileName;
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"Image Processing Error: {ex.Message}");
+                    }
+                }
+                if (!string.IsNullOrWhiteSpace(dto.Name)) dbUser.Name = dto.Name.Trim();
+                if (!string.IsNullOrWhiteSpace(dto.Surname)) dbUser.Surname = dto.Surname.Trim();
+
+                await db.SaveChangesAsync();
+                return Results.Ok();
+            }).DisableAntiforgery();
         }
 
         

@@ -16,6 +16,6 @@ public partial class RecipesMainPage : ContentPage
 		if(BindingContext is RecipesMainViewModel vm)
 		{
 			vm.StartAsync();
-		}
+		};
 	}
 }

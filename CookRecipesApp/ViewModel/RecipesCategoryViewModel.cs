@@ -41,6 +41,9 @@ namespace CookRecipesApp.ViewModel
         }
 
         [ObservableProperty]
+        bool isLoading;
+
+        [ObservableProperty]
         Category selectedCategory;
 
         [ObservableProperty]
@@ -196,6 +199,7 @@ namespace CookRecipesApp.ViewModel
 
         public async Task LoadCategoryAsync(Guid id)
         {
+            IsLoading = true;
             SelectedCategory = await _categoryService.GetCategoryByIdAsync(id) ?? new();
 
             _favouriteFilter.CategoryId = id;
@@ -204,6 +208,7 @@ namespace CookRecipesApp.ViewModel
             _myOwnFilter.CategoryId = id;
 
             await RefreshRecipesLists();
+            IsLoading = false;
         }
 
         [RelayCommand]
@@ -219,6 +224,12 @@ namespace CookRecipesApp.ViewModel
         public void RecipesMainPageBtn()
         {
             Shell.Current.GoToAsync("//RecipesMainPage");
+        }
+
+        [RelayCommand]
+        public void DashboardPageBtn()
+        {
+            Shell.Current.GoToAsync("//DashboardPage");
         }
     }
 }

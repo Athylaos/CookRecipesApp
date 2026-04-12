@@ -11,7 +11,8 @@
              x:Class="CookRecipesApp.View.RecipesMainPage"
              Title="RecepiesMainPage"
              BackgroundColor="#1f1f1f"
-             Shell.NavBarIsVisible="False">
+             Shell.NavBarIsVisible="False"
+             Shell.PresentationMode="Animated">
 
     <Grid
         BackgroundColor="#1f1f1f"
@@ -700,7 +701,7 @@
                     HeightRequest="52"
                     BorderWidth="1"
                     BorderColor="{StaticResource DarkEvergreen}"
-                    Command="{Binding HomePageBtnCommand}">
+                    Command="{Binding DashboardPageBtnCommand}">
                 </ImageButton>
 
                 <ImageButton

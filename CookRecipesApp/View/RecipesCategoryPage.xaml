@@ -562,7 +562,7 @@
                     HeightRequest="52"
                     BorderWidth="1"
                     BorderColor="{StaticResource DarkEvergreen}"
-                    Command="{Binding HomePageBtnCommand}"/>
+                    Command="{Binding DashboardPageBtnCommand}"/>
                 <ImageButton
                     Grid.Column="3"
                     Source="nutrition.png"

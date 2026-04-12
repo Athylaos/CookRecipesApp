@@ -1,0 +1,22 @@
+using CookRecipesApp.ViewModel;
+
+namespace CookRecipesApp.View;
+
+public partial class ProfilePage : ContentPage
+{
+	public ProfilePage(ProfileViewModel vm)
+	{
+		BindingContext = vm;
+		InitializeComponent();
+	}
+
+    protected override async void OnAppearing()
+    {
+        if (BindingContext is ProfileViewModel vm)
+        {
+            vm.StartAsync();
+        }
+        base.OnAppearing();
+    }
+    
+}

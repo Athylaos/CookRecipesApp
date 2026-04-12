@@ -62,7 +62,7 @@
             </Border>
 
             <Label Text="{Binding IndicatorText}" TextColor="DarkRed" IsVisible="{Binding IndicatorVisibility}" Margin="0, 3, 0, 10"></Label>
-            <Button Text="Continue" Margin="5, 5, 5, 0" BorderColor="{StaticResource DarkEvergreen}" BorderWidth="1" Command="{Binding LoginBtnCommand}" TextColor="{StaticResource Porcelain}" CornerRadius="25"></Button>
+            <Button Text="Continue" Margin="20, 5, 20, 0" BackgroundColor="{StaticResource PineTeal}" BorderColor="{StaticResource Evergreen}" BorderWidth="1" Command="{Binding LoginBtnCommand}" TextColor="{StaticResource Porcelain}" CornerRadius="25"></Button>
         </VerticalStackLayout>
         
         <HorizontalStackLayout

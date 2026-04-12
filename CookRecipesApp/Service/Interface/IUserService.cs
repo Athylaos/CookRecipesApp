@@ -9,12 +9,12 @@ namespace CookRecipesApp.Service.Interface
         Task<User?> LoginAsync(UserLoginDto loginDto);
         void Logout();
 
-        Task<User?> GetCurrentUserAsync();
+        Task<UserDisplayDto?> GetCurrentUserAsync();
         Task RememberCurrentUserAsync(User user);
         Task<bool> IsUserLoggedInAsync();
 
         Task<UserDisplayDto?> GetUserByIdAsync(Guid userId);
-        Task UpdateUserAsync(User user);
+        Task<bool> UpdateUserAsync(UserUpdateDto userUpdateDto, FileResult? photo);
         Task ChangePasswordAsync(Guid userId, string oldPassword, string newPassword);
 
         Task<bool> IsEmailRegistredAsync(string email);
