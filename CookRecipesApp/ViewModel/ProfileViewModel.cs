@@ -81,7 +81,7 @@ namespace CookRecipesApp.ViewModel
             {
                 Shell.Current.GoToAsync(nameof(LoginPage));
             }
-            user = loadedUser;
+            user = loadedUser??new();
 
 
             Name = user.Name;

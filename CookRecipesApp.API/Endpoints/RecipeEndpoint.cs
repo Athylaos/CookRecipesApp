@@ -125,7 +125,6 @@ namespace CookRecipesApp.API.Endpoints
                 };
 
                 var results = await query
-                    .OrderByDescending(r => r.RecipeCreated)
                     .Skip(filter.Skip)
                     .Take(filter.Amount)
                     .Select(r => new RecipePreviewDto

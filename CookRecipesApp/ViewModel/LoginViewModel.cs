@@ -32,6 +32,12 @@ namespace CookRecipesApp.ViewModel
 
         }
 
+        public LoginViewModel()
+        {
+            Email = string.Empty;
+            Password = string.Empty;
+        }
+
 
 
         [RelayCommand]
