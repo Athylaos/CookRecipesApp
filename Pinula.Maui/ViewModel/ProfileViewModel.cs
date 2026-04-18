@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Pinula.Service.Interface;
-using Pinula.Service.Services;
+using Pinula.Shared.Interface;
+using Pinula.Shared.Services;
 using Pinula.Shared.DTOs;
 using Pinula.Shared.Models;
 using Pinula.View;
@@ -166,7 +166,18 @@ namespace Pinula.ViewModel
                     Surname = Surname.Trim()
                 };
 
-                var response = await _userService.UpdateUserAsync(updateDto, _selectedPhoto);
+                bool response;
+                if(_selectedPhoto is not null)
+                {
+                    var photo = await _selectedPhoto.OpenReadAsync();
+                    response = await _userService.UpdateUserAsync(updateDto, photo, _selectedPhoto.FileName, _selectedPhoto.ContentType);
+                }
+                else
+                {
+                    response = await _userService.UpdateUserAsync(updateDto, null, null, null);
+                }
+
+
 
                 if (response)
                 {

@@ -1,8 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Pinula.Service;
-using Pinula.Service.Interface;
-using Pinula.Service.Services;
+using Pinula.Shared;
+using Pinula.Shared.Interface;
+using Pinula.Shared.Services;
 using Pinula.Shared.DTOs;
 using Pinula.Shared.Models;
 using Pinula.View;

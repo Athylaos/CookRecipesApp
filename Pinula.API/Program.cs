@@ -22,6 +22,14 @@ builder.Services.AddOpenApi(options =>
     });
 });
 
+builder.Services.AddCors(options => {
+    options.AddDefaultPolicy(policy => {
+    policy.WithOrigins("https://localhost:7175")  // BLAZOR WASM url 
+          .AllowAnyHeader()
+          .AllowAnyMethod();
+    });
+});
+
 var jwtKey = builder.Configuration["JWTKey:Default"];
 if (string.IsNullOrEmpty(jwtKey))
 {
@@ -64,6 +72,7 @@ if (app.Environment.IsDevelopment())
 //app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+app.UseCors();
 
 app.MapUserEndpoints();
 

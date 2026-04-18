@@ -2,7 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using Pinula.Shared.Models;
 using Pinula.Shared.DTOs;
-using Pinula.Service.Interface;
+using Pinula.Shared.Interface;
 using Pinula.View;
 using Pinula.ModelsUI;
 using System;
