@@ -1,9 +1,21 @@
 ﻿@page "/"
 @using Pinula.Shared.Interface;
 @using Pinula.Shared.DTOs
+@using Pinula.WASM.Components
 @inject IRecipeService recipeService
+@inject IJSRuntime JSRuntime
 
-<PageTitle>Test API</PageTitle>
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (recipes != null && recipes.Any())
+        {
+            await JSRuntime.InvokeVoidAsync("setupHorizontalScroll");
+        }
+    }
+}
+
+<PageTitle>Pinula</PageTitle>
 
 <h1>Recipes list</h1>
 
@@ -17,21 +29,14 @@ else if (!recipes.Any())
 }
 else
 {
-    <div class="row">
-        @foreach (var recipe in recipes)
-        {
-            <div class="col-md-4 mb-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">@recipe.Title</h5>
-                        <p class="card-text">@recipe.CookingTime</p>
-                        <span class="badge bg-primary">@recipe.Calories</span>
-                    </div>
-                </div>
-            </div>
+    <h3 class="mt-4">Favourite</h3>
+        <div class="d-flex overflow-auto pb-2 no-scrollbar scroll-container">
+            @foreach (var recipe in recipes)
+            {
+                <RecipeSimpleCard Recipe="recipe" OnRecipeSelected="RecipeClicked" />
+            }
+        </div>
         }
-    </div>
-}
 
 @code {
     private List<RecipePreviewDto>? recipes;
@@ -47,5 +52,10 @@ else
         {
             Console.WriteLine($"Loading error: {ex.Message}");
         }
+    }
+
+    public Task RecipeClicked()
+    {
+        return Task.CompletedTask;
     }
 }

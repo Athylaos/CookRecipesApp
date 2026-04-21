@@ -29,6 +29,22 @@
         <span class="dismiss">🗙</span>
     </div>
     <script src="_framework/blazor.webassembly#[.{fingerprint}].js"></script>
+
+    <script>
+        window.setupHorizontalScroll = function () {
+            const containers = document.querySelectorAll('.scroll-container');
+            console.log("containers for scroll:", containers.length);
+
+            containers.forEach(container => {
+                container.addEventListener('wheel', (evt) => {
+                    if (evt.deltaY !== 0) {
+                        evt.preventDefault();
+                        container.scrollLeft += evt.deltaY;
+                    }
+                }, { passive: false });
+            });
+        };
+    </script>
 </body>
 
 </html>
