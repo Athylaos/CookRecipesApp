@@ -2,6 +2,50 @@
     --pine-teal: #1D4934;
     --evergreen: #112718;
     --dark-evergreen: #011D04;
+
+    --recipe-card-width: 300px;
+}
+
+@media (max-width: 768px) {
+    :root {
+        --recipe-card-width: 200px;
+    }
+
+    .recipe-title {
+        font-size: 1.1rem !important;
+    }
+
+    .recipe-time {
+        font-size: 0.9rem !important;
+    }
+
+    .main-wrapper {
+        max-width: 80vw;
+    }
+}
+.main-wrapper {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+    .main-wrapper {
+        width: 70vw;
+        max-width: 1500px;
+    }
+}
+
+
+body, html {
+    overflow-x: hidden;
+    width: 100%;
+}
+
+article.content {
+    max-width: 100vw;
+    overflow-x: hidden;
 }
 
 .no-scrollbar::-webkit-scrollbar {
@@ -11,6 +55,15 @@
 .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
+}
+
+#blazor-error-ui {
+    display: none;
+    background: lightyellow;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    z-index: 1000;
 }
 
 /*---------- Navbar ----------*/
@@ -104,8 +157,10 @@
 /*---------- Recipe card ----------*/
 .recipe-card {
     position: relative;
-    width: 300px;
-    height: 225px;
+    flex: 0 0 auto;
+    width: var(--recipe-card-width);
+    margin-right: 15px;
+    aspect-ratio: 4 / 3;
     border-radius: 20px;
     cursor: pointer;
     margin-right: 12px;
@@ -173,3 +228,38 @@
     width: 20px;
     margin-left: 5px;
 }
+
+/*---------- Recipe page ----------*/
+
+.scroll-container {
+    padding: 12px 5px;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) #1D1F1D;
+}
+    .scroll-container::-webkit-scrollbar {
+        height: 6px;
+    }
+
+    .scroll-container::-webkit-scrollbar-track {
+        background: #1D1F1D;
+        border-radius: 10px;
+    }
+
+    .scroll-container::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 10px;
+        transition: background 0.3s ease;
+    }
+
+        .scroll-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+

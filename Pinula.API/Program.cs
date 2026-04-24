@@ -23,10 +23,11 @@ builder.Services.AddOpenApi(options =>
 });
 
 builder.Services.AddCors(options => {
-    options.AddDefaultPolicy(policy => {
-    policy.WithOrigins("http://localhost:5119")  // BLAZOR WASM url 
-          .AllowAnyHeader()
-          .AllowAnyMethod();
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
     });
 });
 
@@ -70,9 +71,10 @@ if (app.Environment.IsDevelopment())
 }
 
 //app.UseHttpsRedirection();
+
 app.UseStaticFiles();
 
-app.UseCors();
+app.UseCors("AllowAll");
 
 app.MapUserEndpoints();
 

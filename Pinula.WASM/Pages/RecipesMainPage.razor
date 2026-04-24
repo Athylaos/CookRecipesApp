@@ -1,24 +1,13 @@
-﻿@page "/"
+﻿@page "/recipes"
 @using Pinula.Shared.Interface;
 @using Pinula.Shared.DTOs
 @using Pinula.WASM.Components
 @inject IRecipeService recipeService
 @inject IJSRuntime JSRuntime
 
-@code {
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (recipes != null && recipes.Any())
-        {
-            await JSRuntime.InvokeVoidAsync("setupHorizontalScroll");
-        }
-    }
-}
-
 <PageTitle>Pinula</PageTitle>
-
+<div style="width80">
 <h1>Recipes list</h1>
-
 @if (recipes == null)
 {
     <p><em>Loading recipes from api</em></p>
@@ -30,16 +19,40 @@ else if (!recipes.Any())
 else
 {
     <h3 class="mt-4">Favourite</h3>
-        <div class="d-flex overflow-auto pb-2 no-scrollbar scroll-container">
+        <div class="d-flex pb-2 scroll-container">
             @foreach (var recipe in recipes)
             {
                 <RecipeSimpleCard Recipe="recipe" OnRecipeSelected="RecipeClicked" />
             }
         </div>
-        }
+}
+
+
+</div>
+
+
+
+
+
+
 
 @code {
     private List<RecipePreviewDto>? recipes;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try
+        {
+            if (recipes != null && recipes.Any())
+            {
+                await JSRuntime.InvokeVoidAsync("setupHorizontalScroll");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"JS Error: {ex.Message}");
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -54,8 +67,8 @@ else
         }
     }
 
-    public Task RecipeClicked()
+    public void RecipeClicked(RecipePreviewDto recipe)
     {
-        return Task.CompletedTask;
+        Console.WriteLine($"Recipe selected: {recipe.Title}");
     }
 }

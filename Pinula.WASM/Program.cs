@@ -14,7 +14,7 @@ builder.Services.AddScoped<ITokenStorage, BlazorTokenStorage>();
 builder.Services.AddTransient<AuthHttpMessageHandler>();
 
 builder.Services.AddHttpClient("CookApi", client =>
-    client.BaseAddress = new Uri("http://10.0.1.160:5017/api/"))
+    client.BaseAddress = new Uri("http://localhost:5017/api/"))
     .AddHttpMessageHandler<AuthHttpMessageHandler>();
 
 builder.Services.AddScoped<IIngredientService>(sp => new IngredientService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("CookApi"), sp.GetRequiredService<ILogger<IngredientService>>()));
