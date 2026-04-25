@@ -21,6 +21,8 @@ namespace Pinula.WASM.Services
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             }
             return await base.SendAsync(request, cancellationToken);
+
+
         }
 
     }
