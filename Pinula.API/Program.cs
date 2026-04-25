@@ -24,7 +24,7 @@ builder.Services.AddOpenApi(options =>
 
 builder.Services.AddCors(options => {
     options.AddDefaultPolicy(policy => {
-    policy.WithOrigins("https://localhost:7175")  // BLAZOR WASM url 
+    policy.WithOrigins("http://localhost:5119")  // BLAZOR WASM url 
           .AllowAnyHeader()
           .AllowAnyMethod();
     });
