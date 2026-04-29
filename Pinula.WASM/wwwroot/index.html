@@ -57,11 +57,10 @@
                 z-index: 2;
             }
 
-            .loading-text{
-                font-family:Alegreya, sans-serif;
-                font-style:italic;
-                margin-top:15px;
-
+            .loading-text {
+                font-family: Alegreya, sans-serif;
+                font-style: italic;
+                margin-top: 15px;
             }
 
             @keyframes spin {
@@ -89,6 +88,22 @@
         <span class="dismiss">🗙</span>
     </div>
     <script src="_framework/blazor.webassembly#[.{fingerprint}].js"></script>
+    <script>
+        window.setupHorizontalScroll = function () {
+            const containers = document.querySelectorAll('.scroll-container');
+            console.log("containers for scroll:", containers.length);
+
+            containers.forEach(container => {
+                const newWheelHandler = (evt) => {
+                    if (evt.deltaY !== 0) {
+                        evt.preventDefault();
+                        container.scrollLeft += evt.deltaY;
+                    }
+                };
+                container.onwheel = newWheelHandler;
+            });
+        };
+    </script>
 </body>
 
 </html>

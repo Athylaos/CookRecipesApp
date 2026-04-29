@@ -1,0 +1,37 @@
+﻿@using Pinula.Shared.DTOs
+
+<div class="recipe-grid-wrapper">
+    <div class="recipe-vertical-grid">
+        @foreach (var recipe in Recipes)
+        {
+            <RecipeDetailedCard Recipe="recipe" OnRecipeSelected="OnRecipeSelected" />
+        }
+    </div>
+
+    @if (HasMoreToLoad)
+    {
+        <div class="load-more-section">
+            <button class="btn-load-more" @onclick="OnLoadMore" disabled="@IsLoading">
+                @if (IsLoading)
+                {
+                    <span class="spinner-border spinner-border-sm" role="status"></span>
+                    <span>Loading...</span>
+                }
+                else
+                {
+                    <span>Show more recipes</span>
+                    <i class="oi oi-chevron-bottom"></i>
+                }
+            </button>
+        </div>
+    }
+</div>
+
+@code {
+
+    [Parameter] public List<RecipePreviewDto> Recipes { get; set; } = new();
+    [Parameter] public bool HasMoreToLoad { get; set; }
+    [Parameter] public bool IsLoading { get; set; }
+    [Parameter] public EventCallback OnLoadMore { get; set; }
+    [Parameter] public EventCallback<RecipePreviewDto> OnRecipeSelected { get; set; }
+}

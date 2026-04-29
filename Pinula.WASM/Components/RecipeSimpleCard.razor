@@ -4,13 +4,15 @@
     <img src="@Recipe.PhotoUrl" class="recipe-img" />
     <div class="recipe-overlay">
         <span class="recipe-title">@Recipe.Title</span>
-        <div class="recipe-time">
-            <span>@Recipe.CookingTime</span>
-            <img src="images/icons/time.png" class="time-icon" />
-        </div>
-        <div class="recipe-rating">
-            <span>@Recipe.Rating.Value.ToString("0.#")</span>
-            <img src="images/icons/favorite_full.png" class="time-icon" />
+        <div class="recipe-badge-container">
+            <div class="recipe-badge">
+                <span>@Recipe.CookingTime</span>
+                <img src="images/icons/time.png" class="time-icon" />
+            </div>
+            <div class="recipe-badge">
+                <span>@Recipe.Rating.Value.ToString("0.#")</span>
+                <img src="images/icons/favorite_full.png" class="time-icon" />
+            </div>
         </div>
     </div>
 </div>

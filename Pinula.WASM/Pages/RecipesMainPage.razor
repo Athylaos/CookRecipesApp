@@ -5,118 +5,298 @@
 @using Pinula.WASM.Components
 @inject IRecipeService recipeService
 @inject ICategoryService categoryService
+@inject IUserService userService
 @inject IJSRuntime JSRuntime
 @inject NavigationManager NavManager
 
 <PageTitle>Pinula - Recipes</PageTitle>
-<div class="main-wrapper">
-    <LoadingView IsLoading="@(isLoading)" Text="Searching for the best recipes..." IsFullScreen="true">
-        @if (categories != null && categories.Any())
-        {
-            <h3 class="mt-4 mb-3">Choose category</h3>
-            <div class="d-flex pb-2 scroll-container">
-                @foreach (var category in categories)
-                {
-                    <CategoryCard Category="category" OnCategorySelected="CategoryClicked" />
-                }
-            </div>
-        }
 
-        @if (favouriteRecipes != null && favouriteRecipes.Any())
+<div class="recipes-container">
+    <div class="header-actions">
+        <div class="search-bar">
+            <input type="text" placeholder="Search recipes..." @bind="searchTerm" @bind:event="oninput" @onkeyup="HandleSearch" />
+            <img src="images/icons/search.png"/>
+        </div>
+        <button class="btn-icon @(IsFilterActive ? "active" : "")" @onclick="ToggleFilter">
+            <img src="images/icons/filter.png" class="recipe-nav-icon" />
+        </button>
+        <button class="btn-icon btn-add" @onclick="AddRecipe">
+            <img src="images/icons/plus.png" class="recipe-nav-icon" />
+        </button>
+    </div>
+
+    <div class="main-content">
+        @if (isActuallySearching)
         {
-            <h3 class="mt-4 mb-3">Favourite</h3>
-            <div class="d-flex pb-2 scroll-container">
-                @foreach (var recipe in favouriteRecipes)
+            <div class="search-results-header">
+                <h3>Search Results (@searchedRecipes.Count)</h3>
+                <button class="btn-link" @onclick="ClearAll">Cancel</button>
+            </div>
+            
+            <div class="recipes-grid">
+                @foreach (var recipe in searchedRecipes)
                 {
                     <RecipeSimpleCard Recipe="recipe" OnRecipeSelected="RecipeClicked" />
                 }
-            </div>
-        }
-
-        @if (latestRecipes != null && latestRecipes.Any())
-        {
-            <h3 class="mt-4 mb-3">Latest</h3>
-            <div class="d-flex pb-2 scroll-container">
-                @foreach (var recipe in latestRecipes)
+                @if (!searchedRecipes.Any() && !isLoading)
                 {
-                    <RecipeSimpleCard Recipe="recipe" OnRecipeSelected="RecipeClicked" />
+                    <div class="empty-state">
+                        <p>No recipes found matching your filters.</p>
+                    </div>
                 }
             </div>
         }
-
-        @if (fastRecipes != null && fastRecipes.Any())
+        else
         {
-            <h3 class="mt-4 mb-3">Fast</h3>
-            <div class="d-flex pb-2 scroll-container">
-                @foreach (var recipe in fastRecipes)
-                {
-                    <RecipeSimpleCard Recipe="recipe" OnRecipeSelected="RecipeClicked" />
-                }
-            </div>
-        }
+            <LoadingView IsLoading="@(isLoading)" Text="Searching for the best recipes..." IsFullScreen="true">
 
-        @if (bestRecipes != null && bestRecipes.Any())
-        {
-            <h3 class="mt-4 mb-3">Highest rated</h3>
-            <div class="d-flex pb-2 scroll-container">
-                @foreach (var recipe in bestRecipes)
+                @if (categories.Any())
                 {
-                    <RecipeSimpleCard Recipe="recipe" OnRecipeSelected="RecipeClicked" />
+                    <div class="d-flex pb-2 scroll-container">
+                        @foreach (var category in categories)
+                        {
+                            <CategoryCard Category="category" OnCategorySelected="CategoryClicked" />
+                        }
+                    </div>
                 }
-            </div>
-        }
 
-        @if (mineRecipes != null && mineRecipes.Any())
-        {
-            <h3 class="mt-4 mb-3">Mine</h3>
-            <div class="d-flex pb-2 scroll-container">
-                @foreach (var recipe in mineRecipes)
+                <div class="hero-container mt-4">
+                    <div class="welcome-header mb-4">
+                        @if(currentUser != null)
+                        {
+                            <h1>Hello, @currentUser.Name!</h1>
+                        }
+                        else
+                        {
+                            <h1>Hello, Cook!</h1>
+                        }
+                        <p>What are we cooking today?</p>
+                    </div>
+
+                    <div class="featured-recipe mb-5">
+                        <div class="hero-card">
+                            <div class="hero-image" style="background-image: url('@recipeOfTheDay.PhotoUrl');"></div>
+            
+                            <div class="hero-overlay">
+                                <div class="hero-content">
+                                    <span class="hero-badge">
+                                        Recipe of the day
+                                    </span>
+                                    <h2 class="hero-title">@recipeOfTheDay.Title</h2>
+                                    <button class="btn-cook">
+                                        <span>Cook Now</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @if (favouriteRecipes != null && favouriteRecipes.Any())
                 {
-                    <RecipeSimpleCard Recipe="recipe" OnRecipeSelected="RecipeClicked" />
+                    <RecipeGridHorizontal Title="Your Favorites" Subtitle="The meals you love the most" HasMoreToLoad="moreFavouriteToLoad" IsLoading="isFavouriteLoading" OnLoadMore="LoadMoreFavourite" OnRecipeSelected="RecipeClicked" Recipes="favouriteRecipes"></RecipeGridHorizontal>
                 }
-            </div>
+
+                @if (fastRecipes != null && fastRecipes.Any())
+                {
+                    <RecipeGridHorizontal Title="Speedy Meals" Subtitle="Spend less time cooking, more time eating" HasMoreToLoad="moreFastToLoad" IsLoading="isFastLoading" OnLoadMore="LoadMoreFast" OnRecipeSelected="RecipeClicked" Recipes="fastRecipes"></RecipeGridHorizontal>
+                }
+
+                @if (bestRecipes != null && bestRecipes.Any())
+                {
+                    <RecipeGridHorizontal Title="Trending Now" Subtitle="Fresh recipes with a high rating" HasMoreToLoad="moreBestToLoad" IsLoading="isBestLoading" OnLoadMore="LoadMoreBest" OnRecipeSelected="RecipeClicked" Recipes="bestRecipes"></RecipeGridHorizontal>
+                }
+
+                @if (mineRecipes != null && mineRecipes.Any())
+                {
+                    <RecipeGridHorizontal Title="My Recipes" Subtitle="Recipes designed and shared by you" HasMoreToLoad="moreMineToLoad" IsLoading="isMineLoading" OnLoadMore="LoadMoreMine" OnRecipeSelected="RecipeClicked" Recipes="mineRecipes"></RecipeGridHorizontal>
+                }
+
+                <div class="section-divider">
+                    <div class="title-block">
+                        <span class="subtitle">Discovery</span>
+                        <h2>Other recipes</h2>
+                    </div>
+                    <div class="line"></div>
+                </div>
+
+                @if(latestRecipes != null && latestRecipes.Any())
+                {
+                    <RecipeGridVertical HasMoreToLoad="moreLatestToLoad" IsLoading="isLatestLoading" OnLoadMore="LoadMoreLatest" OnRecipeSelected="RecipeClicked" Recipes="latestRecipes"></RecipeGridVertical>
+                }
+
+            </LoadingView>
+
         }
-    </LoadingView>
+    </div>
+
+    @if (showFilterPopup)
+    {
+        <div class="modal-backdrop" @onclick="ToggleFilter">
+            <div class="filter-popup" @onclick:stopPropagation="true">
+                <div class="filter-header">
+                    <h3>Filter Recipes</h3>
+                </div>
+
+                <div class="filter-body">
+                    <div class="filter-row">
+                        <label>Cooking time</label>
+                        <input type="checkbox" @bind="cookingTimeOn" />
+                    </div>
+                    <div class="slider-container @(!cookingTimeOn ? "disabled" : "")">
+                        <input type="range" min="5" max="180" step="5" @bind="filterParams.MaxCookingTime" disabled="@(!cookingTimeOn)" />
+                        <span>Max: @filterParams.MaxCookingTime min</span>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>Difficulty</label>
+                        <div class="difficulty-flex">
+                            @foreach (var diff in Enum.GetValues<DifficultyLevel>())
+                            {
+                                <button class="chip @(filterParams.MaxDifficulty == (int)diff ? "active" : "")"
+                                        @onclick="() => SetDifficulty(diff)">
+                                    @diff
+                                </button>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="filter-row mt-3">
+                        <label>Only favorite</label>
+                        <input type="checkbox" @bind="filterParams.OnlyFavorites" />
+                    </div>
+                </div>
+
+                <div class="filter-footer">
+                    <button class="btn-apply" @onclick="ApplyFilters">Apply</button>
+                    <button class="btn-cancel" @onclick="ToggleFilter">Cancel</button>
+                </div>
+            </div>
+        </div>
+    }
 </div>
 
 @code {
-    private bool isLoading = true;
 
-    private List<Category>? categories;
-    private List<RecipePreviewDto>? favouriteRecipes;
-    private List<RecipePreviewDto>? latestRecipes;
-    private List<RecipePreviewDto>? fastRecipes;
-    private List<RecipePreviewDto>? bestRecipes;
-    private List<RecipePreviewDto>? mineRecipes;
+    #region RecipeLists
+    private List<RecipePreviewDto> favouriteRecipes = new();
+    private List<RecipePreviewDto> latestRecipes = new();
+    private List<RecipePreviewDto> fastRecipes = new();
+    private List<RecipePreviewDto> bestRecipes = new();
+    private List<RecipePreviewDto> mineRecipes = new();
+
+    private readonly RecipeFilterParametrs _favouriteFilter = new RecipeFilterParametrs()
+    {
+        OnlyFavorites = true,
+        Amount = 4
+    };
+    private readonly RecipeFilterParametrs _bestFilter = new RecipeFilterParametrs()
+    {
+        MinRating = 4,
+        Amount = 4
+    };
+    private readonly RecipeFilterParametrs _fastFilter = new RecipeFilterParametrs()
+    {
+        MaxCookingTime = 20,
+        Amount = 4
+    };
+    private readonly RecipeFilterParametrs _mineFilter = new RecipeFilterParametrs()
+    {
+        OnlyMine = true,
+        Amount = 4
+    };
+    private readonly RecipeFilterParametrs _latestFilter = new RecipeFilterParametrs()
+    {
+        Sort = SortBy.Newest,
+        Amount = 4
+    };
+
+    private bool isFavouriteLoading;
+    private bool isLatestLoading;
+    private bool isFastLoading;
+    private bool isBestLoading;
+    private bool isMineLoading;
+
+    private bool moreFavouriteToLoad = true;
+    private bool moreLatestToLoad = true;
+    private bool moreFastToLoad = true;
+    private bool moreBestToLoad = true;
+    private bool moreMineToLoad = true;
+
+    private async Task LoadMoreFavourite()
+    {
+        isFavouriteLoading = true;
+        favouriteRecipes = await LoadMoreLogic(_favouriteFilter, favouriteRecipes, status => moreFavouriteToLoad = status);
+        isFavouriteLoading = false;
+    }
+
+    private async Task LoadMoreLatest()
+    {
+        isLatestLoading = true;
+        latestRecipes = await LoadMoreLogic(_latestFilter, latestRecipes, status => moreLatestToLoad = status);
+        isLatestLoading = false;
+    }
+
+    private async Task LoadMoreFast()
+    {
+        isFastLoading = true;
+        fastRecipes = await LoadMoreLogic(_fastFilter, fastRecipes, status => moreFastToLoad = status);
+        isFastLoading = false;
+    }
+
+    private async Task LoadMoreBest()
+    {
+        isBestLoading = true;
+        bestRecipes = await LoadMoreLogic(_bestFilter, bestRecipes, status => moreBestToLoad = status);
+        isBestLoading = false;
+    }
+
+    private async Task LoadMoreMine()
+    {
+        isMineLoading = true;
+        mineRecipes = await LoadMoreLogic(_mineFilter, mineRecipes, status => moreMineToLoad = status);
+        isMineLoading = false;
+    }
+
+    private async Task<List<RecipePreviewDto>> LoadMoreLogic(RecipeFilterParametrs filter, List<RecipePreviewDto> currentList, Action<bool> setMoreToLoad)
+    {
+        filter.Skip = currentList.Count;
+
+        var results = await recipeService.GetFilteredRecipePreviewsAsync(filter, default);
+        var newList = results?.ToList() ?? new List<RecipePreviewDto>();
+
+        if (!newList.Any() || newList.Count < filter.Amount)
+        {
+            setMoreToLoad(false);
+        }
+
+        currentList.AddRange(newList);
+
+
+        return currentList;
+    }
+
+    #endregion
+
+
+    private string searchTerm = "";
+    private bool isLoading = true;
+    private bool showFilterPopup = false;
+    private bool isActuallySearching = false;
+    private bool cookingTimeOn = false;
+
+    private List<Category> categories = new();
+    private List<RecipePreviewDto> searchedRecipes = new();
+    private RecipeFilterParametrs filterParams = new();
+
+    private RecipePreviewDto recipeOfTheDay;
+    private UserDisplayDto? currentUser;
+
+    private bool IsFilterActive => filterParams.OnlyFavorites || filterParams.MaxDifficulty.HasValue || cookingTimeOn;
 
     protected override async Task OnInitializedAsync()
     {
-        try
-        {            
-            var categoriesTask = categoryService.GetAllCategoriesAsync();
-            var favouriteTask = recipeService.GetFilteredRecipePreviewsAsync(new RecipeFilterParametrs { OnlyFavorites=true, Sort = SortBy.Rating }, null);
-            var latestTask = recipeService.GetFilteredRecipePreviewsAsync(new RecipeFilterParametrs { Sort= SortBy.Newest }, null);
-            var fastTask = recipeService.GetFilteredRecipePreviewsAsync(new RecipeFilterParametrs { MaxCookingTime = 20, Sort = SortBy.Newest}, null);
-            var bestTask = recipeService.GetFilteredRecipePreviewsAsync(new RecipeFilterParametrs { MinRating = 4, Sort = SortBy.Rating }, null);
-            var mineTask = recipeService.GetFilteredRecipePreviewsAsync(new RecipeFilterParametrs { OnlyMine = true, Sort = SortBy.Newest }, null);
-
-            await Task.WhenAll(categoriesTask, favouriteTask, latestTask, fastTask, bestTask, mineTask);
-
-            categories = categoriesTask.Result?.ToList() ?? new List<Category>();
-            favouriteRecipes = favouriteTask.Result?.ToList() ?? new List<RecipePreviewDto>();
-            latestRecipes = latestTask.Result?.ToList() ?? new List<RecipePreviewDto>();
-            fastRecipes = fastTask.Result?.ToList() ?? new List<RecipePreviewDto>();
-            bestRecipes = bestTask.Result?.ToList() ?? new List<RecipePreviewDto>();
-            mineRecipes = mineTask.Result?.ToList() ?? new List<RecipePreviewDto>();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Loading error: {ex.Message}");
-        }
-        finally
-        {
-            isLoading = false;
-        }
+        await LoadDashboardData();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -134,15 +314,114 @@
         }
     }
 
-    public void RecipeClicked(RecipePreviewDto recipe)
+    private async Task<List<RecipePreviewDto>> LoadRecipesToList(RecipeFilterParametrs parametrs, List<RecipePreviewDto> list)
     {
-        Console.WriteLine($"Recipe selected: {recipe.Title}");
-        // NavManager.NavigateTo($"/recipe/{recipe.Id}");
+        parametrs.Skip = list.Count();
+
+        var resp = await recipeService.GetFilteredRecipePreviewsAsync(parametrs, null);
+
+        var newList = new List<RecipePreviewDto>();
+
+        foreach(var r in list)
+        {
+            newList.Add(r);
+        }
+
+        foreach(var r in resp)
+        {
+            newList.Add(r);
+        }
+
+        return newList;
     }
 
-    public void CategoryClicked(Category category)
+
+
+    private async Task LoadDashboardData()
     {
-        Console.WriteLine($"Category selected: {category.Name}");
-        // NavManager.NavigateTo($"/recipes?categoryId={category.Id}");
+        isLoading = true;
+        try
+        {
+            var categoriesTask = categoryService.GetAllCategoriesAsync();
+            var userTask = userService.GetCurrentUserAsync();
+            var recipeTask = recipeService.GetFilteredRecipePreviewsAsync(new RecipeFilterParametrs { Amount = 1, MinRating = 3, Sort = SortBy.Newest }, null);
+
+            var favouriteTask = LoadRecipesToList(_favouriteFilter, favouriteRecipes);
+            var latestTask = LoadRecipesToList(_latestFilter, latestRecipes);
+            var fastTask = LoadRecipesToList(_fastFilter, fastRecipes);
+            var bestTask = LoadRecipesToList(_bestFilter, bestRecipes);
+            var mineTask = LoadRecipesToList(_mineFilter, mineRecipes);
+
+            await Task.WhenAll(categoriesTask, userTask, favouriteTask, latestTask, fastTask, bestTask, mineTask);
+
+            categories = categoriesTask.Result.ToList();
+            currentUser = userTask.Result;
+            recipeOfTheDay = recipeTask.Result.First();
+
+            favouriteRecipes = favouriteTask.Result;
+            latestRecipes = latestTask.Result;
+            fastRecipes = fastTask.Result;
+            bestRecipes = bestTask.Result;
+            mineRecipes = mineTask.Result;
+
+            if (favouriteRecipes.Count < _favouriteFilter.Amount) moreFavouriteToLoad = false;
+
+
+
+        }
+        finally
+        {
+            isLoading = false;
+        }
     }
+
+    private async Task HandleSearch()
+    {
+        if (string.IsNullOrWhiteSpace(searchTerm) && !IsFilterActive)
+        {
+            isActuallySearching = false;
+            return;
+        }
+
+        isActuallySearching = true;
+        filterParams.SearchTerm = searchTerm;
+        
+        var tempParams = new RecipeFilterParametrs
+        {
+            SearchTerm = filterParams.SearchTerm,
+            OnlyFavorites = filterParams.OnlyFavorites,
+            MaxDifficulty = filterParams.MaxDifficulty,
+            MaxCookingTime = cookingTimeOn ? filterParams.MaxCookingTime : null
+        };
+
+        var results = await recipeService.GetFilteredRecipePreviewsAsync(tempParams, default);
+        searchedRecipes = results?.ToList() ?? new();
+    }
+
+    private void ToggleFilter() => showFilterPopup = !showFilterPopup;
+
+    private void SetDifficulty(DifficultyLevel diff)
+    {
+        if (filterParams.MaxDifficulty == (int)diff) filterParams.MaxDifficulty = null;
+        else filterParams.MaxDifficulty = (int)diff;
+    }
+
+    private async Task ApplyFilters()
+    {
+        showFilterPopup = false;
+        await HandleSearch();
+    }
+
+    private async Task ClearAll()
+    {
+        searchTerm = "";
+        filterParams = new();
+        cookingTimeOn = false;
+        isActuallySearching = false;
+        await LoadDashboardData();
+    }
+
+    private void AddRecipe() => NavManager.NavigateTo("/recipe/add");
+    private void RecipeClicked(RecipePreviewDto r) => NavManager.NavigateTo($"/recipe/{r.Id}");
+    private void CategoryClicked(Category c) => NavManager.NavigateTo($"/recipes/category/{c.Id}");
 }
