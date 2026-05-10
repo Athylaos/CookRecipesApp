@@ -1,5 +1,7 @@
 ﻿@page "/admin"
 @using Pinula.WASM.Components
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "admin")]
 
 <div class="container mt-4" style="background:LightGrey">
     <h1 class="mb-4">Admin Dashboard</h1>
@@ -25,11 +27,11 @@
         }
         else if (activeTab == "categories")
         {
-            <div class="alert alert-info">Zatím neimplementováno.</div>
+            <CategoryManager/>
         }
         else
         {
-            <p>Vyberte sekci z horního menu.</p>
+            <p>Select tab</p>
         }
     </div>
 </div>

@@ -39,13 +39,6 @@ namespace Pinula.API.Endpoints
             //---------------------------------------------------------------Create unit
             group.MapPost("/create", async (Unit unit, ClaimsPrincipal user, CookRecipesDbContext db) =>
             {
-                var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (userIdClaim == null) return Results.Unauthorized();
-                var userId = Guid.Parse(userIdClaim);
-
-                var userDb = await db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == userId);
-                if (userDb.Role != "admin") return Results.Unauthorized();
-
                 if (string.IsNullOrWhiteSpace(unit.Name))
                     return Results.BadRequest("Unit name is mandatory");            
 
@@ -60,7 +53,7 @@ namespace Pinula.API.Endpoints
                 await db.SaveChangesAsync();
 
                 return Results.Ok(unit.Id);
-            });
+            }).RequireAuthorization("AdminOnly");
 
             //---------------------------------------------------------------Delete unit
             group.MapDelete("/{id:guid}", async (Guid id, CookRecipesDbContext db) =>
@@ -78,7 +71,7 @@ namespace Pinula.API.Endpoints
                 await db.SaveChangesAsync();
 
                 return Results.NoContent();
-            });
+            }).RequireAuthorization("AdminOnly");
 
         }
     

@@ -84,9 +84,7 @@ namespace Pinula.API.Endpoints
                 var imageBaseUrl = $"{request.Scheme}://{request.Host}/images/avatars/";
                 var defaultImage = "default_avatar.png";
 
-                var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-                var userId = Guid.Parse(userIdClaim);
+                var userId = user.GetUserId();
 
                 UserDisplayDto userData = await db.Users.AsNoTracking().Where(u => u.Id == userId).Select(u => new UserDisplayDto
                 {
@@ -140,9 +138,6 @@ namespace Pinula.API.Endpoints
             //---------------------------------------------------------------Upadate user
             group.MapPut("/update", async (HttpRequest request, ClaimsPrincipal user, CookRecipesDbContext db, IWebHostEnvironment env) =>
             {
-                var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (userIdClaim == null) return Results.Unauthorized();
-
                 var form = await request.ReadFormAsync();
 
                 var dtoStr = form["userData"];
@@ -151,7 +146,7 @@ namespace Pinula.API.Endpoints
                 var dto = JsonSerializer.Deserialize<UserUpdateDto>(dtoStr, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                 if (dto == null) return Results.BadRequest("Invalid user data.");
 
-                var uId = Guid.Parse(userIdClaim);
+                var uId = user.GetUserId();
                 var dbUser = await db.Users.FindAsync(uId);
                 if (dbUser == null) return Results.NotFound("User not found");
 

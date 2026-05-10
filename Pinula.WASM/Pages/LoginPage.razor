@@ -1,9 +1,12 @@
 ﻿@page "/login"
 @using Pinula.Shared.DTOs
 @using Pinula.Shared.Interface
+@using Pinula.WASM.Services
 @inject IUserService UserService
-@inject NavigationManager NavManager;
+@inject NavigationManager NavManager
 @inject IJSRuntime JSRuntime
+@inject ApiAuthenticationStateProvider AuthStateProvider
+@inject ITokenStorage TokenStorage
 
 <div class="login-page">
     <div class="login-container">
@@ -80,6 +83,8 @@
             }
             else
             {
+                var customAuthStateProvider = (ApiAuthenticationStateProvider)AuthStateProvider;
+                customAuthStateProvider.MarkUserAsAuthenticated(await TokenStorage.GetTokenAsync());
                 try
                 {
                     await JSRuntime.InvokeVoidAsync("history.back");

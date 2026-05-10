@@ -120,7 +120,7 @@ namespace Pinula.Shared.Services
         {
             try
             {
-                var response = await _httpClient.DeleteAsync($"{BaseUrl}/{id}");
+                var response = await _httpClient.DeleteAsync($"{BaseUrl}/delete/{id}");
 
                 if (response.IsSuccessStatusCode)
                 {

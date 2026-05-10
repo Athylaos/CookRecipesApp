@@ -74,19 +74,17 @@
         </div>
 
 
-        <div class="add-recipe-card input-group">
-            <label>Categories</label>
-            <div class="chips-container">
-                @foreach (var cat in Categories)
-                {
-                    <button type="button"
-                            class="chip @(cat.IsSelected ? "selected" : "")"
-                            @onclick="() => ToggleCategory(cat)">
-                        @cat.Category.Name
-                    </button>
-                }
-            </div>
+    <div class="add-recipe-card">
+        <label class="section-title">Categories</label>
+    
+        <div class="category-root-container">
+            @foreach (var root in Categories.Where(c => c.Category.ParentCategory == null || c.Category.ParentCategory == Guid.Empty))
+            {
+                @RenderCategoryTree(root)
+            }
         </div>
+    </div>
+
 
         <AddIngredientPopup 
             IsVisible="showIngredientPopup" 
@@ -176,10 +174,6 @@
         AddStep();
     }
 
-    private void ToggleCategory(CategorySelectableBlazor cat)
-    {
-        cat.IsSelected = !cat.IsSelected;
-    }
 
     private void AddStep()
     {
@@ -278,9 +272,74 @@
         JSRuntime.InvokeVoidAsync("history.back");
     }
 
+    RenderFragment<CategorySelectableBlazor> RenderCategoryTree => category => __builder =>
+    {
+        var children = GetChildren(category.Category.Id).ToList();
+        var hasChildren = children.Any();
+
+        <div class="category-node">
+            <div class="category-chip @(category.IsSelected ? "selected" : "") @(category.IsExpanded ? "expanded" : "")"
+                 @onclick="() => HandleClick(category)">
+                
+                @if (!string.IsNullOrEmpty(category.Category.PictureUrl) && category.Category.PictureUrl != "default_category_picture.png")
+                {
+                    <img src="@category.Category.PictureUrl" class="chip-img" />
+                }
+                <span class="chip-name">@category.Category.Name</span>
+                
+                @if (hasChildren)
+                {
+                    <i class="bi @(category.IsExpanded ? "bi-chevron-down" : "bi-chevron-right") ms-1"></i>
+                }
+            </div>
+
+            @if (hasChildren && category.IsExpanded)
+            {
+                <div class="children-wrapper animate-slide-down">
+                    @foreach (var child in children)
+                    {
+                        @RenderCategoryTree(child)
+                    }
+                </div>
+            }
+        </div>
+    };
+
+    private void HandleClick(CategorySelectableBlazor cat)
+    {
+        cat.IsSelected = !cat.IsSelected;
+    
+        bool hasChildren = Categories.Any(c => c.Category.ParentCategory == cat.Category.Id);
+        if (hasChildren)
+        {
+            cat.IsExpanded = !cat.IsExpanded;
+        }
+
+        if (!cat.IsSelected)
+        {
+            DeselectChildrenRecursive(cat.Category.Id);
+        }
+    }
+
+    private void DeselectChildrenRecursive(Guid parentId)
+    {
+        var children = Categories.Where(c => c.Category.ParentCategory == parentId).ToList();
+        foreach (var child in children)
+        {
+            child.IsSelected = false;
+            child.IsExpanded = false;
+            DeselectChildrenRecursive(child.Category.Id);
+        }
+    }
+
+    private IEnumerable<CategorySelectableBlazor> GetChildren(Guid parentId)
+        => Categories.Where(c => c.Category.ParentCategory == parentId);
+
+
     public class CategorySelectableBlazor
     {
         public Category Category { get; set; } = new();
         public bool IsSelected { get; set; }
+        public bool IsExpanded { get; set; }
     }
 }

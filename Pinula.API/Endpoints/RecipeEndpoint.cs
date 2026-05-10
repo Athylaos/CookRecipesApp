@@ -71,8 +71,7 @@ namespace Pinula.API.Endpoints
                 var imageBaseUrl = $"{request.Scheme}://{request.Host}/images/recipes/";
                 var defaultImage = "default_recipe.png";
 
-                var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                Guid? currentUserId = userIdClaim != null ? Guid.Parse(userIdClaim) : null;
+                Guid? currentUserId = user.GetUserId();
 
                 var query = db.Recipes.AsNoTracking().AsQueryable();
 
@@ -148,7 +147,7 @@ namespace Pinula.API.Endpoints
             //---------------------------------------------------------------Toggle favorite recipe
             group.MapPost("/toggleFavorite/{recipeId:guid}", async (Guid recipeId, ClaimsPrincipal user, CookRecipesDbContext db) =>
             {
-                var userId = Guid.Parse(user.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+                var userId = user.GetUserId();
 
                 var favorite = await db.RecipesUsers.FirstOrDefaultAsync(ru => ru.RecipesId == recipeId && ru.UsersId == userId);
 
@@ -178,9 +177,7 @@ namespace Pinula.API.Endpoints
             {
                 var imageBaseUrl = $"{request.Scheme}://{request.Host}/images/recipes/";
                 var defaultImage = "default_recipe.png";
-
-                var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                Guid? currentUserId = userIdClaim != null ? Guid.Parse(userIdClaim) : null;
+                Guid? currentUserId = user.GetUserId();
 
                 var recipe = await db.Recipes.AsNoTracking().Where(r => r.Id == recipeId).Select(r => new RecipeDetailsDto()
                 {
@@ -228,9 +225,7 @@ namespace Pinula.API.Endpoints
             //---------------------------------------------------------------Create recipe
             group.MapPost("/create", async (HttpRequest request, ClaimsPrincipal user, CookRecipesDbContext db, IWebHostEnvironment env) =>
             {
-                var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (userIdClaim == null) return Results.Unauthorized();
-                var userId = Guid.Parse(userIdClaim);
+                var userId = user.GetUserId();
 
                 var form = await request.ReadFormAsync();
 
@@ -364,10 +359,7 @@ namespace Pinula.API.Endpoints
             //---------------------------------------------------------------Post comment
             group.MapPost("/postComment", async (Comment comment, ClaimsPrincipal user, CookRecipesDbContext db) =>
             {
-                var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (userIdClaim == null) return Results.Unauthorized();
-
-                var userId = Guid.Parse(userIdClaim);
+                var userId = user.GetUserId();
 
                 var exists = await db.Recipes.AnyAsync(r => r.Id == comment.RecipeId);
                 var alreadyCommented = await db.Comments.AnyAsync(c => c.RecipeId == comment.RecipeId && c.UserId == userId);
@@ -415,10 +407,7 @@ namespace Pinula.API.Endpoints
             //---------------------------------------------------------------Get user comment
             group.MapGet("/getUserComment/{recipeId:guid}", async (Guid recipeId, ClaimsPrincipal user, CookRecipesDbContext db) =>
             {
-                var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (userIdClaim == null) return Results.Unauthorized();
-
-                var userId = Guid.Parse(userIdClaim);
+                var userId = user.GetUserId();
 
                 var comResponse = await db.Comments.Include(c => c.User).AsNoTracking().Where(c => c.RecipeId == recipeId && c.UserId == userId).Select(c => new PostCommentResponse
                     {
@@ -439,10 +428,7 @@ namespace Pinula.API.Endpoints
             //---------------------------------------------------------------Remove user comment
             group.MapDelete("/deleteComment/{recipeId:guid}", async (Guid recipeId, ClaimsPrincipal user, CookRecipesDbContext db) =>
             {
-                var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (userIdClaim == null) return Results.Unauthorized();
-
-                var userId = Guid.Parse(userIdClaim);
+                var userId = user.GetUserId();
 
                 var comment = await db.Comments.FirstOrDefaultAsync(c => c.RecipeId == recipeId && c.UserId == userId);
                 if (comment == null) return Results.NotFound();

@@ -1,7 +1,7 @@
 ﻿@using Pinula.Shared.Models
 
 <div class="category-card" @onclick="OnClick">
-    <img src="images/categories/@Category.PictureUrl" alt="@Category.Name" />
+    <img src="@Category.PictureUrl" alt="@Category.Name" />
     <div class="gradient-overlay"></div>
     <span class="category-name">@Category.Name</span>
 </div>

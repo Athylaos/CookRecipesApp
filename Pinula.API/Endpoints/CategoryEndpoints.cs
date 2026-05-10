@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using Pinula.API.Context;
 using Pinula.Shared.DTOs;
 using Pinula.Shared.Models;
@@ -16,20 +17,45 @@ namespace Pinula.API.Endpoints
             var group = app.MapGroup("/api/categories");
 
             //---------------------------------------------------------------Get all categories
-            group.MapGet("/getAll", async (CookRecipesDbContext db) =>
+            group.MapGet("/getAll", async (HttpRequest request, CookRecipesDbContext db) =>
             {
-                return await db.Categories.AsNoTracking().OrderBy(c => c.SortOrder).ToListAsync();
+                var imageBaseUrl = $"{request.Scheme}://{request.Host}/images/categories/";
+                var defaultImage = "default_category.png";
+
+                return await db.Categories.AsNoTracking().Include(c => c.ChildCategories).OrderBy(c => c.SortOrder).Select(c => new Category() { 
+                    ChildCategories = c.ChildCategories,
+                    ParentCategory = c.ParentCategory,
+                    Id = c.Id,
+                    Name = c.Name,
+                    PictureUrl = $"{imageBaseUrl}{(string.IsNullOrWhiteSpace(c.PictureUrl) ? defaultImage : c.PictureUrl)}",
+                    SortOrder = c.SortOrder
+                }).ToListAsync();
             });
 
 
             //---------------------------------------------------------------Get main categories
-            group.MapGet("/getMain", async (CookRecipesDbContext db) =>
+            group.MapGet("/getMain", async (HttpRequest request, CookRecipesDbContext db) =>
             {
-                return await db.Categories.AsNoTracking().Where(c => c.ParentCategory == null).Include(c => c.ChildCategories).OrderBy(c => c.SortOrder).ToListAsync();                   
+                var imageBaseUrl = $"{request.Scheme}://{request.Host}/images/categories/";
+                var defaultImage = "default_category.png";
+
+                return await db.Categories.AsNoTracking().Where(c => c.ParentCategory == null).Include(c => c.ChildCategories).OrderBy(c => c.SortOrder).Select(c => new Category()
+                {
+                    ChildCategories = c.ChildCategories,
+                    ParentCategory = c.ParentCategory,
+                    Id = c.Id,
+                    Name = c.Name,
+                    PictureUrl = $"{imageBaseUrl}{(string.IsNullOrWhiteSpace(c.PictureUrl) ? defaultImage : c.PictureUrl)}",
+                    SortOrder = c.SortOrder
+                }).ToListAsync();
             });
 
-            group.MapGet("/get/{categoryId:guid}", async (Guid categoryId, ClaimsPrincipal user, CookRecipesDbContext db) =>
+            //---------------------------------------------------------------Get category
+            group.MapGet("/get/{categoryId:guid}", async (HttpRequest request, Guid categoryId, ClaimsPrincipal user, CookRecipesDbContext db) =>
             {
+                var imageBaseUrl = $"{request.Scheme}://{request.Host}/images/categories/";
+                var defaultImage = "default_category.png";
+
                 var category = await db.Categories.AsNoTracking().FirstOrDefaultAsync(c => c.Id == categoryId);
 
                 if(category is null)
@@ -38,27 +64,21 @@ namespace Pinula.API.Endpoints
                 }
                 else
                 {
+                    category.PictureUrl = $"{imageBaseUrl}{(string.IsNullOrWhiteSpace(category.PictureUrl) ? defaultImage : category.PictureUrl)}";
                     return Results.Ok(category);
                 }
             });
 
-
+            //---------------------------------------------------------------Create category
             group.MapPost("/create", async (HttpRequest request, ClaimsPrincipal user, CookRecipesDbContext db, IWebHostEnvironment env) =>
             {
-                var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (userIdClaim == null) return Results.Unauthorized();
-                var userId = Guid.Parse(userIdClaim);
-
-                var userDb = await db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == userId);
-                if(userDb.Role != "admin") return Results.Unauthorized();
-
                 var form = await request.ReadFormAsync();
                 var dtoStr = form["categoryData"];
 
                 if (string.IsNullOrEmpty(dtoStr)) return Results.BadRequest("Category data missing.");
 
                 var dto = JsonSerializer.Deserialize<CategoryCreateDto>(dtoStr, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                if (dto == null) return Results.BadRequest("Neplatná data kategorie.");
+                if (dto == null) return Results.BadRequest("Unvalid category data.");
 
                 string finalPhotoUrl = "default_category_picture.png";
                 var file = form.Files.GetFile("image");
@@ -113,9 +133,9 @@ namespace Pinula.API.Endpoints
                 await db.SaveChangesAsync();
 
                 return Results.Ok(newCategory.Id);
-            });
+            }).RequireAuthorization("AdminOnly");
 
-
+            //---------------------------------------------------------------Delete category
             group.MapDelete("/delete/{id:guid}", async (Guid id, CookRecipesDbContext db, IWebHostEnvironment env) =>
             {
                 var category = await db.Categories
@@ -141,7 +161,7 @@ namespace Pinula.API.Endpoints
                 await db.SaveChangesAsync();
 
                 return Results.NoContent();
-            });
+            }).RequireAuthorization("AdminOnly");
 
 
 

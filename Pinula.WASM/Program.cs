@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Pinula.Shared.Interface;
@@ -12,6 +13,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped<ITokenStorage, BlazorTokenStorage>();
 builder.Services.AddTransient<AuthHttpMessageHandler>();
+builder.Services.AddAuthorizationCore();
 
 builder.Services.AddHttpClient("CookApi", client =>
     client.BaseAddress = new Uri("http://10.0.1.160:5017/api/"))
@@ -22,6 +24,8 @@ builder.Services.AddScoped<IRecipeService>(sp => new RecipeService(sp.GetRequire
 builder.Services.AddScoped<ICategoryService>(sp => new CategoryService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("CookApi"), sp.GetRequiredService<ILogger<CategoryService>>()));
 builder.Services.AddScoped<IUserService>(sp => new UserService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("CookApi"), sp.GetRequiredService<ITokenStorage>(), sp.GetRequiredService<ILogger<UserService>>()));
 builder.Services.AddScoped<IUnitService>(sp => new UnitService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("CookApi"), sp.GetRequiredService<ILogger<UnitService>>()));
+builder.Services.AddScoped<ApiAuthenticationStateProvider>();
+builder.Services.AddScoped<AuthenticationStateProvider>(sp => sp.GetRequiredService<ApiAuthenticationStateProvider>());
 
 
 

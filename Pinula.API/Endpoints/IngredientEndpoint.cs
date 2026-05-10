@@ -76,9 +76,6 @@ namespace Pinula.API.Endpoints
             //---------------------------------------------------------------Create ingredient
             group.MapPost("/create", async (IngredientCreateDto dto, ClaimsPrincipal user, CookRecipesDbContext db) =>
             {
-                var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (userIdClaim == null) return Results.Unauthorized();
-
                 if (await db.Ingredients.AnyAsync(i => i.Name.ToLower() == dto.Name.ToLower()))
                 {
                     return Results.Conflict(new { Message = $"Ingredient with name '{dto.Name}' already exists." });
