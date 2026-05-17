@@ -196,13 +196,6 @@ namespace Pinula.API.Endpoints
                     RecipeCreated = r.RecipeCreated,
                     Rating = r.Rating,
                     UsersRated = r.UsersRated,
-                    Comments = r.Comments.Where(c => c.UserId != currentUserId).OrderByDescending(c => c.CreatedAt).Take(10).Select(c => new CommentPreview
-                    {
-                        Text = c.Text,
-                        Rating = c.Rating,
-                        CreatedAt = c.CreatedAt ?? DateTime.UtcNow,
-                        UserName = c.User.Name
-                    }).ToList(),
                     RecipeIngredients = r.RecipeIngredients.Select(ri => new RecipeIngredientDetailDto
                     {
                         Quantity = ri.Quantity ?? 0,
@@ -218,7 +211,38 @@ namespace Pinula.API.Endpoints
                     IsFavorite = currentUserId != null && r.RecipesUsers.Any(ru => ru.UsersId == currentUserId && ru.IsFavorite)
                 }).FirstOrDefaultAsync();
 
-                return recipe;
+                if (recipe == null) return Results.NotFound();
+
+                var allComments = await db.Comments.AsNoTracking().Where(c => c.RecipeId == recipeId).Select(c => new CommentPreview
+                {
+                    Id = c.Id,
+                    Text = c.Text,
+                    Rating = c.Rating,
+                    CreatedAt = c.CreatedAt ?? DateTime.UtcNow,
+                    UserName = c.User.Name,
+                    UserSurname = c.User.Surname,
+                    ParentCommentId = c.ParentCommentId,
+                    Replies = new List<CommentPreview>()
+                }).OrderByDescending(c => c.CreatedAt).ToListAsync();
+
+                var commentLookup = allComments.ToDictionary(c => c.Id);
+                var rootComments = new List<CommentPreview>();
+
+                foreach (var comment in allComments)
+                {
+                    if (comment.ParentCommentId.HasValue && commentLookup.ContainsKey(comment.ParentCommentId.Value))
+                    {
+                        commentLookup[comment.ParentCommentId.Value].Replies.Add(comment);
+                    }
+                    else
+                    {
+                        rootComments.Add(comment);
+                    }
+                }
+
+                recipe.Comments = rootComments;
+
+                return Results.Ok(recipe);
             });
 
 
@@ -362,41 +386,66 @@ namespace Pinula.API.Endpoints
                 var userId = user.GetUserId();
 
                 var exists = await db.Recipes.AnyAsync(r => r.Id == comment.RecipeId);
-                var alreadyCommented = await db.Comments.AnyAsync(c => c.RecipeId == comment.RecipeId && c.UserId == userId);
+                bool isNewRating = comment.Rating.HasValue;
 
-                if (!exists || comment.Rating == 0 || alreadyCommented)
+                if (comment.ParentCommentId.HasValue)
                 {
-                    return Results.BadRequest("Bad request or user already rated.");
+                    var parentExists = await db.Comments.AnyAsync(c => c.Id == comment.ParentCommentId);
+                    if (!parentExists) return Results.BadRequest("Parent comment not found.");
+                    comment.Rating = null;
                 }
+                else
+                {
+                    var alreadyRated = comment.Rating.HasValue && await db.Comments.AnyAsync(c => c.RecipeId == comment.RecipeId && c.UserId == userId && c.Rating != null);
+                    if (alreadyRated) return Results.BadRequest("You have already rated this recipe.");
+                }
+
                 comment.UserId = userId;
                 comment.CreatedAt = DateTime.UtcNow;
-
                 db.Comments.Add(comment);
+                await db.SaveChangesAsync();
 
-                var ratings = await db.Comments.AsNoTracking().Where(c => c.RecipeId == comment.RecipeId).Select(c => (decimal)c.Rating).ToListAsync();
-                ratings.Add(comment.Rating);
+                decimal newAvg = 0;
+                int newCount = 0;
 
-                var recipe = await db.Recipes.FirstOrDefaultAsync(r => r.Id == comment.RecipeId);
-                if (recipe != null)
+                var stats = await db.Comments
+                    .Where(c => c.RecipeId == comment.RecipeId && c.Rating != null)
+                    .GroupBy(c => c.RecipeId)
+                    .Select(g => new { Avg = g.Average(c => (decimal?)c.Rating) ?? 0, Count = g.Count() })
+                    .FirstOrDefaultAsync();
+
+                if (stats != null)
                 {
-                    recipe.Rating = ratings.Average();
-                    recipe.UsersRated = ratings.Count;
+                    var recipe = await db.Recipes.FindAsync(comment.RecipeId);
+                    if (recipe != null)
+                    {
+                        recipe.Rating = stats.Avg;
+                        recipe.UsersRated = stats.Count;
+                        newAvg = stats.Avg;
+                        newCount = stats.Count;
+                        await db.SaveChangesAsync();
+                    }
                 }
 
-                var userProfile = await db.Users.AsNoTracking().Where(u => u.Id == userId).Select(u => new { u.Name, u.Surname }).FirstOrDefaultAsync();
-
-                await db.SaveChangesAsync();
+                var userProfile = await db.Users.AsNoTracking()
+                    .Where(u => u.Id == userId)
+                    .Select(u => new { u.Name, u.Surname })
+                    .FirstOrDefaultAsync();
 
                 var response = new PostCommentResponse
                 {
-                    Text = comment.Text,
-                    Rating = comment.Rating,
-                    UserName = userProfile?.Name ?? "User",
-                    UserSurname = userProfile?.Surname ?? "",
-                    CreatedAt = comment.CreatedAt??DateTime.UtcNow,
-
-                    NewAverageRating = recipe.Rating ?? 0,
-                    NewUsersRatedCount = recipe.UsersRated ?? 0
+                    NewAverageRating = newAvg,
+                    NewUsersRatedCount = newCount,
+                    NewComment = new CommentPreview
+                    {
+                        Text = comment.Text ?? "",
+                        Rating = comment.Rating,
+                        CreatedAt = comment.CreatedAt ?? DateTime.UtcNow,
+                        UserName = userProfile?.Name ?? "User",
+                        UserSurname = userProfile?.Surname ?? "",
+                        ParentCommentId = comment.ParentCommentId,
+                        Replies = new List<CommentPreview>()
+                    }
                 };
 
                 return Results.Ok(response);
@@ -405,6 +454,7 @@ namespace Pinula.API.Endpoints
 
 
             //---------------------------------------------------------------Get user comment
+            /*
             group.MapGet("/getUserComment/{recipeId:guid}", async (Guid recipeId, ClaimsPrincipal user, CookRecipesDbContext db) =>
             {
                 var userId = user.GetUserId();
@@ -424,6 +474,8 @@ namespace Pinula.API.Endpoints
 
                 return Results.Ok(comResponse);
             }).RequireAuthorization();
+            */
+
 
             //---------------------------------------------------------------Remove user comment
             group.MapDelete("/deleteComment/{recipeId:guid}", async (Guid recipeId, ClaimsPrincipal user, CookRecipesDbContext db) =>

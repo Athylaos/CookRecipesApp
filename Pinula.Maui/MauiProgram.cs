@@ -79,7 +79,7 @@ namespace Pinula
             builder.Services.AddSingleton<IRecipeService>(sp => new RecipeService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("CookApi"), sp.GetRequiredService<ILogger<RecipeService>>()));
             builder.Services.AddSingleton<ICategoryService>(sp => new CategoryService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("CookApi"), sp.GetRequiredService<ILogger<CategoryService>>()));
             builder.Services.AddSingleton<IUserService>(sp => new UserService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("CookApi"), sp.GetRequiredService<ITokenStorage>(), sp.GetRequiredService<ILogger<UserService>>()));
-            builder.Services.AddSingleton<IUnitService>(sp => new UnitService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("CookApi")));
+            builder.Services.AddSingleton<IUnitService>(sp => new UnitService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("CookApi"), sp.GetRequiredService<ILogger>()));
 
             builder.Services.AddSingleton<LoginPage>();
             builder.Services.AddTransient<LoginViewModel>();

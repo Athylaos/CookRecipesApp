@@ -13,7 +13,7 @@ public partial class Comment
 
     public string? Text { get; set; }
 
-    public short Rating { get; set; }
+    public short? Rating { get; set; }
 
     public DateTime? CreatedAt { get; set; }
 
