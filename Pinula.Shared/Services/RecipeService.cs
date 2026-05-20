@@ -134,7 +134,7 @@ namespace Pinula.Shared.Services
             return response ?? new List<RecipePreviewDto>();
         }
 
-        public async Task<List<RecipePreviewDto>> GetFilteredRecipePreviewsAsync(RecipeFilterParametrs filter, CancellationToken? ct)
+        public async Task<List<RecipePreviewDto>> GetFilteredRecipePreviewsAsync(RecipeFilterParameters filter, CancellationToken? ct)
         {
             try
             {

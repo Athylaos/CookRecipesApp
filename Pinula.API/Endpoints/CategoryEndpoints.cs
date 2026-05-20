@@ -56,7 +56,7 @@ namespace Pinula.API.Endpoints
                 var imageBaseUrl = $"{request.Scheme}://{request.Host}/images/categories/";
                 var defaultImage = "default_category.png";
 
-                var category = await db.Categories.AsNoTracking().FirstOrDefaultAsync(c => c.Id == categoryId);
+                var category = await db.Categories.AsNoTracking().Include(c => c.ChildCategories).FirstOrDefaultAsync(c => c.Id == categoryId);
 
                 if(category is null)
                 {
@@ -65,6 +65,10 @@ namespace Pinula.API.Endpoints
                 else
                 {
                     category.PictureUrl = $"{imageBaseUrl}{(string.IsNullOrWhiteSpace(category.PictureUrl) ? defaultImage : category.PictureUrl)}";
+                    foreach(var sub in category.ChildCategories)
+                    {
+                        sub.PictureUrl = $"{imageBaseUrl}{(string.IsNullOrWhiteSpace(sub.PictureUrl) ? defaultImage : sub.PictureUrl)}";
+                    }
                     return Results.Ok(category);
                 }
             });

@@ -3,29 +3,17 @@
 @using Pinula.Shared.DTOs
 @using Pinula.Shared.Models
 @using Pinula.WASM.Components
-@using System.Timers
 @inject IRecipeService recipeService
 @inject ICategoryService categoryService
 @inject IUserService userService
 @inject IJSRuntime JSRuntime
 @inject NavigationManager NavManager
-@implements IDisposable
 
 <PageTitle>Pinula - Recipes</PageTitle>
 
 <div class="recipes-container">
-    <div class="header-actions">
-        <div class="search-bar">
-            <input type="text" class="search-input" placeholder="Search recipes..." @bind="SearchTerm" @bind:event="oninput" />
-            <img src="images/icons/search.png"/>
-        </div>
-        <button class="btn-icon btn-filter" @onclick="ToggleFilter">
-            <img src="images/icons/filter.png" class="recipe-nav-icon" />
-        </button>
-        <button class="btn-icon btn-add" @onclick="AddRecipe">
-            <img src="images/icons/plus.png" class="recipe-nav-icon" />
-        </button>
-    </div>
+    
+    <RecipesHeader @ref="headerActionsRef" OnSearchApplied="HandleSearch" />
 
     <div class="main-content">
         @if (isActuallySearching)
@@ -85,8 +73,8 @@
                                         Recipe of the day
                                     </span>
                                     <h2 class="hero-title">@recipeOfTheDay.Title</h2>
-                                    <button class="btn-cook">
-                                        <span>Cook Now</span>
+                                    <button class="btn-cook" @onclick="() => RecipeClicked(recipeOfTheDay)">
+                                        Cook Now
                                     </button>
                                 </div>
                             </div>
@@ -128,74 +116,18 @@
                 }
 
             </LoadingView>
-
         }
     </div>
-
-    @if (showFilterPopup)
-    {
-        <div class="modal-backdrop" @onclick="ToggleFilter">
-            <div class="filter-popup" @onclick:stopPropagation="true">
-            
-                <div class="filter-row">
-                    <label>Cooking time</label>
-                    <input type="checkbox" class="custom-checkbox" @bind="cookingTimeOn" />
-                </div>
-                <div class="slider-row @(!cookingTimeOn ? "disabled" : "")">
-                    <input type="range" min="5" max="180" step="5" @bind="filterParams.MaxCookingTime" @bind:event="oninput" disabled="@(!cookingTimeOn)" />
-                    <span class="value-text">@(filterParams.MaxCookingTime)m</span>
-                </div>
-
-                <div class="filter-row mt-4">
-                    <label>Calories</label>
-                    <input type="checkbox" class="custom-checkbox" @bind="caloriesOn" />
-                </div>
-                <div class="slider-row @(!caloriesOn ? "disabled" : "")">
-                    <input type="range" min="100" max="2500" step="50" @bind="filterParams.MaxCalories" @bind:event="oninput" disabled="@(!caloriesOn)" />
-                    <span class="value-text">@(filterParams.MaxCalories)kcal</span>
-                </div>
-
-                <div class="filter-row mt-4">
-                    <label>Rating</label>
-                    <span class="btn-clear" @onclick="ClearRating">Clear</span>
-                </div>
-                <div class="rating-stars">
-                    @for (int i = 1; i <= 5; i++)
-                    {
-                        var starValue = i;
-                        <img src="@(filterParams.MinRating >= starValue ? "images/icons/favorite_full.png" : "images/icons/favorite.png")" class="time-icon"
-                           @onclick="() => SetRating(starValue)"/>
-                    }
-                </div>
-
-                <div class="filter-row mt-4">
-                    <label>Difficulty</label>
-                </div>
-                <div class="difficulty-grid">
-                    @foreach (var diff in Enum.GetValues<DifficultyLevel>())
-                    {
-                        <button class="diff-btn @(filterParams.MaxDifficulty == (int)diff ? "active" : "")"
-                                @onclick="() => SetDifficulty(diff)">
-                            @diff
-                        </button>
-                    }
-                </div>
-
-                <div class="filter-row mt-4 mb-4">
-                    <label>Only favorite</label>
-                    <input type="checkbox" class="custom-checkbox" @bind="filterParams.OnlyFavorites" />
-                </div>
-
-                <div class="filter-footer">
-                    <button class="btn-apply" @onclick="ApplyFilters">Apply</button>
-                    <button class="btn-cancel" @onclick="ToggleFilter">Cancel</button>
-                </div>
-            </div>
-        </div>
-    }
 </div>
 
 @code {
+    private RecipesHeader? headerActionsRef;
+    private bool isActuallySearching;
+    private bool isLoading = true;
+    private List<RecipePreviewDto> searchedRecipes = new();
+    private List<Category> categories = new();
+    private RecipePreviewDto recipeOfTheDay = new();
+    private UserDisplayDto? currentUser;
 
     #region RecipeLists
     private List<RecipePreviewDto> favouriteRecipes = new();
@@ -204,31 +136,11 @@
     private List<RecipePreviewDto> bestRecipes = new();
     private List<RecipePreviewDto> mineRecipes = new();
 
-    private readonly RecipeFilterParametrs _favouriteFilter = new RecipeFilterParametrs()
-    {
-        OnlyFavorites = true,
-        Amount = 4
-    };
-    private readonly RecipeFilterParametrs _bestFilter = new RecipeFilterParametrs()
-    {
-        MinRating = 4,
-        Amount = 4
-    };
-    private readonly RecipeFilterParametrs _fastFilter = new RecipeFilterParametrs()
-    {
-        MaxCookingTime = 20,
-        Amount = 4
-    };
-    private readonly RecipeFilterParametrs _mineFilter = new RecipeFilterParametrs()
-    {
-        OnlyMine = true,
-        Amount = 4
-    };
-    private readonly RecipeFilterParametrs _latestFilter = new RecipeFilterParametrs()
-    {
-        Sort = SortBy.Newest,
-        Amount = 4
-    };
+    private readonly RecipeFilterParameters _favouriteFilter = new() { OnlyFavorites = true, Amount = 4 };
+    private readonly RecipeFilterParameters _bestFilter = new() { MinRating = 4, Amount = 4 };
+    private readonly RecipeFilterParameters _fastFilter = new() { MaxCookingTime = 20, Amount = 4 };
+    private readonly RecipeFilterParameters _mineFilter = new() { OnlyMine = true, Amount = 4 };
+    private readonly RecipeFilterParameters _latestFilter = new() { Sort = SortBy.Newest, Amount = 4 };
 
     private bool isFavouriteLoading;
     private bool isLatestLoading;
@@ -242,45 +154,16 @@
     private bool moreBestToLoad = true;
     private bool moreMineToLoad = true;
 
-    private async Task LoadMoreFavourite()
-    {
-        isFavouriteLoading = true;
-        favouriteRecipes = await LoadMoreLogic(_favouriteFilter, favouriteRecipes, status => moreFavouriteToLoad = status);
-        isFavouriteLoading = false;
-    }
+    private async Task LoadMoreFavourite() => favouriteRecipes = await LoadMoreLogic(_favouriteFilter, favouriteRecipes, status => moreFavouriteToLoad = status, () => isFavouriteLoading = true, () => isFavouriteLoading = false);
+    private async Task LoadMoreLatest() => latestRecipes = await LoadMoreLogic(_latestFilter, latestRecipes, status => moreLatestToLoad = status, () => isLatestLoading = true, () => isLatestLoading = false);
+    private async Task LoadMoreFast() => fastRecipes = await LoadMoreLogic(_fastFilter, fastRecipes, status => moreFastToLoad = status, () => isFastLoading = true, () => isFastLoading = false);
+    private async Task LoadMoreBest() => bestRecipes = await LoadMoreLogic(_bestFilter, bestRecipes, status => moreBestToLoad = status, () => isBestLoading = true, () => isBestLoading = false);
+    private async Task LoadMoreMine() => mineRecipes = await LoadMoreLogic(_mineFilter, mineRecipes, status => moreMineToLoad = status, () => isMineLoading = true, () => isMineLoading = false);
 
-    private async Task LoadMoreLatest()
+    private async Task<List<RecipePreviewDto>> LoadMoreLogic(RecipeFilterParameters filter, List<RecipePreviewDto> currentList, Action<bool> setMoreToLoad, Action startLoading, Action stopLoading)
     {
-        isLatestLoading = true;
-        latestRecipes = await LoadMoreLogic(_latestFilter, latestRecipes, status => moreLatestToLoad = status);
-        isLatestLoading = false;
-    }
-
-    private async Task LoadMoreFast()
-    {
-        isFastLoading = true;
-        fastRecipes = await LoadMoreLogic(_fastFilter, fastRecipes, status => moreFastToLoad = status);
-        isFastLoading = false;
-    }
-
-    private async Task LoadMoreBest()
-    {
-        isBestLoading = true;
-        bestRecipes = await LoadMoreLogic(_bestFilter, bestRecipes, status => moreBestToLoad = status);
-        isBestLoading = false;
-    }
-
-    private async Task LoadMoreMine()
-    {
-        isMineLoading = true;
-        mineRecipes = await LoadMoreLogic(_mineFilter, mineRecipes, status => moreMineToLoad = status);
-        isMineLoading = false;
-    }
-
-    private async Task<List<RecipePreviewDto>> LoadMoreLogic(RecipeFilterParametrs filter, List<RecipePreviewDto> currentList, Action<bool> setMoreToLoad)
-    {
+        startLoading();
         filter.Skip = currentList.Count;
-
         var results = await recipeService.GetFilteredRecipePreviewsAsync(filter, default);
         var newList = results?.ToList() ?? new List<RecipePreviewDto>();
 
@@ -290,180 +173,69 @@
         }
 
         currentList.AddRange(newList);
-
-
+        stopLoading();
         return currentList;
     }
-
     #endregion
-
-    private bool isLoading = true;
-
-    private List<Category> categories = new();
-
-    private RecipePreviewDto recipeOfTheDay;
-    private UserDisplayDto? currentUser;
-
-    private bool showFilterPopup;
-    private bool cookingTimeOn;
-    private bool caloriesOn;
-    private bool isActuallySearching;
-
-    private RecipeFilterParametrs filterParams = new() { MaxCookingTime = 20, MaxCalories = 1000 };
-    private List<RecipePreviewDto> searchedRecipes = new();
-
-    private Timer? debounceTimer;
-    private string _searchTerm = "";
-
-    public string SearchTerm
-    {
-        get => _searchTerm;
-        set
-        {
-            _searchTerm = value;
-            OnSearchInput();
-        }
-    }
 
     protected override async Task OnInitializedAsync()
     {
         await LoadDashboardData();
-        debounceTimer = new Timer(1000);
-        debounceTimer.AutoReset = false;
-        debounceTimer.Elapsed += async (sender, e) =>
-        {
-            await InvokeAsync(HandleSearch);
-            await InvokeAsync(StateHasChanged);
-        };
-
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!isLoading)
         {
-            try
-            {
-                await JSRuntime.InvokeVoidAsync("setupHorizontalScroll");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"JS Error: {ex.Message}");
-            }
+            try { await JSRuntime.InvokeVoidAsync("setupHorizontalScroll"); }
+            catch (Exception ex) { Console.WriteLine($"JS Error: {ex.Message}"); }
         }
     }
-
-    private async Task<List<RecipePreviewDto>> LoadRecipesToList(RecipeFilterParametrs parametrs, List<RecipePreviewDto> list)
-    {
-        parametrs.Skip = list.Count();
-
-        var resp = await recipeService.GetFilteredRecipePreviewsAsync(parametrs, null);
-
-        var newList = new List<RecipePreviewDto>();
-
-        foreach(var r in list)
-        {
-            newList.Add(r);
-        }
-
-        foreach(var r in resp)
-        {
-            newList.Add(r);
-        }
-
-        return newList;
-    }
-
-
 
     private async Task LoadDashboardData()
     {
         isLoading = true;
         try
         {
-            var categoriesTask = categoryService.GetAllCategoriesAsync();
+            var categoriesTask = categoryService.GetMainCategoriesAsync();
             var userTask = userService.GetCurrentUserAsync();
-            var recipeTask = recipeService.GetFilteredRecipePreviewsAsync(new RecipeFilterParametrs { Amount = 1, MinRating = 3, Sort = SortBy.Newest }, null);
+            var recipeTask = recipeService.GetFilteredRecipePreviewsAsync(new RecipeFilterParameters { Amount = 1, MinRating = 3, Sort = SortBy.Newest }, null);
 
-            var favouriteTask = LoadRecipesToList(_favouriteFilter, favouriteRecipes);
-            var latestTask = LoadRecipesToList(_latestFilter, latestRecipes);
-            var fastTask = LoadRecipesToList(_fastFilter, fastRecipes);
-            var bestTask = LoadRecipesToList(_bestFilter, bestRecipes);
-            var mineTask = LoadRecipesToList(_mineFilter, mineRecipes);
+            var favouriteTask = recipeService.GetFilteredRecipePreviewsAsync(_favouriteFilter, null);
+            var latestTask = recipeService.GetFilteredRecipePreviewsAsync(_latestFilter, null);
+            var fastTask = recipeService.GetFilteredRecipePreviewsAsync(_fastFilter, null);
+            var bestTask = recipeService.GetFilteredRecipePreviewsAsync(_bestFilter, null);
+            var mineTask = recipeService.GetFilteredRecipePreviewsAsync(_mineFilter, null);
 
             await Task.WhenAll(categoriesTask, userTask, favouriteTask, latestTask, fastTask, bestTask, mineTask);
 
+            categories = categoriesTask.Result?.ToList() ?? new();
+            currentUser = userTask.Result;
+            recipeOfTheDay = recipeTask.Result?.FirstOrDefault() ?? new();
 
-            var categoriesData = categoriesTask.Result;
-            var userData = userTask.Result;
-            var recipesData = recipeTask.Result;
-            var favData = favouriteTask.Result;
-            var latestData = latestTask.Result;
-            var fastData = fastTask.Result;
-            var bestData = bestTask.Result;
-            var mineData = mineTask.Result;
-
-            categories = categoriesData?.ToList() ?? new List<Category>();
-            currentUser = userData;
-
-            recipeOfTheDay = recipesData != null && recipesData.Any()? recipesData.First(): new RecipePreviewDto();
-
-            favouriteRecipes = favData?.ToList() ?? new List<RecipePreviewDto>();
-            latestRecipes = latestData?.ToList() ?? new List<RecipePreviewDto>();
-            fastRecipes = fastData?.ToList() ?? new List<RecipePreviewDto>();
-            bestRecipes = bestData?.ToList() ?? new List<RecipePreviewDto>();
-            mineRecipes = mineData?.ToList() ?? new List<RecipePreviewDto>();
+            favouriteRecipes = favouriteTask.Result?.ToList() ?? new();
+            latestRecipes = latestTask.Result?.ToList() ?? new();
+            fastRecipes = fastTask.Result?.ToList() ?? new();
+            bestRecipes = bestTask.Result?.ToList() ?? new();
+            mineRecipes = mineTask.Result?.ToList() ?? new();
 
             if (favouriteRecipes.Count < _favouriteFilter.Amount) moreFavouriteToLoad = false;
             if (latestRecipes.Count < _latestFilter.Amount) moreLatestToLoad = false;
             if (fastRecipes.Count < _fastFilter.Amount) moreFastToLoad = false;
             if (bestRecipes.Count < _bestFilter.Amount) moreBestToLoad = false;
             if (mineRecipes.Count < _mineFilter.Amount) moreMineToLoad = false;
-
-
-
         }
-        finally
-        {
-            isLoading = false;
-        }
+        finally { isLoading = false; }
     }
 
-    private void OnSearchInput()
+    private async Task HandleSearch(RecipeFilterParameters activeParams)
     {
-        if (debounceTimer != null)
-        {
-            debounceTimer.Stop();
-            debounceTimer.Start();
-        }
-    }
-
-    public void Dispose()
-    {
-        debounceTimer?.Dispose();
-    }
-
-    private void ToggleFilter() => showFilterPopup = !showFilterPopup;
-
-    private void SetDifficulty(DifficultyLevel diff)
-    {
-        if (filterParams.MaxDifficulty == (int)diff) filterParams.MaxDifficulty = null;
-        else filterParams.MaxDifficulty = (int)diff;
-    }
-
-    private void SetRating(int rating) => filterParams.MinRating = rating;
-
-    private void ClearRating() => filterParams.MinRating = null;
-
-    private async Task ApplyFilters()
-    {
-        showFilterPopup = false;
-        await HandleSearch();
-    }
-
-    private async Task HandleSearch()
-    {
-        if (string.IsNullOrWhiteSpace(_searchTerm) && !IsFilterActive())
+        if (string.IsNullOrWhiteSpace(activeParams.SearchTerm) &&
+            activeParams.MaxCookingTime == null &&
+            activeParams.MaxCalories == null &&
+            activeParams.MinRating == null &&
+            activeParams.MaxDifficulty == null &&
+            !activeParams.OnlyFavorites)
         {
             isActuallySearching = false;
             return;
@@ -471,39 +243,18 @@
 
         isActuallySearching = true;
 
-        var tempParams = new RecipeFilterParametrs
-        {
-            SearchTerm = _searchTerm,
-            OnlyFavorites = filterParams.OnlyFavorites,
-            MaxDifficulty = filterParams.MaxDifficulty,
-            MaxCookingTime = cookingTimeOn ? filterParams.MaxCookingTime : null,
-            MaxCalories = caloriesOn ? filterParams.MaxCalories : null,
-            MinRating = filterParams.MinRating
-        };
-
-        var recipes = await recipeService.GetFilteredRecipePreviewsAsync(tempParams, null);
-
-        searchedRecipes.Clear();
-        foreach(var r in recipes)
-        {
-            searchedRecipes.Add(r);
-        }    
+        var recipes = await recipeService.GetFilteredRecipePreviewsAsync(activeParams, null);
+        searchedRecipes = recipes?.ToList() ?? new();
     }
 
-    private bool IsFilterActive()
+    private async Task ClearAll()
     {
-        return cookingTimeOn || caloriesOn || filterParams.OnlyFavorites ||
-               filterParams.MaxDifficulty != null || filterParams.MinRating != null;
+        if (headerActionsRef != null)
+        {
+            await headerActionsRef.Reset();
+        }
     }
 
-    private void ClearAll()
-    {
-        filterParams = new();
-        _searchTerm = string.Empty;
-        isActuallySearching = false;
-    }
-
-    private void AddRecipe() => NavManager.NavigateTo("/add-recipe");
     private void RecipeClicked(RecipePreviewDto r) => NavManager.NavigateTo($"/recipe/{r.Id}");
     private void CategoryClicked(Category c) => NavManager.NavigateTo($"/recipes/category/{c.Id}");
 }

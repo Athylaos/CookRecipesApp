@@ -66,7 +66,7 @@ namespace Pinula.API.Endpoints
             });
 
             //---------------------------------------------------------------Get previews filtered
-            group.MapGet("/getPreviews/filtered", async (HttpRequest request,[AsParameters] RecipeFilterParametrs filter, ClaimsPrincipal user, CookRecipesDbContext db) =>
+            group.MapGet("/getPreviews/filtered", async (HttpRequest request,[AsParameters] RecipeFilterParameters filter, ClaimsPrincipal user, CookRecipesDbContext db) =>
             {
                 var imageBaseUrl = $"{request.Scheme}://{request.Host}/images/recipes/";
                 var defaultImage = "default_recipe.png";

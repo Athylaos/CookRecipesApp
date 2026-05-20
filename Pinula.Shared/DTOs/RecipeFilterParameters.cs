@@ -13,7 +13,7 @@ namespace Pinula.Shared.DTOs
         Calories,
     }
 
-    public class RecipeFilterParametrs
+    public class RecipeFilterParameters
     {
         public string? SearchTerm { get; set; }
         public Guid? CategoryId { get; set; }
@@ -27,11 +27,10 @@ namespace Pinula.Shared.DTOs
         public int? MaxCalories { get; set; }
         public SortBy Sort { get; set; } = SortBy.Newest;
         public bool SortDescending { get; set; } = true;
-
     
-        public RecipeFilterParametrs Clone()
+        public RecipeFilterParameters Clone()
         {
-            return (RecipeFilterParametrs)this.MemberwiseClone();
+            return (RecipeFilterParameters)this.MemberwiseClone();
         }
 
     }

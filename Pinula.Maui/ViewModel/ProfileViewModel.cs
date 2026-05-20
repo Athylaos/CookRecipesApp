@@ -55,7 +55,7 @@ namespace Pinula.ViewModel
         public ObservableCollection<RecipePreviewDto> MyOwnRecipes { get; set; } = new();
         [ObservableProperty]
         bool myOwnVisible;
-        private readonly RecipeFilterParametrs _myOwnFilter = new RecipeFilterParametrs()
+        private readonly RecipeFilterParameters _myOwnFilter = new RecipeFilterParameters()
         {
             OnlyMine = true,
             Amount = 4
@@ -119,7 +119,7 @@ namespace Pinula.ViewModel
         [RelayCommand]
         public async Task LoadMoreMyOwnAsync() => await LoadMoreRecipesAsync(_myOwnFilter, MyOwnRecipes);
 
-        private async Task LoadMoreRecipesAsync(RecipeFilterParametrs filterPar, ObservableCollection<RecipePreviewDto> list)
+        private async Task LoadMoreRecipesAsync(RecipeFilterParameters filterPar, ObservableCollection<RecipePreviewDto> list)
         {
             if (LoadingRecipes) return;
 
